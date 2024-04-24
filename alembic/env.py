@@ -8,6 +8,16 @@ from alembic import context
 
 from src.config import settings
 
+# This models aren't directly used in file
+# But it's necessary to import them to be able to use them in target_metadata
+# And then autogenerate migrations based on them
+from src.restaurants.models import Restaurant, RestaurantSchedule  # noqa
+from src.users.models import User  # noqa
+from src.products.models import Product  # noqa
+from src.categories.models import Category  # noqa
+from src.offers.models import Offer, OfferSchedule  # noqa
+
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
@@ -21,7 +31,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = settings.Base.metadata
+target_metadata = [settings.Base.metadata]
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
