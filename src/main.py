@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from config import settings
+from api import api_router
 
 
 app = FastAPI(
@@ -8,6 +9,7 @@ app = FastAPI(
 	description=settings.APP_DESCRIPTION,
 	version=settings.APP_VERSION,
 )
+app.include_router(api_router, prefix=settings.APP_V1_PREFIX)
 
 
 @app.get(

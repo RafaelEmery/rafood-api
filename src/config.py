@@ -8,6 +8,7 @@ class Settings(BaseSettings):
 	APP_NAME: str = 'RaFood API'
 	APP_DESCRIPTION: str = "RESTful API to manage RaFood's restaurants, products and offers."
 	APP_VERSION: str = '1.0.0'
+	APP_V1_PREFIX: str = '/api/v1'
 	APP_HOST: str
 	APP_PORT: int
 
@@ -16,7 +17,6 @@ class Settings(BaseSettings):
 	DB_HOST: str
 	DB_NAME: str
 	DB_PORT: int
-	# DB_URL: str = f'postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 
 	Base: Any = declarative_base()
 

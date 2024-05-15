@@ -5,7 +5,7 @@ from sqlalchemy import Column, String, DateTime
 from sqlalchemy_utils import UUIDType
 from sqlalchemy.orm import relationship
 
-from src.config import settings
+from config import settings
 
 
 class Category(settings.Base):
@@ -16,4 +16,4 @@ class Category(settings.Base):
 	created_at = Column(DateTime, nullable=False, default=datetime.datetime.now)
 	updated_at = Column(DateTime, nullable=False, onupdate=datetime.datetime.now)
 
-	products = relationship('Product')
+	products = relationship('Product', back_populates='category')

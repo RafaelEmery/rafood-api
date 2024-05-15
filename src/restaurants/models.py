@@ -7,7 +7,9 @@ from sqlalchemy import Column, String, Integer, DateTime, ForeignKey, Time, Enum
 from sqlalchemy_utils import UUIDType
 from sqlalchemy.orm import relationship
 
-from src.config import settings
+# TODO: validate why this import is working to create users or restaurants
+from products.models import Product  # noqa
+from config import settings
 
 
 class Restaurant(settings.Base):
@@ -23,11 +25,13 @@ class Restaurant(settings.Base):
 	city = Column(String(256), nullable=False)
 	state_abbr = Column(String(2), nullable=False)
 	created_at = Column(DateTime, nullable=False, default=datetime.datetime.now)
-	updated_at = Column(DateTime, nullable=False, onupdate=datetime.datetime.now)
+	updated_at = Column(
+		DateTime, nullable=False, default=datetime.datetime.now, onupdate=datetime.datetime.now
+	)
 
-	owner = relationship('User')
-	products = relationship('Product')
-	schedules = relationship('RestaurantSchedule')
+	owner = relationship('User', back_populates='restaurants')
+	products = relationship('Product', back_populates='restaurant')
+	schedules = relationship('RestaurantSchedule', back_populates='restaurant')
 
 
 class DayType(Enum):
@@ -49,4 +53,4 @@ class RestaurantSchedule(settings.Base):
 	created_at = Column(DateTime, nullable=False, default=datetime.datetime.now)
 	updated_at = Column(DateTime, nullable=False, onupdate=datetime.datetime.now)
 
-	restaurant = relationship('Restaurant')
+	restaurant = relationship('Restaurant', back_populates='schedules')

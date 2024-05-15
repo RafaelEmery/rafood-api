@@ -5,7 +5,8 @@ from sqlalchemy import Column, String, ForeignKey, Double, DateTime
 from sqlalchemy_utils import UUIDType
 from sqlalchemy.orm import relationship
 
-from src.config import settings
+from config import settings
+from categories.models import Category  # noqa
 
 
 class Product(settings.Base):
@@ -20,5 +21,5 @@ class Product(settings.Base):
 	created_at = Column(DateTime, nullable=False, default=datetime.datetime.now)
 	updated_at = Column(DateTime, nullable=False, onupdate=datetime.datetime.now)
 
-	restaurant = relationship('Restaurant')
-	category = relationship('Category')
+	restaurant = relationship('Restaurant', back_populates='products')
+	category = relationship('Category', back_populates='products')
