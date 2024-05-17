@@ -48,6 +48,7 @@ async def create_restaurant(
 	# TODO: intercept pydantic validation exception and return custom payload
 	# TODO: handle bad request and server error exceptions
 	# TODO: abstract base exception payload for all endpoints
+
 	try:
 		async with db as session:
 			new_restaurant = Restaurant(**restaurant.model_dump())

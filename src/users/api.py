@@ -116,7 +116,7 @@ async def delete_user(user_id: str, db: AsyncSession = Depends(get_session)):
 			if not user:
 				raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User not found')
 
-			session.delete(user)
+			await session.delete(user)
 			await session.commit()
 		except Exception as e:
 			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
