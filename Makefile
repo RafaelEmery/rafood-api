@@ -11,7 +11,7 @@ dep-logs:
 create-migration:
 	@poetry run alembic revision -m "$(name)"
 
-# make revision name='<revision message>'
+# Usage: make revision name='<revision message>'
 revision:
 	@poetry run alembic revision --autogenerate -m "$(name)"
 

@@ -1,7 +1,10 @@
 from uuid import UUID
 from datetime import datetime
+from typing import List
 
 from pydantic import BaseModel, Field, HttpUrl
+
+from enums import Day, DayType
 
 
 class RestaurantSchema(BaseModel):
@@ -39,3 +42,30 @@ class CreateRestaurantResponseSchema(BaseModel):
 # TODO: set parameters to nullable at UpdateRestaurantSchema
 class UpdateRestaurantSchema(CreateRestaurantSchema):
 	pass
+
+
+# TODO: improve restaurant schedule schema
+class RestaurantScheduleSchema(BaseModel):
+	id: UUID
+
+
+# TODO: improve validation for creating schedule
+class CreateRestaurantScheduleSchema(BaseModel):
+	restaurant_id: UUID
+	day_type: List[DayType]
+	start_day: List[Day]
+	end_day: List[Day]
+	start_time: str = Field(max_length=6)
+	end_time: str = Field(max_length=6)
+
+
+class CreateRestaurantScheduleResponseSchema(BaseModel):
+	id: UUID
+
+
+class UpdateRestaurantScheduleSchema(BaseModel):
+	day_type: List[DayType]
+	start_day: List[Day]
+	end_day: List[Day]
+	start_time: str = Field(max_length=6)
+	end_time: str = Field(max_length=6)

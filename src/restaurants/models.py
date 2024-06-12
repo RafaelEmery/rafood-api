@@ -1,15 +1,14 @@
 import datetime
 import uuid
 
-from enum import Enum
-
 from sqlalchemy import Column, String, Integer, DateTime, ForeignKey, Time, Enum as SQLEnum
 from sqlalchemy_utils import UUIDType
 from sqlalchemy.orm import relationship
 
-# TODO: validate why this import is working to create users or restaurants
+# FIXME: understand why this import is working to create users or restaurants
 from products.models import Product  # noqa
 from config import settings
+from enums import DayType
 
 
 class Restaurant(settings.Base):
@@ -34,12 +33,8 @@ class Restaurant(settings.Base):
 	schedules = relationship('RestaurantSchedule', back_populates='restaurant')
 
 
-class DayType(Enum):
-	WEEKDAY = 'weekday'
-	WEEKEND = 'weekend'
-	HOLIDAY = 'holiday'
-
-
+# TODO: add start and end day enums at database
+# TODO: add active boolean column
 class RestaurantSchedule(settings.Base):
 	__tablename__ = 'restaurant_schedules'
 
