@@ -1,6 +1,5 @@
 from uuid import UUID
 from datetime import datetime
-from typing import List
 
 from pydantic import BaseModel, Field, HttpUrl
 
@@ -49,14 +48,13 @@ class RestaurantScheduleSchema(BaseModel):
 	id: UUID
 
 
-# TODO: improve validation for creating schedule
+# TODO: validate if is one of Day or DayType Enums
 class CreateRestaurantScheduleSchema(BaseModel):
-	restaurant_id: UUID
-	day_type: List[DayType]
-	start_day: List[Day]
-	end_day: List[Day]
-	start_time: str = Field(max_length=6)
-	end_time: str = Field(max_length=6)
+	day_type: DayType | str = Field(max_length=10)
+	start_day: Day | str = Field(max_length=10)
+	end_day: Day | str = Field(max_length=10)
+	start_time: str = Field(min_length=6, max_length=8)
+	end_time: str = Field(min_length=6, max_length=8)
 
 
 class CreateRestaurantScheduleResponseSchema(BaseModel):
@@ -64,8 +62,8 @@ class CreateRestaurantScheduleResponseSchema(BaseModel):
 
 
 class UpdateRestaurantScheduleSchema(BaseModel):
-	day_type: List[DayType]
-	start_day: List[Day]
-	end_day: List[Day]
-	start_time: str = Field(max_length=6)
-	end_time: str = Field(max_length=6)
+	day_type: DayType | str = Field(max_length=10)
+	start_day: Day | str = Field(max_length=10)
+	end_day: Day | str = Field(max_length=10)
+	start_time: str = Field(min_length=6, max_length=8)
+	end_time: str = Field(min_length=6, max_length=8)

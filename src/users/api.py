@@ -7,7 +7,7 @@ from sqlalchemy.future import select
 
 from .models import User
 from .schemas import UserSchema, CreateUserSchema, CreateUserResponseSchema, UpdateUserSchema
-from deps import get_session
+from core.deps import get_session
 
 
 router = APIRouter()

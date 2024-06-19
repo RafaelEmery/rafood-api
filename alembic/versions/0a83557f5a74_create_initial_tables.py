@@ -1,4 +1,4 @@
-"""create inicial tables
+"""create initial tables
 
 Revision ID: 0a83557f5a74
 Revises:
@@ -87,11 +87,9 @@ def upgrade() -> None:
 		'restaurant_schedules',
 		sa.Column('id', sa_utils.types.uuid.UUIDType(binary=False), nullable=False),
 		sa.Column('restaurant_id', sa_utils.types.uuid.UUIDType(binary=False), nullable=False),
-		sa.Column(
-			'day_type', sa.Enum('WEEKDAY', 'WEEKEND', 'HOLIDAY', name='daytype'), nullable=False
-		),
-		sa.Column('start_day', sa.String(length=10), nullable=True),
-		sa.Column('end_day', sa.String(length=10), nullable=True),
+		sa.Column('day_type', sa.String(length=10), nullable=False),
+		sa.Column('start_day', sa.String(length=10), nullable=False),
+		sa.Column('end_day', sa.String(length=10), nullable=False),
 		sa.Column('start_time', sa.Time(), nullable=False),
 		sa.Column('end_time', sa.Time(), nullable=False),
 		sa.Column('created_at', sa.DateTime(), nullable=False),

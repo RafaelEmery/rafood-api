@@ -4,7 +4,7 @@ import uuid
 from sqlalchemy import Column, ForeignKey, Double, DateTime, Time, String, Boolean
 from sqlalchemy_utils import UUIDType
 
-from config import settings
+from core.config import settings
 
 
 class Offer(settings.Base):

@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -16,7 +17,7 @@ from .schemas import (
 	CreateRestaurantScheduleResponseSchema,
 	UpdateRestaurantSchema,
 )
-from deps import get_session
+from core.deps import get_session
 
 
 router = APIRouter()
@@ -26,7 +27,7 @@ router = APIRouter()
 	'/',
 	status_code=status.HTTP_200_OK,
 	description='Get all restaurants',
-	response_model=List[Restaurant],
+	response_model=List[RestaurantSchema],
 )
 async def get_all_restaurants(db: AsyncSession = Depends(get_session)):
 	async with db as session:
@@ -37,9 +38,6 @@ async def get_all_restaurants(db: AsyncSession = Depends(get_session)):
 			return restaurants
 		except Exception as e:
 			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
-
-
-# TODO: get all restaurant schedules endpoint
 
 
 @router.get(
@@ -66,9 +64,6 @@ async def get_restaurant(restaurant_id: str, db: AsyncSession = Depends(get_sess
 			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-# TODO: get restaurant schedule details endpoint
-
-
 # TODO: get only products relationship
 @router.get(
 	'/{restaurant_id}/products',
@@ -92,7 +87,7 @@ async def create_restaurant(
 ):
 	async with db as session:
 		try:
-			new_restaurant = Restaurant(**restaurant.model_dump())
+			new_restaurant: Restaurant = Restaurant(**restaurant.model_dump())
 
 			session.add(new_restaurant)
 			await session.commit()
@@ -102,31 +97,7 @@ async def create_restaurant(
 			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-@router.post(
-	'/schedules',
-	name='Create a restaurant schedule',
-	status_code=status.HTTP_201_CREATED,
-	response_model=CreateRestaurantScheduleResponseSchema,
-	description='Create a new restaurant',
-)
-async def create_restaurant_schedule(
-	schedule: CreateRestaurantScheduleSchema, db: AsyncSession = Depends(get_session)
-):
-	async with db as session:
-		try:
-			new_schedule: RestaurantSchedule = RestaurantSchedule(**schedule.model_dump())
-
-			# TODO: add validation to don't create schedule when there's three active schedules
-
-			session.add(new_schedule)
-			await session.commit()
-
-			return CreateRestaurantScheduleResponseSchema(id=new_schedule.id)
-		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
-
-
-@router.put(
+@router.patch(
 	'/{restaurant_id}',
 	name='Update restaurant',
 	status_code=status.HTTP_200_OK,
@@ -146,7 +117,7 @@ async def update_restaurant(
 					status_code=status.HTTP_404_NOT_FOUND, detail='Restaurant not found'
 				)
 
-				# TODO: implement update methods using some more like a mass assignment
+			# TODO: implement update methods using some more like a mass assignment
 			restaurant.name = body.name
 			restaurant.image_url = body.image_url
 			restaurant.owner_id = body.owner_id
@@ -163,7 +134,59 @@ async def update_restaurant(
 			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-@router.put(
+@router.delete(
+	'/{restaurant_id}',
+	name='Delete restaurant',
+	status_code=status.HTTP_204_NO_CONTENT,
+	description='Delete a restaurant by id',
+)
+async def delete_restaurant(restaurant_id: str, db: AsyncSession = Depends(get_session)):
+	async with db as session:
+		try:
+			result = await session.execute(select(Restaurant).where(Restaurant.id == restaurant_id))
+			restaurant: Restaurant = result.scalars().first()
+
+			if not restaurant:
+				raise HTTPException(
+					status_code=status.HTTP_404_NOT_FOUND, detail='Restaurant not found'
+				)
+
+			await session.delete(restaurant)
+			await session.commit()
+		except Exception as e:
+			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+
+@router.post(
+	'/{restaurant_id}/schedules',
+	name='Create a restaurant schedule',
+	status_code=status.HTTP_201_CREATED,
+	response_model=CreateRestaurantScheduleResponseSchema,
+	description='Create a new restaurant',
+)
+async def create_restaurant_schedule(
+	restaurant_id: str,
+	schedule: CreateRestaurantScheduleSchema,
+	db: AsyncSession = Depends(get_session),
+):
+	async with db as session:
+		try:
+			new_schedule: RestaurantSchedule = RestaurantSchedule(**schedule.model_dump())
+			new_schedule.restaurant_id = restaurant_id
+			new_schedule.start_time = datetime.strptime(schedule.start_time, '%H:%M:%S').time()
+			new_schedule.end_time = datetime.strptime(schedule.end_time, '%H:%M:%S').time()
+
+			# TODO: add validation to don't create schedule when there's three active schedules
+
+			session.add(new_schedule)
+			await session.commit()
+
+			return CreateRestaurantScheduleResponseSchema(id=new_schedule.id)
+		except Exception as e:
+			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+
+@router.patch(
 	'/{restaurant_id}/schedules/{schedule_id}',
 	name='Update a restaurant schedule',
 	status_code=status.HTTP_200_OK,
@@ -200,35 +223,12 @@ async def update_restaurant_schedule(
 			schedule.day_type = body.day_type
 			schedule.start_day = body.start_day
 			schedule.end_day = body.end_day
-			schedule.start_time = body.start_time
-			schedule.end_time = body.end_time
+			schedule.start_time = datetime.strptime(body.start_time, '%H:%M:%S').time()
+			schedule.end_time = datetime.strptime(body.end_time, '%H:%M:%S').time()
 
 			await session.commit()
 
 			return schedule
-		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
-
-
-@router.delete(
-	'/{restaurant_id}',
-	name='Delete restaurant',
-	status_code=status.HTTP_204_NO_CONTENT,
-	description='Delete a restaurant by id',
-)
-async def delete_restaurant(restaurant_id: str, db: AsyncSession = Depends(get_session)):
-	async with db as session:
-		try:
-			result = await session.execute(select(Restaurant).where(Restaurant.id == restaurant_id))
-			restaurant: Restaurant = result.scalars().first()
-
-			if not restaurant:
-				raise HTTPException(
-					status_code=status.HTTP_404_NOT_FOUND, detail='Restaurant not found'
-				)
-
-			await session.delete(restaurant)
-			await session.commit()
 		except Exception as e:
 			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 

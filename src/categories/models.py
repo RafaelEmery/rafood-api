@@ -5,7 +5,7 @@ from sqlalchemy import Column, String, DateTime
 from sqlalchemy_utils import UUIDType
 from sqlalchemy.orm import relationship
 
-from config import settings
+from core.config import settings
 
 
 class Category(settings.Base):

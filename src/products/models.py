@@ -5,8 +5,7 @@ from sqlalchemy import Column, String, ForeignKey, Double, DateTime
 from sqlalchemy_utils import UUIDType
 from sqlalchemy.orm import relationship
 
-from config import settings
-from categories.models import Category  # noqa
+from core.config import settings
 
 
 class Product(settings.Base):

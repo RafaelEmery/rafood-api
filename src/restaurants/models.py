@@ -1,14 +1,13 @@
 import datetime
 import uuid
 
-from sqlalchemy import Column, String, Integer, DateTime, ForeignKey, Time, Enum as SQLEnum
+from sqlalchemy import Column, String, Integer, DateTime, ForeignKey, Time
 from sqlalchemy_utils import UUIDType
 from sqlalchemy.orm import relationship
 
 # FIXME: understand why this import is working to create users or restaurants
 from products.models import Product  # noqa
-from config import settings
-from enums import DayType
+from core.config import settings
 
 
 class Restaurant(settings.Base):
@@ -33,19 +32,20 @@ class Restaurant(settings.Base):
 	schedules = relationship('RestaurantSchedule', back_populates='restaurant')
 
 
-# TODO: add start and end day enums at database
 # TODO: add active boolean column
 class RestaurantSchedule(settings.Base):
 	__tablename__ = 'restaurant_schedules'
 
 	id = Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)
 	restaurant_id = Column(UUIDType(binary=False), ForeignKey('restaurants.id'), nullable=False)
-	day_type = Column(SQLEnum(DayType), nullable=False)
-	start_day = Column(String(10), nullable=True)
-	end_day = Column(String(10), nullable=True)
+	day_type = Column(String(10), nullable=False)
+	start_day = Column(String(10), nullable=False)
+	end_day = Column(String(10), nullable=False)
 	start_time = Column(Time, nullable=False)
 	end_time = Column(Time, nullable=False)
 	created_at = Column(DateTime, nullable=False, default=datetime.datetime.now)
-	updated_at = Column(DateTime, nullable=False, onupdate=datetime.datetime.now)
+	updated_at = Column(
+		DateTime, nullable=False, default=datetime.datetime.now, onupdate=datetime.datetime.now
+	)
 
 	restaurant = relationship('Restaurant', back_populates='schedules')

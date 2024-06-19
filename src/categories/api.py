@@ -6,7 +6,7 @@ from sqlalchemy.future import select
 
 from .schemas import CategorySchema, CreateCategorySchema, CreateCategoryResponseSchema
 from .models import Category
-from deps import get_session
+from core.deps import get_session
 
 
 router = APIRouter()
