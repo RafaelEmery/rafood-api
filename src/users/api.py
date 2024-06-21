@@ -21,14 +21,14 @@ router = APIRouter()
 	response_model=List[UserSchema],
 )
 async def get_all_users(db: AsyncSession = Depends(get_session)):
-	async with db as session:
-		try:
+	try:
+		async with db as session:
 			result = await session.execute(select(User))
 			users: List[UserSchema] = result.scalars().all()
 
 			return users
-		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+	except Exception as e:
+		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
 @router.get(
@@ -39,19 +39,17 @@ async def get_all_users(db: AsyncSession = Depends(get_session)):
 	response_model=UserSchema,
 )
 async def get_user(user_id: str, db: AsyncSession = Depends(get_session)):
-	try:
-		async with db as session:
+	async with db as session:
+		try:
 			result = await session.execute(select(User).where(User.id == user_id))
 			user: UserSchema = result.scalars().first()
-
-			# TODO: load restaurants relationship
 
 			if not user:
 				raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User not found')
 
 			return user
-	except Exception as e:
-		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+		except Exception as e:
+			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
 @router.post(
@@ -62,16 +60,16 @@ async def get_user(user_id: str, db: AsyncSession = Depends(get_session)):
 	response_model=CreateUserResponseSchema,
 )
 async def create_user(user: CreateUserSchema, db: AsyncSession = Depends(get_session)):
-	try:
-		async with db as session:
+	async with db as session:
+		try:
 			new_user = User(**user.model_dump())
 
 			session.add(new_user)
 			await session.commit()
 
 			return CreateUserResponseSchema(id=new_user.id)
-	except Exception as e:
-		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+		except Exception as e:
+			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
 @router.put(
@@ -84,8 +82,8 @@ async def create_user(user: CreateUserSchema, db: AsyncSession = Depends(get_ses
 async def update_user(
 	user_id: str, body: UpdateUserSchema, db: AsyncSession = Depends(get_session)
 ):
-	try:
-		async with db as session:
+	async with db as session:
+		try:
 			result = await session.execute(select(User).where(User.id == user_id))
 			user: User = result.scalars().first()
 
@@ -97,8 +95,8 @@ async def update_user(
 			await session.commit()
 
 			return user
-	except Exception as e:
-		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+		except Exception as e:
+			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
 @router.delete(

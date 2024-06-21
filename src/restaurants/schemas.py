@@ -38,7 +38,6 @@ class CreateRestaurantResponseSchema(BaseModel):
 	id: UUID
 
 
-# TODO: set parameters to nullable at UpdateRestaurantSchema
 class UpdateRestaurantSchema(CreateRestaurantSchema):
 	pass
 
@@ -61,6 +60,7 @@ class CreateRestaurantScheduleResponseSchema(BaseModel):
 	id: UUID
 
 
+# TODO: validate if is one of Day or DayType Enums
 class UpdateRestaurantScheduleSchema(BaseModel):
 	day_type: DayType | str = Field(max_length=10)
 	start_day: Day | str = Field(max_length=10)

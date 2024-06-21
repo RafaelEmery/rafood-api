@@ -20,14 +20,14 @@ router = APIRouter()
 	response_model=List[CategorySchema],
 )
 async def get_all_categories(db: AsyncSession = Depends(get_session)):
-	try:
-		async with db as session:
+	async with db as session:
+		try:
 			result = await session.execute(select(Category))
 			categories: List[CategorySchema] = result.scalars().all()
 
 			return categories
-	except Exception as e:
-		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+		except Exception as e:
+			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
 @router.post(
@@ -37,16 +37,16 @@ async def get_all_categories(db: AsyncSession = Depends(get_session)):
 	description='Create a new category',
 )
 async def create_category(category: CreateCategorySchema, db: AsyncSession = Depends(get_session)):
-	try:
-		async with db as session:
+	async with db as session:
+		try:
 			new_category = Category(**category.model_dump())
 
 			session.add(new_category)
 			await session.commit()
 
 			return CreateCategoryResponseSchema(id=new_category.id)
-	except Exception as e:
-		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+		except Exception as e:
+			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
 @router.delete(
@@ -56,8 +56,8 @@ async def create_category(category: CreateCategorySchema, db: AsyncSession = Dep
 	description='Delete a category by id',
 )
 async def delete_category(category_id: str, db: AsyncSession = Depends(get_session)):
-	try:
-		async with db as session:
+	async with db as session:
+		try:
 			result = await session.execute(select(Category).where(Category.id == category_id))
 			category: Category = result.scalars().first()
 
@@ -68,5 +68,5 @@ async def delete_category(category_id: str, db: AsyncSession = Depends(get_sessi
 
 			await session.delete(category)
 			await session.commit()
-	except Exception as e:
-		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+		except Exception as e:
+			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))

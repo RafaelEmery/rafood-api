@@ -18,7 +18,9 @@ class Product(settings.Base):
 	category_id = Column(UUIDType(binary=False), ForeignKey('categories.id'), nullable=False)
 	image_url = Column(String(256))
 	created_at = Column(DateTime, nullable=False, default=datetime.datetime.now)
-	updated_at = Column(DateTime, nullable=False, onupdate=datetime.datetime.now)
+	updated_at = Column(
+		DateTime, nullable=False, default=datetime.datetime.now, onupdate=datetime.datetime.now
+	)
 
 	restaurant = relationship('Restaurant', back_populates='products')
 	category = relationship('Category', back_populates='products')
