@@ -3,10 +3,12 @@ import uuid
 
 from sqlalchemy import Column, ForeignKey, Double, DateTime, Time, String, Boolean
 from sqlalchemy_utils import UUIDType
+from sqlalchemy.orm import relationship
 
 from core.config import settings
 
 
+# TODO: add is active column
 class Offer(settings.Base):
 	__tablename__ = 'offers'
 
@@ -16,8 +18,8 @@ class Offer(settings.Base):
 	created_at = Column(DateTime, nullable=False, default=datetime.datetime.now)
 	updated_at = Column(DateTime, nullable=False, onupdate=datetime.datetime.now)
 
-	# product = relationship('Product')
-	# schedules = relationship('OfferSchedule')
+	product = relationship('Product')
+	schedules = relationship('OfferSchedule')
 
 
 class OfferSchedule(settings.Base):
@@ -32,4 +34,4 @@ class OfferSchedule(settings.Base):
 	created_at = Column(DateTime, nullable=False, default=datetime.datetime.now)
 	updated_at = Column(DateTime, nullable=False, onupdate=datetime.datetime.now)
 
-	# offer = relationship('Offer')
+	offer = relationship('Offer')

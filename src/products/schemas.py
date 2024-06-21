@@ -5,6 +5,7 @@ from typing import Optional
 from pydantic import BaseModel, HttpUrl
 
 
+# TODO: improve validation rules
 # TODO: validate changing UUID from pydantic UUID4
 class ProductSchema(BaseModel):
 	id: UUID
