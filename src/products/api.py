@@ -29,7 +29,7 @@ async def get_all_products(db: AsyncSession = Depends(get_session)):
 	async with db as session:
 		try:
 			result = await session.execute(select(Product))
-			products: List[Product] = result.scalars.all()
+			products: List[ProductSchema] = result.scalars.all()
 
 			return products
 		except Exception as e:
@@ -69,19 +69,19 @@ async def get_product(product_id: str, db: AsyncSession = Depends(get_session)):
 	response_model=CreateProductResponseSchema,
 )
 async def create_product(product: CreateProductSchema, db: AsyncSession = Depends(get_session)):
-	try:
-		async with db as session:
+	async with db as session:
+		try:
 			new_product = Product(**product.model_dump())
 
 			session.add(new_product)
 			await session.commit()
 
 			return CreateProductResponseSchema(id=new_product.id)
-	except Exception as e:
-		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+		except Exception as e:
+			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-@router.put(
+@router.patch(
 	'/{product_id}',
 	name='Update product',
 	status_code=status.HTTP_200_OK,
