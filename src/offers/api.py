@@ -168,7 +168,7 @@ async def create_offer_schedule(
 
 # TODO: must search offer schedules by offer_id and schedule_id? Or just schedule_id?
 @router.patch(
-	'/{offer_id}/schedules/{schedule_id}',
+	'/{offer_id}/schedules/{offer_schedule_id}',
 	name='Update offer schedule',
 	status_code=status.HTTP_200_OK,
 	description='Update an offer schedule by id',
@@ -210,7 +210,7 @@ async def update_offer_schedule(
 
 # TODO: pass only schedule_id
 @router.delete(
-	'/{offer_id}/schedules/{schedule_id}',
+	'/{offer_id}/schedules/{offer_schedule_id}',
 	name='Delete offer schedule',
 	status_code=status.HTTP_204_NO_CONTENT,
 	description='Delete an offer schedule by id',
@@ -236,7 +236,7 @@ async def delete_offer_schedule(
 					status_code=status.HTTP_404_NOT_FOUND, detail='Offer schedule not found'
 				)
 
-			await session.delete(offer)
+			await session.delete(schedule)
 			await session.commit()
 		except Exception as e:
 			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))

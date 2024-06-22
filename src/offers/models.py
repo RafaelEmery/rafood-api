@@ -16,7 +16,9 @@ class Offer(settings.Base):
 	product_id = Column(UUIDType(binary=False), ForeignKey('products.id'), nullable=False)
 	price = Column(Double, nullable=False)
 	created_at = Column(DateTime, nullable=False, default=datetime.datetime.now)
-	updated_at = Column(DateTime, nullable=False, onupdate=datetime.datetime.now)
+	updated_at = Column(
+		DateTime, nullable=False, default=datetime.datetime.now, onupdate=datetime.datetime.now
+	)
 
 	product = relationship('Product')
 	schedules = relationship('OfferSchedule')
@@ -32,6 +34,8 @@ class OfferSchedule(settings.Base):
 	end_time = Column(Time, nullable=False)
 	repeats = Column(Boolean, default=False)
 	created_at = Column(DateTime, nullable=False, default=datetime.datetime.now)
-	updated_at = Column(DateTime, nullable=False, onupdate=datetime.datetime.now)
+	updated_at = Column(
+		DateTime, nullable=False, default=datetime.datetime.now, onupdate=datetime.datetime.now
+	)
 
 	offer = relationship('Offer')

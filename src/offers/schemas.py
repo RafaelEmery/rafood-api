@@ -1,5 +1,5 @@
 from uuid import UUID
-from datetime import datetime
+from datetime import datetime, time
 
 from pydantic import BaseModel, Field
 
@@ -11,7 +11,7 @@ class OfferSchema(BaseModel):
 	created_at: datetime
 	updated_at: datetime
 
-	# TODO: validate if orm_mode is really useful
+	# TODO: validate if orm_mode is really useful or if needs from_attributes
 	class Config:
 		orm_mode = True
 
@@ -34,18 +34,18 @@ class OfferScheduleSchema(BaseModel):
 	id: UUID
 	offer_id: UUID
 	day: str
-	start_time: str
-	end_time: str
+	start_time: time
+	end_time: time
 	repeats: bool
 	created_at: datetime
 	updated_at: datetime
 
 	class Config:
 		orm_mode = True
+		json_encoders = {time: lambda v: v.strftime('%H:%M:%S')}
 
 
 class CreateOfferScheduleSchema(BaseModel):
-	offer_id: UUID
 	day: str
 	start_time: str = Field(min_length=6, max_length=8)
 	end_time: str = Field(min_length=6, max_length=8)
