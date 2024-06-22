@@ -1,6 +1,5 @@
 from uuid import UUID
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel, HttpUrl
 
@@ -13,7 +12,7 @@ class ProductSchema(BaseModel):
 	name: str
 	price: float
 	category_id: UUID
-	image_url: Optional[HttpUrl] = None
+	image_url: str
 	created_at: datetime
 	updated_at: datetime
 
@@ -27,7 +26,7 @@ class CreateProductSchema(BaseModel):
 	name: str
 	price: float
 	category_id: UUID
-	image_url: Optional[HttpUrl] = None
+	image_url: str = HttpUrl | None
 
 
 class CreateProductResponseSchema(BaseModel):
@@ -39,4 +38,4 @@ class UpdateProductSchema(BaseModel):
 	name: str
 	price: float
 	category_id: UUID
-	image_url: Optional[HttpUrl] = None
+	image_url: str = HttpUrl

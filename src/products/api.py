@@ -29,7 +29,7 @@ async def get_all_products(db: AsyncSession = Depends(get_session)):
 	async with db as session:
 		try:
 			result = await session.execute(select(Product))
-			products: List[ProductSchema] = result.scalars.all()
+			products: List[ProductSchema] = result.scalars().all()
 
 			return products
 		except Exception as e:

@@ -34,7 +34,7 @@ async def get_all_offers(db: AsyncSession = Depends(get_session)):
 	async with db as session:
 		try:
 			result = await session.execute(select(Offer))
-			offers: List[OfferSchema] = result.scalars.all()
+			offers: List[OfferSchema] = result.scalars().all()
 
 			return offers
 		except Exception as e:
@@ -114,7 +114,7 @@ async def update_offer(
 @router.delete(
 	'/{offer_id}',
 	name='Delete offer',
-	status_code=status.HTTP_204_OK,
+	status_code=status.HTTP_204_NO_CONTENT,
 	description='Delete an offer by id',
 )
 async def delete_offer(offer_id: str, db: AsyncSession = Depends(get_session)):
@@ -212,7 +212,7 @@ async def update_offer_schedule(
 @router.delete(
 	'/{offer_id}/schedules/{schedule_id}',
 	name='Delete offer schedule',
-	status_code=status.HTTP_204_OK,
+	status_code=status.HTTP_204_NO_CONTENT,
 	description='Delete an offer schedule by id',
 )
 async def delete_offer_schedule(
