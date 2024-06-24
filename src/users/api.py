@@ -6,7 +6,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from .models import User
-from .schemas import UserSchema, CreateUserSchema, CreateUserResponseSchema, UpdateUserSchema
+from .schemas import (
+	UserSchema,
+	UserDetailsSchema,
+	CreateUserSchema,
+	CreateUserResponseSchema,
+	UpdateUserSchema,
+)
 from core.deps import get_session
 
 
@@ -20,11 +26,11 @@ router = APIRouter()
 	description='Get all users',
 	response_model=List[UserSchema],
 )
-async def get_all_users(db: AsyncSession = Depends(get_session)):
+async def list_users(db: AsyncSession = Depends(get_session)):
 	try:
 		async with db as session:
 			result = await session.execute(select(User))
-			users: List[UserSchema] = result.scalars().all()
+			users: List[UserSchema] = result.scalars().unique().all()
 
 			return users
 	except Exception as e:
@@ -36,13 +42,13 @@ async def get_all_users(db: AsyncSession = Depends(get_session)):
 	name='Get user by ID',
 	status_code=status.HTTP_200_OK,
 	description='Get a user by id with all its restaurants',
-	response_model=UserSchema,
+	response_model=UserDetailsSchema,
 )
-async def get_user(user_id: str, db: AsyncSession = Depends(get_session)):
+async def find_user(user_id: str, db: AsyncSession = Depends(get_session)):
 	async with db as session:
 		try:
 			result = await session.execute(select(User).where(User.id == user_id))
-			user: UserSchema = result.scalars().first()
+			user: UserDetailsSchema = result.scalars().first()
 
 			if not user:
 				raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User not found')

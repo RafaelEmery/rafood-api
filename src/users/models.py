@@ -21,4 +21,4 @@ class User(settings.Base):
 		DateTime, nullable=False, default=datetime.datetime.now, onupdate=datetime.datetime.now
 	)
 
-	restaurants = relationship('Restaurant', back_populates='owner')
+	restaurants = relationship('Restaurant', back_populates='owner', lazy='joined')
