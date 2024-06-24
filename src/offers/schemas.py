@@ -41,7 +41,7 @@ class OfferScheduleSchema(BaseModel):
 	updated_at: datetime
 
 	class Config:
-		orm_mode = True
+		from_attributes = True
 		json_encoders = {time: lambda v: v.strftime('%H:%M:%S')}
 
 

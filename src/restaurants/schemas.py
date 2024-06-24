@@ -1,9 +1,12 @@
 from uuid import UUID
-from datetime import datetime
+from datetime import datetime, time
+from typing import List
 
 from pydantic import BaseModel, Field, HttpUrl
 
 from enums import Day, DayType
+
+from products.schemas import ProductSchema
 
 
 class RestaurantSchema(BaseModel):
@@ -23,6 +26,30 @@ class RestaurantSchema(BaseModel):
 		from_attributes = True
 
 
+# TODO: improve restaurant schedule schema
+class RestaurantScheduleSchema(BaseModel):
+	id: UUID
+	day_type: str
+	start_day: str
+	end_day: str
+	start_time: time
+	end_time: time
+	created_at: datetime
+	updated_at: datetime
+
+	class Config:
+		from_attributes = True
+		json_encoders = {time: lambda v: v.strftime('%H:%M:%S')}
+
+
+class RestaurantWithSchedulesSchema(RestaurantSchema):
+	schedules: List[RestaurantScheduleSchema] = []
+
+
+class RestaurantWithProductsSchema(RestaurantSchema):
+	products: List[ProductSchema] = []
+
+
 class CreateRestaurantSchema(BaseModel):
 	name: str = Field(max_length=256)
 	image_url: str = HttpUrl
@@ -40,11 +67,6 @@ class CreateRestaurantResponseSchema(BaseModel):
 
 class UpdateRestaurantSchema(CreateRestaurantSchema):
 	pass
-
-
-# TODO: improve restaurant schedule schema
-class RestaurantScheduleSchema(BaseModel):
-	id: UUID
 
 
 # TODO: validate if is one of Day or DayType Enums

@@ -21,7 +21,7 @@ router = APIRouter()
 
 @router.get(
 	'/',
-	name='Get users',
+	name='List users',
 	status_code=status.HTTP_200_OK,
 	description='Get all users',
 	response_model=List[UserSchema],

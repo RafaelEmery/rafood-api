@@ -27,9 +27,9 @@ class Restaurant(settings.Base):
 		DateTime, nullable=False, default=datetime.datetime.now, onupdate=datetime.datetime.now
 	)
 
-	owner = relationship('User', back_populates='restaurants')
-	products = relationship('Product', back_populates='restaurant')
-	schedules = relationship('RestaurantSchedule', back_populates='restaurant')
+	owner = relationship('User', back_populates='restaurants', lazy='joined')
+	products = relationship('Product', back_populates='restaurant', lazy='joined')
+	schedules = relationship('RestaurantSchedule', back_populates='restaurant', lazy='joined')
 
 
 # TODO: add active boolean column

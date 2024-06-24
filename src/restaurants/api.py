@@ -9,6 +9,8 @@ from sqlalchemy.future import select
 from .models import Restaurant, RestaurantSchedule
 from .schemas import (
 	RestaurantSchema,
+	RestaurantWithSchedulesSchema,
+	RestaurantWithProductsSchema,
 	RestaurantScheduleSchema,
 	CreateRestaurantSchema,
 	CreateRestaurantResponseSchema,
@@ -25,15 +27,16 @@ router = APIRouter()
 
 @router.get(
 	'/',
+	name='List restaurants',
 	status_code=status.HTTP_200_OK,
 	description='Get all restaurants',
-	response_model=List[RestaurantSchema],
+	response_model=List[RestaurantWithSchedulesSchema],
 )
-async def get_all_restaurants(db: AsyncSession = Depends(get_session)):
+async def list_restaurants(db: AsyncSession = Depends(get_session)):
 	async with db as session:
 		try:
 			result = await session.execute(select(Restaurant))
-			restaurants: List[RestaurantSchema] = result.scalars().all()
+			restaurants: List[RestaurantWithSchedulesSchema] = result.scalars().unique().all()
 
 			return restaurants
 		except Exception as e:
@@ -42,17 +45,16 @@ async def get_all_restaurants(db: AsyncSession = Depends(get_session)):
 
 @router.get(
 	'/{restaurant_id}',
+	name='Get restaurant by ID',
 	status_code=status.HTTP_200_OK,
-	description='Get a restaurant by id with owner and schedules',
-	response_model=RestaurantSchema,
+	description='Get a restaurant by id with products',
+	response_model=RestaurantWithProductsSchema,
 )
-async def get_restaurant(restaurant_id: str, db: AsyncSession = Depends(get_session)):
+async def find_restaurant(restaurant_id: str, db: AsyncSession = Depends(get_session)):
 	async with db as session:
 		try:
 			result = await session.execute(select(Restaurant).where(Restaurant.id == restaurant_id))
-			restaurant: RestaurantSchema = result.scalars().first()
-
-			# TODO: load schedule and owner relationships
+			restaurant: RestaurantWithProductsSchema = result.scalars().first()
 
 			if not restaurant:
 				raise HTTPException(
@@ -62,16 +64,6 @@ async def get_restaurant(restaurant_id: str, db: AsyncSession = Depends(get_sess
 			return restaurant
 		except Exception as e:
 			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
-
-
-# TODO: get only products relationship
-@router.get(
-	'/{restaurant_id}/products',
-	status_code=status.HTTP_200_OK,
-	description='Get all products from a restaurant',
-)
-async def get_restaurant_products(restaurant_id: str):
-	return {'message': f'Get products from restaurant {restaurant_id}'}
 
 
 # TODO: add owner_id validation
