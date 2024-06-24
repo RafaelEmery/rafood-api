@@ -8,6 +8,7 @@ from sqlalchemy.future import select
 from .models import Product
 from .schemas import (
 	ProductSchema,
+	ProductWithCategories,
 	CreateProductSchema,
 	CreateProductResponseSchema,
 	UpdateProductSchema,
@@ -20,16 +21,16 @@ router = APIRouter()
 
 @router.get(
 	'/',
-	name='Get products',
+	name='List products',
 	status_code=status.HTTP_200_OK,
 	description='Get all products',
-	response_model=List[ProductSchema],
+	response_model=List[ProductWithCategories],
 )
-async def get_all_products(db: AsyncSession = Depends(get_session)):
+async def list_products(db: AsyncSession = Depends(get_session)):
 	async with db as session:
 		try:
 			result = await session.execute(select(Product))
-			products: List[ProductSchema] = result.scalars().all()
+			products: List[ProductWithCategories] = result.scalars().unique().all()
 
 			return products
 		except Exception as e:
@@ -43,7 +44,7 @@ async def get_all_products(db: AsyncSession = Depends(get_session)):
 	description='Get a product by id',
 	response_model=ProductSchema,
 )
-async def get_product(product_id: str, db: AsyncSession = Depends(get_session)):
+async def find_product(product_id: str, db: AsyncSession = Depends(get_session)):
 	async with db as session:
 		try:
 			result = await session.execute(select(Product).where(Product.id == product_id))

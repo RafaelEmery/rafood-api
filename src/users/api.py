@@ -39,7 +39,7 @@ async def list_users(db: AsyncSession = Depends(get_session)):
 
 @router.get(
 	'/{user_id}',
-	name='Get user by ID',
+	name='Find user',
 	status_code=status.HTTP_200_OK,
 	description='Get a user by id with all its restaurants',
 	response_model=UserDetailsSchema,

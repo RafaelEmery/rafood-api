@@ -2,9 +2,9 @@ from uuid import UUID
 from datetime import datetime
 
 from pydantic import BaseModel, HttpUrl
+from categories.schemas import CategorySchema
 
 
-# TODO: improve validation rules
 # TODO: validate changing UUID from pydantic UUID4
 class ProductSchema(BaseModel):
 	id: UUID
@@ -16,11 +16,15 @@ class ProductSchema(BaseModel):
 	created_at: datetime
 	updated_at: datetime
 
-	# TODO: validate not using from_attributes
 	class Config:
 		from_attributes = True
 
 
+class ProductWithCategories(ProductSchema):
+	category: CategorySchema
+
+
+# TODO: improve validation rules
 class CreateProductSchema(BaseModel):
 	restaurant_id: UUID
 	name: str

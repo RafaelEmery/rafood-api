@@ -26,7 +26,6 @@ class RestaurantSchema(BaseModel):
 		from_attributes = True
 
 
-# TODO: improve restaurant schedule schema
 class RestaurantScheduleSchema(BaseModel):
 	id: UUID
 	day_type: str

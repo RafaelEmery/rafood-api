@@ -45,7 +45,7 @@ async def list_restaurants(db: AsyncSession = Depends(get_session)):
 
 @router.get(
 	'/{restaurant_id}',
-	name='Get restaurant by ID',
+	name='Find restaurant',
 	status_code=status.HTTP_200_OK,
 	description='Get a restaurant by id with products',
 	response_model=RestaurantWithProductsSchema,

@@ -20,7 +20,7 @@ class Offer(settings.Base):
 		DateTime, nullable=False, default=datetime.datetime.now, onupdate=datetime.datetime.now
 	)
 
-	product = relationship('Product')
+	product = relationship('Product', back_populates='products')
 	schedules = relationship('OfferSchedule')
 
 

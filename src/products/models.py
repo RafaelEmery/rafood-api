@@ -23,4 +23,5 @@ class Product(settings.Base):
 	)
 
 	restaurant = relationship('Restaurant', back_populates='products')
-	category = relationship('Category', back_populates='products')
+	category = relationship('Category', back_populates='products', lazy='joined')
+	offers = relationship('Offer', back_populates='offers', lazy='joined')

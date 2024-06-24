@@ -5,8 +5,6 @@ from sqlalchemy import Column, String, Integer, DateTime, ForeignKey, Time
 from sqlalchemy_utils import UUIDType
 from sqlalchemy.orm import relationship
 
-# FIXME: understand why this import is working to create users or restaurants
-from products.models import Product  # noqa
 from core.config import settings
 
 
@@ -27,7 +25,7 @@ class Restaurant(settings.Base):
 		DateTime, nullable=False, default=datetime.datetime.now, onupdate=datetime.datetime.now
 	)
 
-	owner = relationship('User', back_populates='restaurants', lazy='joined')
+	owner = relationship('User', back_populates='restaurants')
 	products = relationship('Product', back_populates='restaurant', lazy='joined')
 	schedules = relationship('RestaurantSchedule', back_populates='restaurant', lazy='joined')
 

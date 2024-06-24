@@ -11,9 +11,8 @@ class OfferSchema(BaseModel):
 	created_at: datetime
 	updated_at: datetime
 
-	# TODO: validate if orm_mode is really useful or if needs from_attributes
 	class Config:
-		orm_mode = True
+		from_attributes = True
 
 
 class CreateOfferSchema(BaseModel):
