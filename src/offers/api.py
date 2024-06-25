@@ -9,6 +9,7 @@ from sqlalchemy.future import select
 from .models import Offer, OfferSchedule
 from .schemas import (
 	OfferSchema,
+	OfferWithSchedulesSchema,
 	CreateOfferSchema,
 	CreateOfferResponseSchema,
 	UpdateOfferSchema,
@@ -19,43 +20,40 @@ from .schemas import (
 )
 from core.deps import get_session
 
+
 router = APIRouter()
 
 
-# TODO: change all functions to list
 @router.get(
 	'/',
-	name='Get offers',
+	name='List offers',
 	status_code=status.HTTP_200_OK,
 	description='Get all offers',
 	response_model=List[OfferSchema],
 )
-async def get_all_offers(db: AsyncSession = Depends(get_session)):
+async def list_offers(db: AsyncSession = Depends(get_session)):
 	async with db as session:
 		try:
 			result = await session.execute(select(Offer))
-			offers: List[OfferSchema] = result.scalars().all()
+			offers: List[OfferSchema] = result.scalars().unique().all()
 
 			return offers
 		except Exception as e:
 			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-# TODO: change all functions to find
 @router.get(
 	'/{offer_id}',
-	name='Get offer by ID',
+	name='Find offer',
 	status_code=status.HTTP_200_OK,
 	description='Get an offer by ID',
-	response_model=OfferSchema,
+	response_model=OfferWithSchedulesSchema,
 )
-async def get_offer(offer_id: str, db: AsyncSession = Depends(get_session)):
+async def find_offer(offer_id: str, db: AsyncSession = Depends(get_session)):
 	async with db as session:
 		try:
 			result = await session.execute(select(Offer).where(Offer.id == offer_id))
-			offer: OfferSchema = result.scalars().first()
-
-			# TODO: return offer schedules here
+			offer: OfferWithSchedulesSchema = result.scalars().first()
 
 			if not offer:
 				raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Offer not found')
@@ -132,7 +130,6 @@ async def delete_offer(offer_id: str, db: AsyncSession = Depends(get_session)):
 			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-# TODO: think about removing offer_id from url and pass it to request body (and restaurant schedules endpoints either)
 @router.post(
 	'/{offer_id}/schedules',
 	name='Create offer schedule',
@@ -147,8 +144,6 @@ async def create_offer_schedule(
 		try:
 			result = await session.execute(select(Offer).where(Offer.id == offer_id))
 			offer: OfferSchema = result.scalars().first()
-
-			# TODO: do not return offer schedules here
 
 			if not offer:
 				raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Offer not found')
@@ -166,7 +161,6 @@ async def create_offer_schedule(
 			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-# TODO: must search offer schedules by offer_id and schedule_id? Or just schedule_id?
 @router.patch(
 	'/{offer_id}/schedules/{offer_schedule_id}',
 	name='Update offer schedule',
@@ -208,7 +202,6 @@ async def update_offer_schedule(
 			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-# TODO: pass only schedule_id
 @router.delete(
 	'/{offer_id}/schedules/{offer_schedule_id}',
 	name='Delete offer schedule',

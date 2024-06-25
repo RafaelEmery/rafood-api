@@ -8,7 +8,7 @@ from sqlalchemy.future import select
 from .models import Product
 from .schemas import (
 	ProductSchema,
-	ProductWithCategories,
+	ProductWithCategoriesSchema,
 	CreateProductSchema,
 	CreateProductResponseSchema,
 	UpdateProductSchema,
@@ -24,13 +24,13 @@ router = APIRouter()
 	name='List products',
 	status_code=status.HTTP_200_OK,
 	description='Get all products',
-	response_model=List[ProductWithCategories],
+	response_model=List[ProductWithCategoriesSchema],
 )
 async def list_products(db: AsyncSession = Depends(get_session)):
 	async with db as session:
 		try:
 			result = await session.execute(select(Product))
-			products: List[ProductWithCategories] = result.scalars().unique().all()
+			products: List[ProductWithCategoriesSchema] = result.scalars().unique().all()
 
 			return products
 		except Exception as e:

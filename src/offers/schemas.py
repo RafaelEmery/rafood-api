@@ -1,5 +1,6 @@
 from uuid import UUID
 from datetime import datetime, time
+from typing import List
 
 from pydantic import BaseModel, Field
 
@@ -15,20 +16,6 @@ class OfferSchema(BaseModel):
 		from_attributes = True
 
 
-class CreateOfferSchema(BaseModel):
-	product_id: UUID
-	price: float
-
-
-class CreateOfferResponseSchema(BaseModel):
-	id: UUID
-
-
-# TODO: validate if user send null when is Optional[float] = None
-class UpdateOfferSchema(BaseModel):
-	price: float
-
-
 class OfferScheduleSchema(BaseModel):
 	id: UUID
 	offer_id: UUID
@@ -42,6 +29,24 @@ class OfferScheduleSchema(BaseModel):
 	class Config:
 		from_attributes = True
 		json_encoders = {time: lambda v: v.strftime('%H:%M:%S')}
+
+
+class OfferWithSchedulesSchema(OfferSchema):
+	schedules: List[OfferScheduleSchema] = []
+
+
+class CreateOfferSchema(BaseModel):
+	product_id: UUID
+	price: float
+
+
+class CreateOfferResponseSchema(BaseModel):
+	id: UUID
+
+
+# TODO: validate if user send null when is Optional[float] = None
+class UpdateOfferSchema(BaseModel):
+	price: float
 
 
 class CreateOfferScheduleSchema(BaseModel):

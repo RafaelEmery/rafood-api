@@ -20,7 +20,7 @@ class ProductSchema(BaseModel):
 		from_attributes = True
 
 
-class ProductWithCategories(ProductSchema):
+class ProductWithCategoriesSchema(ProductSchema):
 	category: CategorySchema
 
 
