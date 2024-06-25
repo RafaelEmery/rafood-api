@@ -6,7 +6,7 @@ FastAPI project to manage restaurants, products and offers :hamburger:
 
  - [ ] Query params on lists endpoints
  - [ ] Improve body data validation
- - [ ] Return all relations correctly on 'get by ID' endpoints
+ - [X] Return all relations correctly on 'get by ID' endpoints
  - [ ] Refactor to use services and core classes
  - [ ] Fix on error on alembic `env.py` file
  - [ ] Add tests for all endpoints and contracts
