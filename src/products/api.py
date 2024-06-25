@@ -1,3 +1,4 @@
+from uuid import UUID
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -26,10 +27,20 @@ router = APIRouter()
 	description='Get all products',
 	response_model=List[ProductWithCategoriesSchema],
 )
-async def list_products(db: AsyncSession = Depends(get_session)):
+async def list_products(
+	name: str | None = None,
+	category_id: UUID | None = None,
+	db: AsyncSession = Depends(get_session),
+):
 	async with db as session:
 		try:
-			result = await session.execute(select(Product))
+			query = select(Product)
+			if name is not None:
+				query = query.filter(Product.name.like(f'%{name}%'))
+			if category_id is not None:
+				query = query.filter(Product.category_id == category_id)
+
+			result = await session.execute(query)
 			products: List[ProductWithCategoriesSchema] = result.scalars().unique().all()
 
 			return products

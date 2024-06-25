@@ -1,3 +1,4 @@
+from uuid import UUID
 from datetime import datetime
 from typing import List
 
@@ -32,10 +33,18 @@ router = APIRouter()
 	description='Get all restaurants',
 	response_model=List[RestaurantWithSchedulesSchema],
 )
-async def list_restaurants(db: AsyncSession = Depends(get_session)):
+async def list_restaurants(
+	name: str | None = None, owner_id: UUID | None = None, db: AsyncSession = Depends(get_session)
+):
 	async with db as session:
 		try:
-			result = await session.execute(select(Restaurant))
+			query = select(Restaurant)
+			if name is not None:
+				query = query.filter(Restaurant.name.like(f'%{name}%'))
+			if owner_id is not None:
+				query = query.filter(Restaurant.owner_id == owner_id)
+
+			result = await session.execute(query)
 			restaurants: List[RestaurantWithSchedulesSchema] = result.scalars().unique().all()
 
 			return restaurants

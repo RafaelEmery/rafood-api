@@ -4,7 +4,7 @@ FastAPI project to manage restaurants, products and offers :hamburger:
 
 ## :white_check_mark: Major technical TODOs
 
- - [ ] Query params on lists endpoints
+ - [X] Query params on lists endpoints
  - [ ] Improve body data validation
  - [X] Return all relations correctly on 'get by ID' endpoints
  - [ ] Refactor to use services and core classes
