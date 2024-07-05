@@ -15,6 +15,7 @@ It was based on [this](https://github.com/goomerdev/job-dev-backend-interview) b
 - SQLAlchemy
 - Alembic
 - Pre-commit
+- PostgreSQL
 - Docker & Docker Compose
 
 ### ER Model
