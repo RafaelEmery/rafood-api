@@ -4,7 +4,9 @@ FastAPI project to manage restaurants, products and offers :hamburger:
 
 ## About the project
 
-It was based on [this](https://github.com/goomerdev/job-dev-backend-interview) backend challenge and a opportunity to learn and apply some concepts of FastAPI
+It was based on [this](https://github.com/goomerdev/job-dev-backend-interview) backend challenge and a opportunity to learn and apply some concepts of FastAPI.
+
+My inicial studies of FastAPI is at [fastapi-studies repository](https://github.com/RafaelEmery/fastapi-studies)
 
 ### Tools used :hammer:
 
