@@ -31,6 +31,7 @@ FastAPI generates an OpenAPI docs on `/docs` endpoint.
 ### Contexts
 
 Based on the ER Model there are 5 folder to separate contexts:
+
 - Restaurants and restaurant schedules
 - Products
 - Offers and offers schedules
@@ -99,21 +100,21 @@ make lint
 
 :hourglass: **To be defined**
 
----
+______________________________________________________________________
 
 ### :white_check_mark: Major technical TODOs
 
- - [X] Query params on lists endpoints
- - [ ] Improve body data validation
- - [X] Return all relations correctly on 'get by ID' endpoints
- - [ ] Refactor to use services and core classes
- - [ ] Fix on error on alembic `env.py` file
- - [ ] Add tests for all endpoints and contracts
- - [ ] Improve exception handling errors
- - [ ] Improve logging
- - [ ] Solve minor TODOs
- - [X] Write README docs
+- [x] Query params on lists endpoints
+- [ ] Improve body data validation
+- [x] Return all relations correctly on 'get by ID' endpoints
+- [ ] Refactor to use services and core classes
+- [ ] Fix on error on alembic `env.py` file
+- [ ] Add tests for all endpoints and contracts
+- [ ] Improve exception handling errors
+- [ ] Improve logging
+- [ ] Solve minor TODOs
+- [x] Write README docs
 
----
+______________________________________________________________________
 
 Made with :crystal_ball: for studies by RafaelEmery

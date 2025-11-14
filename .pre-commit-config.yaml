@@ -13,5 +13,24 @@ repos:
     rev: v0.3.7
     hooks:
     -   id: ruff
+        name: "🐍 python · Fix with Ruff"
         args: [ --fix ]
     -   id: ruff-format
+        name: "🐍 python · Format with Ruff"
+
+- repo: https://github.com/hukkin/mdformat
+  rev: 0.7.21
+  hooks:
+    - id: mdformat
+      name: "📝 markdown · Format markdown"
+      additional_dependencies:
+        - mdformat-gfm          # GitHub-Flavored Markdown support
+        - mdformat-ruff         # Python code formatting
+        - mdformat-frontmatter  # YAML frontmatter support
+        - ruff                  # Required for mdformat-ruff
+
+- repo: https://github.com/mrtazz/checkmake.git
+  rev: 0.2.2
+  hooks:
+    - id: checkmake
+      name: "🐮 Makefile · Lint Makefile"
