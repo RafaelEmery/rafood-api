@@ -1,3 +1,4 @@
+from uuid import UUID
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -38,16 +39,16 @@ async def list_users(db: AsyncSession = Depends(get_session)):
 
 
 @router.get(
-	'/{user_id}',
+	'/{id}',
 	name='Find user',
 	status_code=status.HTTP_200_OK,
 	description='Get a user by id with all its restaurants',
 	response_model=UserDetailsSchema,
 )
-async def find_user(user_id: str, db: AsyncSession = Depends(get_session)):
+async def find_user(id: UUID, db: AsyncSession = Depends(get_session)):
 	async with db as session:
 		try:
-			result = await session.execute(select(User).where(User.id == user_id))
+			result = await session.execute(select(User).where(User.id == id))
 			user: UserDetailsSchema = result.scalars().first()
 
 			if not user:
@@ -79,18 +80,16 @@ async def create_user(user: CreateUserSchema, db: AsyncSession = Depends(get_ses
 
 
 @router.put(
-	'/{user_id}',
+	'/{id}',
 	name='Update user',
 	status_code=status.HTTP_200_OK,
-	description='Update a user by id',
+	description='Update a user by ID',
 	response_model=UserSchema,
 )
-async def update_user(
-	user_id: str, body: UpdateUserSchema, db: AsyncSession = Depends(get_session)
-):
+async def update_user(id: UUID, body: UpdateUserSchema, db: AsyncSession = Depends(get_session)):
 	async with db as session:
 		try:
-			result = await session.execute(select(User).where(User.id == user_id))
+			result = await session.execute(select(User).where(User.id == id))
 			user: User = result.scalars().first()
 
 			if not user:
@@ -106,15 +105,15 @@ async def update_user(
 
 
 @router.delete(
-	'/{user_id}',
+	'/{id}',
 	name='Delete user',
 	status_code=status.HTTP_204_NO_CONTENT,
-	description='Delete a user by id',
+	description='Delete a user by ID',
 )
-async def delete_user(user_id: str, db: AsyncSession = Depends(get_session)):
+async def delete_user(id: UUID, db: AsyncSession = Depends(get_session)):
 	async with db as session:
 		try:
-			result = await session.execute(select(User).where(User.id == user_id))
+			result = await session.execute(select(User).where(User.id == id))
 			user: User = result.scalars().first()
 
 			if not user:

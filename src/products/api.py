@@ -49,16 +49,16 @@ async def list_products(
 
 
 @router.get(
-	'/{product_id}',
+	'/{id}',
 	name='Get product by ID',
 	status_code=status.HTTP_200_OK,
-	description='Get a product by id',
+	description='Get a product by ID',
 	response_model=ProductSchema,
 )
-async def find_product(product_id: str, db: AsyncSession = Depends(get_session)):
+async def find_product(id: UUID, db: AsyncSession = Depends(get_session)):
 	async with db as session:
 		try:
-			result = await session.execute(select(Product).where(Product.id == product_id))
+			result = await session.execute(select(Product).where(Product.id == id))
 			product: ProductSchema = result.scalars().first()
 
 			# TODO: Validate if can return offers or some flag to offers
@@ -94,18 +94,18 @@ async def create_product(product: CreateProductSchema, db: AsyncSession = Depend
 
 
 @router.patch(
-	'/{product_id}',
+	'/{id}',
 	name='Update product',
 	status_code=status.HTTP_200_OK,
-	description='Update a product by id',
+	description='Update a product by ID',
 	response_model=ProductSchema,
 )
 async def update_product(
-	product_id: str, body: UpdateProductSchema, db: AsyncSession = Depends(get_session)
+	id: UUID, body: UpdateProductSchema, db: AsyncSession = Depends(get_session)
 ):
 	async with db as session:
 		try:
-			result = await session.execute(select(Product).where(Product.id == product_id))
+			result = await session.execute(select(Product).where(Product.id == id))
 			product: Product = result.scalars().first()
 
 			if not product:
@@ -126,15 +126,15 @@ async def update_product(
 
 
 @router.delete(
-	'/{product_id}',
+	'/{id}',
 	name='Delete product',
 	status_code=status.HTTP_204_NO_CONTENT,
-	description='Delete a product by id',
+	description='Delete a product by ID',
 )
-async def delete_product(product_id: str, db: AsyncSession = Depends(get_session)):
+async def delete_product(id: UUID, db: AsyncSession = Depends(get_session)):
 	async with db as session:
 		try:
-			result = await session.execute(select(Product).where(Product.id == product_id))
+			result = await session.execute(select(Product).where(Product.id == id))
 			product: Product = result.scalars().first()
 
 			if not product:

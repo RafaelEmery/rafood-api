@@ -55,16 +55,16 @@ async def list_restaurants(
 
 
 @router.get(
-	'/{restaurant_id}',
+	'/{id}',
 	name='Find restaurant',
 	status_code=status.HTTP_200_OK,
-	description='Get a restaurant by id with products',
+	description='Get a restaurant by ID with products',
 	response_model=RestaurantWithProductsSchema,
 )
-async def find_restaurant(restaurant_id: str, db: AsyncSession = Depends(get_session)):
+async def find_restaurant(id: UUID, db: AsyncSession = Depends(get_session)):
 	async with db as session:
 		try:
-			result = await session.execute(select(Restaurant).where(Restaurant.id == restaurant_id))
+			result = await session.execute(select(Restaurant).where(Restaurant.id == id))
 			restaurant: RestaurantWithProductsSchema = result.scalars().first()
 
 			if not restaurant:
@@ -101,20 +101,20 @@ async def create_restaurant(
 
 
 @router.patch(
-	'/{restaurant_id}',
+	'/{id}',
 	name='Update restaurant',
 	status_code=status.HTTP_200_OK,
 	description='Update a restaurant',
 	response_model=RestaurantSchema,
 )
 async def update_restaurant(
-	restaurant_id: str,
+	id: UUID,
 	body: UpdateRestaurantSchema,
 	db: AsyncSession = Depends(get_session),
 ):
 	async with db as session:
 		try:
-			result = await session.execute(select(Restaurant).where(Restaurant.id == restaurant_id))
+			result = await session.execute(select(Restaurant).where(Restaurant.id == id))
 			restaurant: Restaurant = result.scalars().first()
 
 			if not restaurant:
@@ -140,15 +140,15 @@ async def update_restaurant(
 
 
 @router.delete(
-	'/{restaurant_id}',
+	'/{id}',
 	name='Delete restaurant',
 	status_code=status.HTTP_204_NO_CONTENT,
 	description='Delete a restaurant by id',
 )
-async def delete_restaurant(restaurant_id: str, db: AsyncSession = Depends(get_session)):
+async def delete_restaurant(id: UUID, db: AsyncSession = Depends(get_session)):
 	async with db as session:
 		try:
-			result = await session.execute(select(Restaurant).where(Restaurant.id == restaurant_id))
+			result = await session.execute(select(Restaurant).where(Restaurant.id == id))
 			restaurant: Restaurant = result.scalars().first()
 
 			if not restaurant:
@@ -163,21 +163,21 @@ async def delete_restaurant(restaurant_id: str, db: AsyncSession = Depends(get_s
 
 
 @router.post(
-	'/{restaurant_id}/schedules',
+	'/{id}/schedules',
 	name='Create a restaurant schedule',
 	status_code=status.HTTP_201_CREATED,
 	response_model=CreateRestaurantScheduleResponseSchema,
 	description='Create a new restaurant',
 )
 async def create_restaurant_schedule(
-	restaurant_id: str,
+	id: str,
 	schedule: CreateRestaurantScheduleSchema,
 	db: AsyncSession = Depends(get_session),
 ):
 	async with db as session:
 		try:
 			new_schedule: RestaurantSchedule = RestaurantSchedule(**schedule.model_dump())
-			new_schedule.restaurant_id = restaurant_id
+			new_schedule.restaurant_id = id
 			new_schedule.start_time = datetime.strptime(schedule.start_time, '%H:%M:%S').time()
 			new_schedule.end_time = datetime.strptime(schedule.end_time, '%H:%M:%S').time()
 
@@ -192,21 +192,21 @@ async def create_restaurant_schedule(
 
 
 @router.patch(
-	'/{restaurant_id}/schedules/{schedule_id}',
+	'/{id}/schedules/{schedule_id}',
 	name='Update a restaurant schedule',
 	status_code=status.HTTP_200_OK,
 	response_model=RestaurantScheduleSchema,
 	description='Update a restaurant schedule',
 )
 async def update_restaurant_schedule(
-	restaurant_id: str,
-	schedule_id: str,
+	id: UUID,
+	schedule_id: UUID,
 	body: UpdateRestaurantScheduleSchema,
 	db: AsyncSession = Depends(get_session),
 ):
 	async with db as session:
 		try:
-			result = await session.execute(select(Restaurant).where(Restaurant.id == restaurant_id))
+			result = await session.execute(select(Restaurant).where(Restaurant.id == id))
 			restaurant: Restaurant = result.scalars().first()
 
 			if not restaurant:
@@ -239,17 +239,17 @@ async def update_restaurant_schedule(
 
 
 @router.delete(
-	'/{restaurant_id}/schedules/{schedule_id}',
+	'/{id}/schedules/{schedule_id}',
 	name='Delete a restaurant schedule',
 	status_code=status.HTTP_204_NO_CONTENT,
 	description='Delete a restaurant schedule',
 )
 async def delete_restaurant_schedule(
-	restaurant_id: str, schedule_id: str, db: AsyncSession = Depends(get_session)
+	id: UUID, schedule_id: UUID, db: AsyncSession = Depends(get_session)
 ):
 	async with db as session:
 		try:
-			result = await session.execute(select(Restaurant).where(Restaurant.id == restaurant_id))
+			result = await session.execute(select(Restaurant).where(Restaurant.id == id))
 			restaurant: Restaurant = result.scalars().first()
 
 			if not restaurant:

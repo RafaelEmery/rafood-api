@@ -1,3 +1,4 @@
+from uuid import UUID
 from datetime import datetime
 from typing import List
 
@@ -43,16 +44,16 @@ async def list_offers(db: AsyncSession = Depends(get_session)):
 
 
 @router.get(
-	'/{offer_id}',
+	'/{id}',
 	name='Find offer',
 	status_code=status.HTTP_200_OK,
 	description='Get an offer by ID',
 	response_model=OfferWithSchedulesSchema,
 )
-async def find_offer(offer_id: str, db: AsyncSession = Depends(get_session)):
+async def find_offer(id: UUID, db: AsyncSession = Depends(get_session)):
 	async with db as session:
 		try:
-			result = await session.execute(select(Offer).where(Offer.id == offer_id))
+			result = await session.execute(select(Offer).where(Offer.id == id))
 			offer: OfferWithSchedulesSchema = result.scalars().first()
 
 			if not offer:
@@ -84,18 +85,16 @@ async def create_offer(offer: CreateOfferSchema, db: AsyncSession = Depends(get_
 
 
 @router.patch(
-	'/{offer_id}',
+	'/{id}',
 	name='Update offer',
 	status_code=status.HTTP_200_OK,
-	description='Update an offer by id',
+	description='Update an offer by ID',
 	response_model=OfferSchema,
 )
-async def update_offer(
-	offer_id: str, body: UpdateOfferSchema, db: AsyncSession = Depends(get_session)
-):
+async def update_offer(id: UUID, body: UpdateOfferSchema, db: AsyncSession = Depends(get_session)):
 	async with db as session:
 		try:
-			result = await session.execute(select(Offer).where(Offer.id == offer_id))
+			result = await session.execute(select(Offer).where(Offer.id == id))
 			offer: Offer = result.scalars().first()
 
 			if not offer:
@@ -110,15 +109,15 @@ async def update_offer(
 
 
 @router.delete(
-	'/{offer_id}',
+	'/{id}',
 	name='Delete offer',
 	status_code=status.HTTP_204_NO_CONTENT,
-	description='Delete an offer by id',
+	description='Delete an offer by ID',
 )
-async def delete_offer(offer_id: str, db: AsyncSession = Depends(get_session)):
+async def delete_offer(id: UUID, db: AsyncSession = Depends(get_session)):
 	async with db as session:
 		try:
-			result = await session.execute(select(Offer).where(Offer.id == offer_id))
+			result = await session.execute(select(Offer).where(Offer.id == id))
 			offer: Offer = result.scalars().first()
 
 			if not offer:
@@ -131,27 +130,27 @@ async def delete_offer(offer_id: str, db: AsyncSession = Depends(get_session)):
 
 
 @router.post(
-	'/{offer_id}/schedules',
+	'/{id}/schedules',
 	name='Create offer schedule',
 	status_code=status.HTTP_201_CREATED,
 	description='Create a new offer schedule',
 	response_model=CreateOfferScheduleResponseSchema,
 )
 async def create_offer_schedule(
-	offer_id: str,
+	id: UUID,
 	schedule: CreateOfferScheduleSchema,
 	db: AsyncSession = Depends(get_session),
 ):
 	async with db as session:
 		try:
-			result = await session.execute(select(Offer).where(Offer.id == offer_id))
+			result = await session.execute(select(Offer).where(Offer.id == id))
 			offer: OfferSchema = result.scalars().first()
 
 			if not offer:
 				raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Offer not found')
 
 			new_schedule = OfferSchedule(**schedule.model_dump())
-			new_schedule.offer_id = offer_id
+			new_schedule.offer_id = id
 			new_schedule.start_time = datetime.strptime(schedule.start_time, '%H:%M:%S').time()
 			new_schedule.end_time = datetime.strptime(schedule.end_time, '%H:%M:%S').time()
 
@@ -164,28 +163,28 @@ async def create_offer_schedule(
 
 
 @router.patch(
-	'/{offer_id}/schedules/{offer_schedule_id}',
+	'/{id}/schedules/{schedule_id}',
 	name='Update offer schedule',
 	status_code=status.HTTP_200_OK,
-	description='Update an offer schedule by id',
+	description='Update an offer schedule by ID',
 	response_model=OfferScheduleSchema,
 )
 async def update_offer_schedule(
-	offer_id: str,
-	offer_schedule_id: str,
+	id: UUID,
+	schedule_id: UUID,
 	body: UpdateOfferScheduleSchema,
 	db: AsyncSession = Depends(get_session),
 ):
 	async with db as session:
 		try:
-			result = await session.execute(select(Offer).where(Offer.id == offer_id))
+			result = await session.execute(select(Offer).where(Offer.id == id))
 			offer: Offer = result.scalars().first()
 
 			if not offer:
 				raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Offer not found')
 
 			result = await session.execute(
-				select(OfferSchedule).where(OfferSchedule.id == offer_schedule_id)
+				select(OfferSchedule).where(OfferSchedule.id == schedule_id)
 			)
 			schedule: OfferSchedule = result.scalars().first()
 
@@ -206,24 +205,24 @@ async def update_offer_schedule(
 
 
 @router.delete(
-	'/{offer_id}/schedules/{offer_schedule_id}',
+	'/{id}/schedules/{schedule_id}',
 	name='Delete offer schedule',
 	status_code=status.HTTP_204_NO_CONTENT,
 	description='Delete an offer schedule by id',
 )
 async def delete_offer_schedule(
-	offer_id: str, offer_schedule_id: str, db: AsyncSession = Depends(get_session)
+	id: UUID, schedule_id: UUID, db: AsyncSession = Depends(get_session)
 ):
 	async with db as session:
 		try:
-			result = await session.execute(select(Offer).where(Offer.id == offer_id))
+			result = await session.execute(select(Offer).where(Offer.id == id))
 			offer: OfferSchema = result.scalars().first()
 
 			if not offer:
 				raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Offer not found')
 
 			result = await session.execute(
-				select(OfferSchedule).where(OfferSchedule.id == offer_schedule_id)
+				select(OfferSchedule).where(OfferSchedule.id == schedule_id)
 			)
 			schedule: OfferSchedule = result.scalars().first()
 
