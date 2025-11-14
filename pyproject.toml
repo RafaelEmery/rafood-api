@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "rafood-api"
 version = "0.1.0"
-description = ""
+description = "API to handle Rafood operations"
 authors = ["rafael.emery <rafael.emery@olist.com>"]
 readme = "README.md"
 
@@ -20,6 +20,7 @@ sqlalchemy-utils = "^0.41.2"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.7.0"
+ruff = "^0.14.5"
 
 [build-system]
 requires = ["poetry-core"]

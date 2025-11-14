@@ -138,7 +138,9 @@ async def delete_offer(offer_id: str, db: AsyncSession = Depends(get_session)):
 	response_model=CreateOfferScheduleResponseSchema,
 )
 async def create_offer_schedule(
-	offer_id: str, schedule: CreateOfferScheduleSchema, db: AsyncSession = Depends(get_session)
+	offer_id: str,
+	schedule: CreateOfferScheduleSchema,
+	db: AsyncSession = Depends(get_session),
 ):
 	async with db as session:
 		try:
@@ -189,7 +191,8 @@ async def update_offer_schedule(
 
 			if not schedule:
 				raise HTTPException(
-					status_code=status.HTTP_404_NOT_FOUND, detail='Offer schedule not found'
+					status_code=status.HTTP_404_NOT_FOUND,
+					detail='Offer schedule not found',
 				)
 
 			schedule.day = body.day
@@ -226,7 +229,8 @@ async def delete_offer_schedule(
 
 			if not schedule:
 				raise HTTPException(
-					status_code=status.HTTP_404_NOT_FOUND, detail='Offer schedule not found'
+					status_code=status.HTTP_404_NOT_FOUND,
+					detail='Offer schedule not found',
 				)
 
 			await session.delete(schedule)

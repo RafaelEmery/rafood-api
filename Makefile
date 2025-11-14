@@ -1,11 +1,11 @@
 dep-start:
-	docker-compose up -d
+	docker compose up -d
 
 dep-stop:
-	docker-compose down
+	docker compose down
 
 dep-logs:
-	docker-compose logs -f database
+	docker compose logs -f database
 
 # Usage: make create-migration name='<revision message>'
 create-migration:
@@ -21,11 +21,17 @@ migrate:
 rollback:
 	@poetry run alembic downgrade -1
 
-lint:
-	poetry run pre-commit install && poetry run pre-commit run -a -v
+pre-commit:
+	@poetry run pre-commit install && poetry run pre-commit run -a -v
 
-shell:
-	@poetry shell
+lint:
+	@poetry run ruff check .
+
+lint-fix:
+	@poetry run ruff check --fix .
+
+format:
+	@poetry run ruff format .
 
 run:
 	@poetry run python src/main.py

@@ -22,7 +22,10 @@ class Restaurant(settings.Base):
 	state_abbr = Column(String(2), nullable=False)
 	created_at = Column(DateTime, nullable=False, default=datetime.datetime.now)
 	updated_at = Column(
-		DateTime, nullable=False, default=datetime.datetime.now, onupdate=datetime.datetime.now
+		DateTime,
+		nullable=False,
+		default=datetime.datetime.now,
+		onupdate=datetime.datetime.now,
 	)
 
 	owner = relationship('User', back_populates='restaurants')
@@ -43,7 +46,10 @@ class RestaurantSchedule(settings.Base):
 	end_time = Column(Time, nullable=False)
 	created_at = Column(DateTime, nullable=False, default=datetime.datetime.now)
 	updated_at = Column(
-		DateTime, nullable=False, default=datetime.datetime.now, onupdate=datetime.datetime.now
+		DateTime,
+		nullable=False,
+		default=datetime.datetime.now,
+		onupdate=datetime.datetime.now,
 	)
 
 	restaurant = relationship('Restaurant', back_populates='schedules')

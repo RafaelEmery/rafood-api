@@ -15,7 +15,10 @@ class Category(settings.Base):
 	name = Column(String(256), nullable=False)
 	created_at = Column(DateTime, nullable=False, default=datetime.datetime.now)
 	updated_at = Column(
-		DateTime, nullable=False, default=datetime.datetime.now, onupdate=datetime.datetime.now
+		DateTime,
+		nullable=False,
+		default=datetime.datetime.now,
+		onupdate=datetime.datetime.now,
 	)
 
 	products = relationship('Product', back_populates='category')

@@ -10,7 +10,7 @@ My inicial studies of FastAPI is at [fastapi-studies repository](https://github.
 
 ### Tools used :hammer:
 
-- Python (3.10)
+- Python (3.10.7)
 - Poetry
 - FastAPI
 - Pydantic
@@ -39,16 +39,20 @@ Based on the ER Model there are 5 folder to separate contexts:
 
 ## Running the API :running:
 
-To install the app:
+To install Python and Pyenv:
 
 ```bash
-poetry install
+pyenv install 3.10.7
+
+pyenv virtualenv 3.10.7 rafood-api
+
+pyenv activate rafood-api
 ```
 
-To run poetry shell:
+To install the application:
 
 ```bash
-make shell
+poetry install --no-root
 ```
 
 To run the API:
@@ -90,8 +94,6 @@ The `pre-commit` is enable to run linter before each commit, but you can run any
 ```bash
 make lint
 ```
-
-
 
 ### Tests
 

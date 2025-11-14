@@ -34,7 +34,9 @@ router = APIRouter()
 	response_model=List[RestaurantWithSchedulesSchema],
 )
 async def list_restaurants(
-	name: str | None = None, owner_id: UUID | None = None, db: AsyncSession = Depends(get_session)
+	name: str | None = None,
+	owner_id: UUID | None = None,
+	db: AsyncSession = Depends(get_session),
 ):
 	async with db as session:
 		try:
@@ -106,7 +108,9 @@ async def create_restaurant(
 	response_model=RestaurantSchema,
 )
 async def update_restaurant(
-	restaurant_id: str, body: UpdateRestaurantSchema, db: AsyncSession = Depends(get_session)
+	restaurant_id: str,
+	body: UpdateRestaurantSchema,
+	db: AsyncSession = Depends(get_session),
 ):
 	async with db as session:
 		try:

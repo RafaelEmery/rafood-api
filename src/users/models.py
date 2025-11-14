@@ -18,7 +18,10 @@ class User(settings.Base):
 	password = Column(String(256), nullable=False)
 	created_at = Column(DateTime, nullable=False, default=datetime.datetime.now)
 	updated_at = Column(
-		DateTime, nullable=False, default=datetime.datetime.now, onupdate=datetime.datetime.now
+		DateTime,
+		nullable=False,
+		default=datetime.datetime.now,
+		onupdate=datetime.datetime.now,
 	)
 
 	restaurants = relationship('Restaurant', back_populates='owner', lazy='joined')

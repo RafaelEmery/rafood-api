@@ -19,7 +19,10 @@ class Product(settings.Base):
 	image_url = Column(String(256))
 	created_at = Column(DateTime, nullable=False, default=datetime.datetime.now)
 	updated_at = Column(
-		DateTime, nullable=False, default=datetime.datetime.now, onupdate=datetime.datetime.now
+		DateTime,
+		nullable=False,
+		default=datetime.datetime.now,
+		onupdate=datetime.datetime.now,
 	)
 
 	restaurant = relationship('Restaurant', back_populates='products')
