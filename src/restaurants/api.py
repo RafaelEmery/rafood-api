@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from .models import Restaurant, RestaurantSchedule
+from restaurants.models import Restaurant, RestaurantSchedule
 from .schemas import (
 	RestaurantSchema,
 	RestaurantWithSchedulesSchema,
@@ -27,7 +27,7 @@ router = APIRouter()
 
 
 @router.get(
-	'/',
+	'',
 	name='List restaurants',
 	status_code=status.HTTP_200_OK,
 	description='Get all restaurants',
@@ -79,7 +79,7 @@ async def find_restaurant(id: UUID, db: AsyncSession = Depends(get_session)):
 
 # TODO: add owner_id validation
 @router.post(
-	'/',
+	'',
 	name='Create a restaurant',
 	status_code=status.HTTP_201_CREATED,
 	response_model=CreateRestaurantResponseSchema,

@@ -1,3 +1,5 @@
+.PHONY: all clean test
+
 dep-start:
 	docker compose up -d
 
@@ -10,10 +12,6 @@ dep-logs:
 # Usage: make create-migration name='<revision message>'
 create-migration:
 	@poetry run alembic revision -m "$(name)"
-
-# Usage: make revision name='<revision message>'
-revision:
-	@poetry run alembic revision --autogenerate -m "$(name)"
 
 migrate:
 	@poetry run alembic upgrade head

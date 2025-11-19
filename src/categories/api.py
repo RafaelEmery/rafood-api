@@ -4,8 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from .schemas import CategorySchema, CreateCategorySchema, CreateCategoryResponseSchema
-from .models import Category
+from categories.schemas import CategorySchema, CreateCategorySchema, CreateCategoryResponseSchema
+from categories.models import Category
 from core.deps import get_session
 
 
@@ -13,7 +13,7 @@ router = APIRouter()
 
 
 @router.get(
-	'/',
+	'',
 	name='Get categories',
 	status_code=status.HTTP_200_OK,
 	description='Get all categories',
@@ -31,7 +31,7 @@ async def get_all_categories(db: AsyncSession = Depends(get_session)):
 
 
 @router.post(
-	'/',
+	'',
 	name='Create category',
 	status_code=status.HTTP_201_CREATED,
 	description='Create a new category',

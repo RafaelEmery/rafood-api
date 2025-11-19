@@ -6,8 +6,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from .models import Product
-from .schemas import (
+from products.models import Product
+from products.schemas import (
 	ProductSchema,
 	ProductWithCategoriesSchema,
 	CreateProductSchema,
@@ -21,7 +21,7 @@ router = APIRouter()
 
 
 @router.get(
-	'/',
+	'',
 	name='List products',
 	status_code=status.HTTP_200_OK,
 	description='Get all products',
@@ -74,7 +74,7 @@ async def find_product(id: UUID, db: AsyncSession = Depends(get_session)):
 
 
 @router.post(
-	'/',
+	'',
 	name='Create product',
 	status_code=status.HTTP_201_CREATED,
 	description='Create a new product',

@@ -6,8 +6,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from .models import User
-from .schemas import (
+from users.models import User
+from users.schemas import (
 	UserSchema,
 	UserDetailsSchema,
 	CreateUserSchema,
@@ -21,7 +21,7 @@ router = APIRouter()
 
 
 @router.get(
-	'/',
+	'',
 	name='List users',
 	status_code=status.HTTP_200_OK,
 	description='Get all users',
@@ -60,7 +60,7 @@ async def find_user(id: UUID, db: AsyncSession = Depends(get_session)):
 
 
 @router.post(
-	'/',
+	'',
 	name='Create user',
 	status_code=status.HTTP_201_CREATED,
 	description='Create a new user',

@@ -7,8 +7,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from .models import Offer, OfferSchedule
-from .schemas import (
+from offers.models import Offer, OfferSchedule
+from offers.schemas import (
 	OfferSchema,
 	OfferWithSchedulesSchema,
 	CreateOfferSchema,
@@ -26,7 +26,7 @@ router = APIRouter()
 
 
 @router.get(
-	'/',
+	'',
 	name='List offers',
 	status_code=status.HTTP_200_OK,
 	description='Get all offers',
@@ -65,7 +65,7 @@ async def find_offer(id: UUID, db: AsyncSession = Depends(get_session)):
 
 
 @router.post(
-	'/',
+	'',
 	name='Create offer',
 	status_code=status.HTTP_201_CREATED,
 	description='Create a new offer',

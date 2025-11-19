@@ -8,18 +8,6 @@ from alembic import context
 
 from src.core.config import settings
 
-# This models aren't directly used in file
-# But it's necessary to import them to be able to use them in target_metadata
-# And then autogenerate migrations based on them
-from src.products.models import Product  # noqa
-from src.users.models import User  # noqa
-from src.categories.models import Category  # noqa
-from src.offers.models import Offer, OfferSchedule  # noqa
-from src.restaurants.models import Restaurant, RestaurantSchedule  # noqa
-
-# TODO: understand why needs to import with src here and doesn't have inside the other src files
-
-
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
