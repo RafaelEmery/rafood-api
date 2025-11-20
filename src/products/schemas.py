@@ -1,18 +1,17 @@
 from uuid import UUID
 from datetime import datetime
 
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel, HttpUrl, Field
 from categories.schemas import CategorySchema
 
 
-# TODO: validate changing UUID from pydantic UUID4
 class ProductSchema(BaseModel):
 	id: UUID
 	restaurant_id: UUID
 	name: str
 	price: float
 	category_id: UUID
-	image_url: str
+	image_url: HttpUrl | None
 	created_at: datetime
 	updated_at: datetime
 
@@ -24,13 +23,12 @@ class ProductWithCategoriesSchema(ProductSchema):
 	category: CategorySchema
 
 
-# TODO: improve validation rules
 class CreateProductSchema(BaseModel):
 	restaurant_id: UUID
 	name: str
-	price: float
+	price: float = Field(gt=0)
 	category_id: UUID
-	image_url: str = HttpUrl | None
+	image_url: HttpUrl | None
 
 
 class CreateProductResponseSchema(BaseModel):
@@ -40,6 +38,6 @@ class CreateProductResponseSchema(BaseModel):
 class UpdateProductSchema(BaseModel):
 	restaurant_id: UUID
 	name: str
-	price: float
+	price: float = Field(gt=0)
 	category_id: UUID
-	image_url: str = HttpUrl
+	image_url: HttpUrl | None

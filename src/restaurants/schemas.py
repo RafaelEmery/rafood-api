@@ -68,11 +68,10 @@ class UpdateRestaurantSchema(CreateRestaurantSchema):
 	pass
 
 
-# TODO: validate if is one of Day or DayType Enums
 class CreateRestaurantScheduleSchema(BaseModel):
-	day_type: DayType | str = Field(max_length=10)
-	start_day: Day | str = Field(max_length=10)
-	end_day: Day | str = Field(max_length=10)
+	day_type: DayType
+	start_day: Day
+	end_day: Day
 	start_time: str = Field(min_length=6, max_length=8)
 	end_time: str = Field(min_length=6, max_length=8)
 
@@ -81,10 +80,9 @@ class CreateRestaurantScheduleResponseSchema(BaseModel):
 	id: UUID
 
 
-# TODO: validate if is one of Day or DayType Enums
 class UpdateRestaurantScheduleSchema(BaseModel):
-	day_type: DayType | str = Field(max_length=10)
-	start_day: Day | str = Field(max_length=10)
-	end_day: Day | str = Field(max_length=10)
+	day_type: DayType
+	start_day: Day
+	end_day: Day
 	start_time: str = Field(min_length=6, max_length=8)
 	end_time: str = Field(min_length=6, max_length=8)

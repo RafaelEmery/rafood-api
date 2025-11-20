@@ -4,6 +4,8 @@ from typing import List
 
 from pydantic import BaseModel, Field
 
+from enums import Day
+
 
 class OfferSchema(BaseModel):
 	id: UUID
@@ -19,7 +21,7 @@ class OfferSchema(BaseModel):
 class OfferScheduleSchema(BaseModel):
 	id: UUID
 	offer_id: UUID
-	day: str
+	day: Day
 	start_time: time
 	end_time: time
 	repeats: bool
@@ -37,20 +39,19 @@ class OfferWithSchedulesSchema(OfferSchema):
 
 class CreateOfferSchema(BaseModel):
 	product_id: UUID
-	price: float
+	price: float = Field(gt=0)
 
 
 class CreateOfferResponseSchema(BaseModel):
 	id: UUID
 
 
-# TODO: validate if user send null when is Optional[float] = None
 class UpdateOfferSchema(BaseModel):
 	price: float
 
 
 class CreateOfferScheduleSchema(BaseModel):
-	day: str
+	day: Day
 	start_time: str = Field(min_length=6, max_length=8)
 	end_time: str = Field(min_length=6, max_length=8)
 	repeats: bool
@@ -61,7 +62,7 @@ class CreateOfferScheduleResponseSchema(BaseModel):
 
 
 class UpdateOfferScheduleSchema(BaseModel):
-	day: str
+	day: Day
 	start_time: str = Field(min_length=6, max_length=8)
 	end_time: str = Field(min_length=6, max_length=8)
 	repeats: bool

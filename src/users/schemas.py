@@ -11,8 +11,7 @@ class UserSchema(BaseModel):
 	id: UUID
 	first_name: str
 	last_name: str
-	email: str
-	password: str
+	email: EmailStr
 	created_at: datetime
 	updated_at: datetime
 
