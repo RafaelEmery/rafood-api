@@ -1,16 +1,16 @@
 .PHONY: all clean test
 
 dep-start:
-	docker compose up -d
+	@docker compose up -d
 
 dep-stop:
-	docker compose stop
+	@docker compose stop
 
 dep-down:
-	docker compose down
+	@docker compose down
 
 dep-logs:
-	docker compose logs -f database
+	@docker compose logs -f database
 
 create-migration:
 	@echo "Usage: make create-migration name='<revision message>'"

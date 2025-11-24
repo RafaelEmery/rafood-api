@@ -1,30 +1,28 @@
-import datetime
-import uuid
+from datetime import datetime
+from typing import Optional
+from uuid import UUID, uuid4
 
-from sqlalchemy import Column, DateTime, Double, ForeignKey, String
-from sqlalchemy.orm import relationship
-from sqlalchemy_utils import UUIDType
-
-from core.config import settings
+from sqlmodel import Field, Relationship, SQLModel
 
 
-class Product(settings.Base):
+class Product(SQLModel, table=True):
 	__tablename__ = 'products'
 
-	id = Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)
-	restaurant_id = Column(UUIDType(binary=False), ForeignKey('restaurants.id'), nullable=False)
-	name = Column(String(256), nullable=False)
-	price = Column(Double, nullable=False)
-	category_id = Column(UUIDType(binary=False), ForeignKey('categories.id'), nullable=False)
-	image_url = Column(String(256))
-	created_at = Column(DateTime, nullable=False, default=datetime.datetime.now)
-	updated_at = Column(
-		DateTime,
-		nullable=False,
-		default=datetime.datetime.now,
-		onupdate=datetime.datetime.now,
+	id: UUID = Field(default_factory=uuid4, primary_key=True)
+	restaurant_id: UUID = Field(foreign_key='restaurants.id')
+	name: str = Field(max_length=256)
+	price: float
+	category_id: UUID = Field(foreign_key='categories.id')
+	image_url: str | None = Field(default=None, max_length=256)
+	created_at: datetime = Field(default_factory=datetime.now)
+	updated_at: datetime = Field(
+		default_factory=datetime.now, sa_column_kwargs={'onupdate': datetime.now}
 	)
 
-	restaurant = relationship('Restaurant', back_populates='products')
-	category = relationship('Category', back_populates='products', lazy='joined')
-	offers = relationship('Offer', back_populates='product', lazy='joined')
+	restaurant: Optional['Restaurant'] = Relationship(back_populates='products')  # noqa: F821
+	category: Optional['Category'] = Relationship(  # noqa: F821
+		back_populates='products', sa_relationship_kwargs={'lazy': 'joined'}
+	)
+	offers: list['Offer'] = Relationship(  # noqa: F821
+		back_populates='product', sa_relationship_kwargs={'lazy': 'joined'}
+	)

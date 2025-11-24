@@ -1,27 +1,23 @@
-import datetime
-import uuid
+from datetime import datetime
+from uuid import UUID, uuid4
 
-from sqlalchemy import Column, DateTime, String
-from sqlalchemy.orm import relationship
-from sqlalchemy_utils import UUIDType
-
-from core.config import settings
+from sqlmodel import Field, Relationship, SQLModel
 
 
-class User(settings.Base):
+class User(SQLModel, table=True):
 	__tablename__ = 'users'
 
-	id = Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)
-	first_name = Column(String(256), nullable=False)
-	last_name = Column(String(256), nullable=False)
-	email = Column(String(256), nullable=False)
-	password = Column(String(256), nullable=False)
-	created_at = Column(DateTime, nullable=False, default=datetime.datetime.now)
-	updated_at = Column(
-		DateTime,
-		nullable=False,
-		default=datetime.datetime.now,
-		onupdate=datetime.datetime.now,
+	id: UUID = Field(default_factory=uuid4, primary_key=True)
+	first_name: str = Field(max_length=256)
+	last_name: str = Field(max_length=256)
+	email: str = Field(max_length=256)
+	password: str = Field(max_length=256)
+	created_at: datetime = Field(default_factory=datetime.now)
+	updated_at: datetime = Field(
+		default_factory=datetime.now, sa_column_kwargs={'onupdate': datetime.now}
 	)
 
-	restaurants = relationship('Restaurant', back_populates='owner', lazy='joined')
+	# Relationships
+	restaurants: list['Restaurant'] = Relationship(  # noqa: F821
+		back_populates='owner', sa_relationship_kwargs={'lazy': 'joined'}
+	)

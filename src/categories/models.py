@@ -1,24 +1,17 @@
-import datetime
-import uuid
+from datetime import datetime
+from uuid import UUID, uuid4
 
-from sqlalchemy import Column, DateTime, String
-from sqlalchemy.orm import relationship
-from sqlalchemy_utils import UUIDType
-
-from core.config import settings
+from sqlmodel import Field, Relationship, SQLModel
 
 
-class Category(settings.Base):
+class Category(SQLModel, table=True):
 	__tablename__ = 'categories'
 
-	id = Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)
-	name = Column(String(256), nullable=False)
-	created_at = Column(DateTime, nullable=False, default=datetime.datetime.now)
-	updated_at = Column(
-		DateTime,
-		nullable=False,
-		default=datetime.datetime.now,
-		onupdate=datetime.datetime.now,
+	id: UUID = Field(default_factory=uuid4, primary_key=True)
+	name: str = Field(max_length=256)
+	created_at: datetime = Field(default_factory=datetime.now)
+	updated_at: datetime = Field(
+		default_factory=datetime.now, sa_column_kwargs={'onupdate': datetime.now}
 	)
 
-	products = relationship('Product', back_populates='category')
+	products: list['Product'] = Relationship(back_populates='category')  # noqa: F821

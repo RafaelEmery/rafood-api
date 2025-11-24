@@ -1,7 +1,4 @@
-from typing import Any
-
 from pydantic_settings import BaseSettings
-from sqlalchemy.orm import declarative_base
 
 
 class Settings(BaseSettings):
@@ -17,8 +14,6 @@ class Settings(BaseSettings):
 	DB_HOST: str
 	DB_NAME: str
 	DB_PORT: int
-
-	Base: Any = declarative_base()
 
 	class Config:
 		case_sensitive = True

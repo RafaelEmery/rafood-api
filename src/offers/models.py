@@ -1,47 +1,40 @@
-import datetime
-import uuid
+from datetime import datetime, time
+from typing import Optional
+from uuid import UUID, uuid4
 
-from sqlalchemy import Boolean, Column, DateTime, Double, ForeignKey, String, Time
-from sqlalchemy.orm import relationship
-from sqlalchemy_utils import UUIDType
-
-from core.config import settings
+from sqlmodel import Field, Relationship, SQLModel
 
 
 # TODO: add is active column
-class Offer(settings.Base):
+class Offer(SQLModel, table=True):
 	__tablename__ = 'offers'
 
-	id = Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)
-	product_id = Column(UUIDType(binary=False), ForeignKey('products.id'), nullable=False)
-	price = Column(Double, nullable=False)
-	created_at = Column(DateTime, nullable=False, default=datetime.datetime.now)
-	updated_at = Column(
-		DateTime,
-		nullable=False,
-		default=datetime.datetime.now,
-		onupdate=datetime.datetime.now,
+	id: UUID = Field(default_factory=uuid4, primary_key=True)
+	product_id: UUID = Field(foreign_key='products.id')
+	price: float
+	created_at: datetime = Field(default_factory=datetime.now)
+	updated_at: datetime = Field(
+		default_factory=datetime.now, sa_column_kwargs={'onupdate': datetime.now}
 	)
 
-	product = relationship('Product', back_populates='offers')
-	schedules = relationship('OfferSchedule', back_populates='offer', lazy='joined')
+	product: Optional['Product'] = Relationship(back_populates='offers')  # noqa: F821
+	schedules: list['OfferSchedule'] = Relationship(
+		back_populates='offer', sa_relationship_kwargs={'lazy': 'joined'}
+	)
 
 
-class OfferSchedule(settings.Base):
+class OfferSchedule(SQLModel, table=True):
 	__tablename__ = 'offer_schedules'
 
-	id = Column(UUIDType(binary=False), primary_key=True, default=uuid.uuid4)
-	offer_id = Column(UUIDType(binary=False), ForeignKey('offers.id'), nullable=False)
-	day = Column(String(10), nullable=False)
-	start_time = Column(Time, nullable=False)
-	end_time = Column(Time, nullable=False)
-	repeats = Column(Boolean, default=False)
-	created_at = Column(DateTime, nullable=False, default=datetime.datetime.now)
-	updated_at = Column(
-		DateTime,
-		nullable=False,
-		default=datetime.datetime.now,
-		onupdate=datetime.datetime.now,
+	id: UUID = Field(default_factory=uuid4, primary_key=True)
+	offer_id: UUID = Field(foreign_key='offers.id')
+	day: str = Field(max_length=10)
+	start_time: time
+	end_time: time
+	repeats: bool = Field(default=False)
+	created_at: datetime = Field(default_factory=datetime.now)
+	updated_at: datetime = Field(
+		default_factory=datetime.now, sa_column_kwargs={'onupdate': datetime.now}
 	)
 
-	offer = relationship('Offer', back_populates='schedules')
+	offer: Optional['Offer'] = Relationship(back_populates='schedules')
