@@ -1,13 +1,10 @@
-from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
-
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from categories.schemas import CategorySchema, CreateCategorySchema, CreateCategoryResponseSchema
 from categories.models import Category
+from categories.schemas import CategorySchema, CreateCategoryResponseSchema, CreateCategorySchema
 from core.deps import get_session
-
 
 router = APIRouter()
 
@@ -17,17 +14,19 @@ router = APIRouter()
 	name='Get categories',
 	status_code=status.HTTP_200_OK,
 	description='Get all categories',
-	response_model=List[CategorySchema],
+	response_model=list[CategorySchema],
 )
 async def get_all_categories(db: AsyncSession = Depends(get_session)):
 	async with db as session:
 		try:
 			result = await session.execute(select(Category))
-			categories: List[CategorySchema] = result.scalars().all()
+			categories: list[CategorySchema] = result.scalars().all()
 
 			return categories
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e
 
 
 @router.post(
@@ -46,7 +45,9 @@ async def create_category(category: CreateCategorySchema, db: AsyncSession = Dep
 
 			return CreateCategoryResponseSchema(id=new_category.id)
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e
 
 
 @router.delete(
@@ -69,4 +70,6 @@ async def delete_category(category_id: str, db: AsyncSession = Depends(get_sessi
 			await session.delete(category)
 			await session.commit()
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e

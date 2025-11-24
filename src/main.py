@@ -1,8 +1,7 @@
 from fastapi import FastAPI
 
-from core.config import settings
 from api import api_router
-
+from core.config import settings
 
 app = FastAPI(
 	title=settings.APP_NAME,
@@ -13,14 +12,14 @@ app.include_router(api_router, prefix=settings.APP_V1_PREFIX)
 
 
 @app.get(
-	'/ok',
+	'/ping',
 	tags=['Standard'],
 	status_code=200,
 	name='Health Check Endpoint',
 	description='Check if the API is running.',
 )
 async def ok():
-	return {'message': 'OK!'}
+	return {'message': 'pong'}
 
 
 if __name__ == '__main__':

@@ -1,11 +1,10 @@
 from fastapi import APIRouter
 
+from categories import api as categories
+from offers import api as offers
+from products import api as products
 from restaurants import api as restaurants
 from users import api as users
-from categories import api as categories
-from products import api as products
-from offers import api as offers
-
 
 api_router = APIRouter()
 

@@ -4,13 +4,16 @@ dep-start:
 	docker compose up -d
 
 dep-stop:
+	docker compose stop
+
+dep-down:
 	docker compose down
 
 dep-logs:
 	docker compose logs -f database
 
-# Usage: make create-migration name='<revision message>'
 create-migration:
+	@echo "Usage: make create-migration name='<revision message>'"
 	@poetry run alembic revision -m "$(name)"
 
 migrate:
@@ -33,3 +36,6 @@ format:
 
 run:
 	@poetry run python src/main.py
+
+test:
+	@PYTHONPATH=src poetry run pytest -vv --cov=src --cov-report=term-missing $(t)

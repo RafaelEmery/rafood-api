@@ -1,8 +1,7 @@
-from uuid import UUID
 from datetime import datetime
-from typing import List
+from uuid import UUID
 
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 from restaurants.schemas import RestaurantSchema
 
@@ -20,7 +19,7 @@ class UserSchema(BaseModel):
 
 
 class UserDetailsSchema(UserSchema):
-	restaurants: List[RestaurantSchema] = []
+	restaurants: list[RestaurantSchema] = []
 
 
 class CreateUserSchema(BaseModel):

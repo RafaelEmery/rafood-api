@@ -1,26 +1,23 @@
-from uuid import UUID
 from datetime import datetime
-from typing import List
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
-
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
+from core.deps import get_session
 from offers.models import Offer, OfferSchedule
 from offers.schemas import (
+	CreateOfferResponseSchema,
+	CreateOfferScheduleResponseSchema,
+	CreateOfferScheduleSchema,
+	CreateOfferSchema,
+	OfferScheduleSchema,
 	OfferSchema,
 	OfferWithSchedulesSchema,
-	CreateOfferSchema,
-	CreateOfferResponseSchema,
-	UpdateOfferSchema,
-	OfferScheduleSchema,
-	CreateOfferScheduleSchema,
-	CreateOfferScheduleResponseSchema,
 	UpdateOfferScheduleSchema,
+	UpdateOfferSchema,
 )
-from core.deps import get_session
-
 
 router = APIRouter()
 
@@ -30,17 +27,19 @@ router = APIRouter()
 	name='List offers',
 	status_code=status.HTTP_200_OK,
 	description='Get all offers',
-	response_model=List[OfferSchema],
+	response_model=list[OfferSchema],
 )
 async def list_offers(db: AsyncSession = Depends(get_session)):
 	async with db as session:
 		try:
 			result = await session.execute(select(Offer))
-			offers: List[OfferSchema] = result.scalars().unique().all()
+			offers: list[OfferSchema] = result.scalars().unique().all()
 
 			return offers
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e
 
 
 @router.get(
@@ -61,7 +60,9 @@ async def find_offer(id: UUID, db: AsyncSession = Depends(get_session)):
 
 			return offer
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e
 
 
 @router.post(
@@ -81,7 +82,9 @@ async def create_offer(offer: CreateOfferSchema, db: AsyncSession = Depends(get_
 
 			return CreateOfferResponseSchema(id=new_offer.id)
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e
 
 
 @router.patch(
@@ -105,7 +108,9 @@ async def update_offer(id: UUID, body: UpdateOfferSchema, db: AsyncSession = Dep
 
 			return offer
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e
 
 
 @router.delete(
@@ -126,7 +131,9 @@ async def delete_offer(id: UUID, db: AsyncSession = Depends(get_session)):
 			await session.delete(offer)
 			await session.commit()
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e
 
 
 @router.post(
@@ -159,7 +166,9 @@ async def create_offer_schedule(
 
 			return CreateOfferScheduleResponseSchema(id=new_schedule.id)
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e
 
 
 @router.patch(
@@ -201,7 +210,9 @@ async def update_offer_schedule(
 
 			return schedule
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e
 
 
 @router.delete(
@@ -235,4 +246,6 @@ async def delete_offer_schedule(
 			await session.delete(schedule)
 			await session.commit()
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e

@@ -1,9 +1,9 @@
 import datetime
 import uuid
 
-from sqlalchemy import Column, ForeignKey, Double, DateTime, Time, String, Boolean
-from sqlalchemy_utils import UUIDType
+from sqlalchemy import Boolean, Column, DateTime, Double, ForeignKey, String, Time
 from sqlalchemy.orm import relationship
+from sqlalchemy_utils import UUIDType
 
 from core.config import settings
 

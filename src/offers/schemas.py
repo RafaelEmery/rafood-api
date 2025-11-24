@@ -1,6 +1,5 @@
-from uuid import UUID
 from datetime import datetime, time
-from typing import List
+from uuid import UUID
 
 from pydantic import BaseModel, Field
 
@@ -34,7 +33,7 @@ class OfferScheduleSchema(BaseModel):
 
 
 class OfferWithSchedulesSchema(OfferSchema):
-	schedules: List[OfferScheduleSchema] = []
+	schedules: list[OfferScheduleSchema] = []
 
 
 class CreateOfferSchema(BaseModel):

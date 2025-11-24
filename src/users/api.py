@@ -1,21 +1,18 @@
 from uuid import UUID
-from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
-
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
+from core.deps import get_session
 from users.models import User
 from users.schemas import (
-	UserSchema,
-	UserDetailsSchema,
-	CreateUserSchema,
 	CreateUserResponseSchema,
+	CreateUserSchema,
 	UpdateUserSchema,
+	UserDetailsSchema,
+	UserSchema,
 )
-from core.deps import get_session
-
 
 router = APIRouter()
 
@@ -25,17 +22,17 @@ router = APIRouter()
 	name='List users',
 	status_code=status.HTTP_200_OK,
 	description='Get all users',
-	response_model=List[UserSchema],
+	response_model=list[UserSchema],
 )
 async def list_users(db: AsyncSession = Depends(get_session)):
 	try:
 		async with db as session:
 			result = await session.execute(select(User))
-			users: List[UserSchema] = result.scalars().unique().all()
+			users: list[UserSchema] = result.scalars().unique().all()
 
 			return users
 	except Exception as e:
-		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
 
 
 @router.get(
@@ -56,7 +53,9 @@ async def find_user(id: UUID, db: AsyncSession = Depends(get_session)):
 
 			return user
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e
 
 
 @router.post(
@@ -76,7 +75,9 @@ async def create_user(user: CreateUserSchema, db: AsyncSession = Depends(get_ses
 
 			return CreateUserResponseSchema(id=new_user.id)
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e
 
 
 @router.put(
@@ -101,7 +102,9 @@ async def update_user(id: UUID, body: UpdateUserSchema, db: AsyncSession = Depen
 
 			return user
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e
 
 
 @router.delete(
@@ -122,4 +125,6 @@ async def delete_user(id: UUID, db: AsyncSession = Depends(get_session)):
 			await session.delete(user)
 			await session.commit()
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e

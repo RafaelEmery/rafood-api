@@ -1,7 +1,7 @@
 from typing import Any
 
 from pydantic_settings import BaseSettings
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 
 
 class Settings(BaseSettings):

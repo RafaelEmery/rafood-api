@@ -1,27 +1,25 @@
-from uuid import UUID
 from datetime import datetime
-from typing import List
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
-
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
+from core.deps import get_session
 from restaurants.models import Restaurant, RestaurantSchedule
+
 from .schemas import (
-	RestaurantSchema,
-	RestaurantWithSchedulesSchema,
-	RestaurantWithProductsSchema,
-	RestaurantScheduleSchema,
-	CreateRestaurantSchema,
 	CreateRestaurantResponseSchema,
-	CreateRestaurantScheduleSchema,
-	UpdateRestaurantScheduleSchema,
 	CreateRestaurantScheduleResponseSchema,
+	CreateRestaurantScheduleSchema,
+	CreateRestaurantSchema,
+	RestaurantScheduleSchema,
+	RestaurantSchema,
+	RestaurantWithProductsSchema,
+	RestaurantWithSchedulesSchema,
+	UpdateRestaurantScheduleSchema,
 	UpdateRestaurantSchema,
 )
-from core.deps import get_session
-
 
 router = APIRouter()
 
@@ -31,7 +29,7 @@ router = APIRouter()
 	name='List restaurants',
 	status_code=status.HTTP_200_OK,
 	description='Get all restaurants',
-	response_model=List[RestaurantWithSchedulesSchema],
+	response_model=list[RestaurantWithSchedulesSchema],
 )
 async def list_restaurants(
 	name: str | None = None,
@@ -47,11 +45,13 @@ async def list_restaurants(
 				query = query.filter(Restaurant.owner_id == owner_id)
 
 			result = await session.execute(query)
-			restaurants: List[RestaurantWithSchedulesSchema] = result.scalars().unique().all()
+			restaurants: list[RestaurantWithSchedulesSchema] = result.scalars().unique().all()
 
 			return restaurants
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e
 
 
 @router.get(
@@ -74,7 +74,9 @@ async def find_restaurant(id: UUID, db: AsyncSession = Depends(get_session)):
 
 			return restaurant
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e
 
 
 # TODO: add owner_id validation
@@ -97,7 +99,9 @@ async def create_restaurant(
 
 			return CreateRestaurantResponseSchema(id=new_restaurant.id)
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e
 
 
 @router.patch(
@@ -136,7 +140,9 @@ async def update_restaurant(
 
 			return restaurant
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e
 
 
 @router.delete(
@@ -159,7 +165,9 @@ async def delete_restaurant(id: UUID, db: AsyncSession = Depends(get_session)):
 			await session.delete(restaurant)
 			await session.commit()
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e
 
 
 @router.post(
@@ -188,7 +196,9 @@ async def create_restaurant_schedule(
 
 			return CreateRestaurantScheduleResponseSchema(id=new_schedule.id)
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e
 
 
 @router.patch(
@@ -235,7 +245,9 @@ async def update_restaurant_schedule(
 
 			return schedule
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e
 
 
 @router.delete(
@@ -270,4 +282,6 @@ async def delete_restaurant_schedule(
 			await session.delete(schedule)
 			await session.commit()
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e

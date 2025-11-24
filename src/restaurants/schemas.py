@@ -1,11 +1,9 @@
-from uuid import UUID
 from datetime import datetime, time
-from typing import List
+from uuid import UUID
 
 from pydantic import BaseModel, Field, HttpUrl
 
 from enums import Day, DayType
-
 from products.schemas import ProductSchema
 
 
@@ -42,11 +40,11 @@ class RestaurantScheduleSchema(BaseModel):
 
 
 class RestaurantWithSchedulesSchema(RestaurantSchema):
-	schedules: List[RestaurantScheduleSchema] = []
+	schedules: list[RestaurantScheduleSchema] = []
 
 
 class RestaurantWithProductsSchema(RestaurantSchema):
-	products: List[ProductSchema] = []
+	products: list[ProductSchema] = []
 
 
 class CreateRestaurantSchema(BaseModel):

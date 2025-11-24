@@ -1,21 +1,18 @@
 from uuid import UUID
-from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
-
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
+from core.deps import get_session
 from products.models import Product
 from products.schemas import (
+	CreateProductResponseSchema,
+	CreateProductSchema,
 	ProductSchema,
 	ProductWithCategoriesSchema,
-	CreateProductSchema,
-	CreateProductResponseSchema,
 	UpdateProductSchema,
 )
-from core.deps import get_session
-
 
 router = APIRouter()
 
@@ -25,7 +22,7 @@ router = APIRouter()
 	name='List products',
 	status_code=status.HTTP_200_OK,
 	description='Get all products',
-	response_model=List[ProductWithCategoriesSchema],
+	response_model=list[ProductWithCategoriesSchema],
 )
 async def list_products(
 	name: str | None = None,
@@ -41,11 +38,13 @@ async def list_products(
 				query = query.filter(Product.category_id == category_id)
 
 			result = await session.execute(query)
-			products: List[ProductWithCategoriesSchema] = result.scalars().unique().all()
+			products: list[ProductWithCategoriesSchema] = result.scalars().unique().all()
 
 			return products
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e
 
 
 @router.get(
@@ -70,7 +69,9 @@ async def find_product(id: UUID, db: AsyncSession = Depends(get_session)):
 
 			return product
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e
 
 
 @router.post(
@@ -90,7 +91,9 @@ async def create_product(product: CreateProductSchema, db: AsyncSession = Depend
 
 			return CreateProductResponseSchema(id=new_product.id)
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e
 
 
 @router.patch(
@@ -122,7 +125,9 @@ async def update_product(
 
 			return product
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e
 
 
 @router.delete(
@@ -145,4 +150,6 @@ async def delete_product(id: UUID, db: AsyncSession = Depends(get_session)):
 			await session.delete(product)
 			await session.commit()
 		except Exception as e:
-			raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+			raise HTTPException(
+				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+			) from e
