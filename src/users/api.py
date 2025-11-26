@@ -4,9 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from core.deps import get_session
-from users.models import User
-from users.schemas import (
+from src.core.deps import get_session
+from src.users.models import User
+from src.users.schemas import (
 	CreateUserResponseSchema,
 	CreateUserSchema,
 	UpdateUserSchema,

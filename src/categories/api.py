@@ -2,9 +2,13 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from categories.models import Category
-from categories.schemas import CategorySchema, CreateCategoryResponseSchema, CreateCategorySchema
-from core.deps import get_session
+from src.categories.models import Category
+from src.categories.schemas import (
+	CategorySchema,
+	CreateCategoryResponseSchema,
+	CreateCategorySchema,
+)
+from src.core.deps import get_session
 
 router = APIRouter()
 
@@ -70,6 +74,6 @@ async def delete_category(category_id: str, db: AsyncSession = Depends(get_sessi
 			await session.delete(category)
 			await session.commit()
 		except Exception as e:
-			raise HTTPException(
-				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-			) from e
+			status_code = e.status_code or status.HTTP_500_INTERNAL_SERVER_ERROR
+
+			raise HTTPException(status_code=status_code, detail=str(e)) from e

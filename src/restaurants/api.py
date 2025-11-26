@@ -5,10 +5,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from core.deps import get_session
-from restaurants.models import Restaurant, RestaurantSchedule
-
-from .schemas import (
+from src.core.deps import get_session
+from src.restaurants.models import Restaurant, RestaurantSchedule
+from src.restaurants.schemas import (
 	CreateRestaurantResponseSchema,
 	CreateRestaurantScheduleResponseSchema,
 	CreateRestaurantScheduleSchema,
@@ -126,7 +125,6 @@ async def update_restaurant(
 					status_code=status.HTTP_404_NOT_FOUND, detail='Restaurant not found'
 				)
 
-			# TODO: implement update methods using some more like a mass assignment
 			restaurant.name = body.name
 			restaurant.image_url = body.image_url
 			restaurant.owner_id = body.owner_id
@@ -190,7 +188,6 @@ async def create_restaurant_schedule(
 			new_schedule.end_time = datetime.strptime(schedule.end_time, '%H:%M:%S').time()
 
 			# TODO: add validation to don't create schedule when there's three active schedules
-
 			session.add(new_schedule)
 			await session.commit()
 
@@ -234,7 +231,6 @@ async def update_restaurant_schedule(
 					status_code=status.HTTP_404_NOT_FOUND, detail='Schedule not found'
 				)
 
-			# TODO: implement update methods using some more like a mass assignment
 			schedule.day_type = body.day_type
 			schedule.start_day = body.start_day
 			schedule.end_day = body.end_day

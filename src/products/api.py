@@ -4,9 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from core.deps import get_session
-from products.models import Product
-from products.schemas import (
+from src.core.deps import get_session
+from src.products.models import Product
+from src.products.schemas import (
 	CreateProductResponseSchema,
 	CreateProductSchema,
 	ProductSchema,

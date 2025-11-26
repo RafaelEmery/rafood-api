@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
-from enums import Day
+from src.enums import Day
 
 
 class OfferSchema(BaseModel):

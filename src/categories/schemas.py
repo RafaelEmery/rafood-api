@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class CategorySchema(BaseModel):
@@ -15,7 +15,7 @@ class CategorySchema(BaseModel):
 
 
 class CreateCategorySchema(BaseModel):
-	name: str
+	name: str = Field(min_length=1, max_length=256, strip_whitespace=True)
 
 
 class CreateCategoryResponseSchema(BaseModel):

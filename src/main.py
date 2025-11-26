@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
-from api import api_router
-from core.config import settings
+from src.api import api_router
+from src.core.config import settings
 
 app = FastAPI(
 	title=settings.APP_NAME,
@@ -26,7 +26,7 @@ if __name__ == '__main__':
 	import uvicorn
 
 	uvicorn.run(
-		'main:app',
+		'src.main:app',
 		host=settings.APP_HOST,
 		port=settings.APP_PORT,
 		reload=True,

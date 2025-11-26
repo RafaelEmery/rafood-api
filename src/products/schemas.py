@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field, HttpUrl
 
-from categories.schemas import CategorySchema
+from src.categories.schemas import CategorySchema
 
 
 class ProductSchema(BaseModel):

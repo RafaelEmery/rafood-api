@@ -5,9 +5,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from core.deps import get_session
-from offers.models import Offer, OfferSchedule
-from offers.schemas import (
+from src.core.deps import get_session
+from src.offers.models import Offer, OfferSchedule
+from src.offers.schemas import (
 	CreateOfferResponseSchema,
 	CreateOfferScheduleResponseSchema,
 	CreateOfferScheduleSchema,

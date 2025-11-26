@@ -3,8 +3,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field, HttpUrl
 
-from enums import Day, DayType
-from products.schemas import ProductSchema
+from src.enums import Day, DayType
+from src.products.schemas import ProductSchema
 
 
 class RestaurantSchema(BaseModel):

@@ -35,7 +35,7 @@ format:
 	@poetry run ruff format .
 
 run:
-	@poetry run python src/main.py
+	@poetry run python -m src.main
 
 test:
 	@PYTHONPATH=src poetry run pytest -vv --cov=src --cov-report=term-missing $(t)

@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, EmailStr, Field
 
-from restaurants.schemas import RestaurantSchema
+from src.restaurants.schemas import RestaurantSchema
 
 
 class UserSchema(BaseModel):
