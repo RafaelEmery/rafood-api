@@ -1,6 +1,7 @@
 from uuid import uuid4
 
 import pytest
+from fastapi import status
 from sqlalchemy.future import select
 
 from src.categories.models import Category
@@ -17,7 +18,7 @@ async def test_get_categories(client, session, category_factory):
 
 	data = response.json()
 
-	assert response.status_code == 200
+	assert response.status_code == status.HTTP_200_OK
 	assert len(data) == 2
 	assert data[0]['name'] in ['Pizza', 'Drinks']
 
@@ -30,7 +31,7 @@ async def test_create_category(client):
 
 	data = response.json()
 
-	assert response.status_code == 201
+	assert response.status_code == status.HTTP_201_CREATED
 	assert data['id'] is not None
 
 
@@ -47,7 +48,7 @@ async def test_create_category(client):
 async def test_create_category_bad_request_error(client, payload):
 	response = await client.post('/api/v1/categories', json=payload)
 
-	assert response.status_code == 422
+	assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
 @pytest.mark.asyncio
@@ -61,7 +62,7 @@ async def test_delete_category(client, session, category_factory):
 	result = await session.execute(select(Category).where(Category.id == category.id))
 	deleted_category = result.scalars().first()
 
-	assert response.status_code == 204
+	assert response.status_code == status.HTTP_204_NO_CONTENT
 	assert deleted_category is None
 
 
@@ -69,4 +70,4 @@ async def test_delete_category(client, session, category_factory):
 async def test_delete_category_not_found_error(client, session, category_factory):
 	response = await client.delete(f'/api/v1/categories/{str(uuid4())}')
 
-	assert response.status_code == 404
+	assert response.status_code == status.HTTP_404_NOT_FOUND

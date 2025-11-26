@@ -1,7 +1,7 @@
 from datetime import datetime, time
 from uuid import UUID
 
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field, HttpUrl, field_validator
 
 from src.enums import Day, DayType
 from src.products.schemas import ProductSchema
@@ -10,7 +10,7 @@ from src.products.schemas import ProductSchema
 class RestaurantSchema(BaseModel):
 	id: UUID
 	name: str
-	image_url: str
+	image_url: str | None
 	owner_id: UUID
 	street: str
 	number: int
@@ -48,14 +48,22 @@ class RestaurantWithProductsSchema(RestaurantSchema):
 
 
 class CreateRestaurantSchema(BaseModel):
-	name: str = Field(max_length=256)
-	image_url: str = HttpUrl
+	name: str = Field(max_length=256, min_length=1)
+	image_url: HttpUrl | None = None
 	owner_id: UUID
-	street: str = Field(max_length=256)
+	street: str = Field(min_length=1, max_length=256)
 	number: int = Field(ge=1)
-	neighborhood: str = Field(max_length=256)
-	city: str = Field(max_length=256)
-	state_abbr: str = Field(max_length=2)
+	neighborhood: str = Field(min_length=1, max_length=256)
+	city: str = Field(min_length=1, max_length=256)
+	state_abbr: str = Field(min_length=2, max_length=2)
+
+	@field_validator('image_url')
+	@classmethod
+	def convert_url_to_string(cls, v):
+		"""Convert HttpUrl to string for database storage"""
+		if v is not None:
+			return str(v)
+		return v
 
 
 class CreateRestaurantResponseSchema(BaseModel):
