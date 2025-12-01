@@ -24,8 +24,8 @@ async def test_get_categories(client, session, category_factory):
 
 
 @pytest.mark.asyncio
-async def test_create_category(client):
-	payload = {'name': 'Burgers'}
+async def test_create_category(client, build_category_create_payload):
+	payload = build_category_create_payload()
 
 	response = await client.post('/api/v1/categories', json=payload)
 

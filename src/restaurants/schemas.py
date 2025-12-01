@@ -48,7 +48,7 @@ class RestaurantWithProductsSchema(RestaurantSchema):
 
 
 class CreateRestaurantSchema(BaseModel):
-	name: str = Field(max_length=256, min_length=1)
+	name: str = Field(min_length=1, max_length=256)
 	image_url: HttpUrl | None = None
 	owner_id: UUID
 	street: str = Field(min_length=1, max_length=256)

@@ -3,34 +3,7 @@ from uuid import uuid4
 
 import pytest
 
-from src.restaurants.models import Restaurant, RestaurantSchedule
-
-
-@pytest.fixture
-def restaurant_factory(user_factory):
-	def create(session, **kwargs):
-		# Create owner if not provided
-		if 'owner_id' not in kwargs:
-			owner = user_factory(session)
-			session.add(owner)
-			kwargs['owner_id'] = owner.id
-
-		obj = Restaurant(
-			id=uuid4(),
-			name=kwargs.get('name', 'Restaurant By Factory'),
-			image_url=kwargs.get('image_url', 'https://example.com/image.jpg'),
-			owner_id=kwargs['owner_id'],
-			street=kwargs.get('street', 'Main Street'),
-			number=kwargs.get('number', 123),
-			neighborhood=kwargs.get('neighborhood', 'Downtown'),
-			city=kwargs.get('city', 'São Paulo'),
-			state_abbr=kwargs.get('state_abbr', 'SP'),
-		)
-		session.add(obj)
-
-		return obj
-
-	return create
+from src.restaurants.models import RestaurantSchedule
 
 
 @pytest.fixture

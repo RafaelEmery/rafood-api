@@ -96,6 +96,7 @@ async def test_create_restaurant(client, session, user_factory, build_create_pay
 	[
 		{'name': ''},
 		{'name': None},
+		{'name': 123},
 		{'image_url': 'invalid-url'},
 		{'image_url': 123},
 		{'owner_id': None},
