@@ -67,7 +67,7 @@ async def test_delete_category(client, session, category_factory):
 
 
 @pytest.mark.asyncio
-async def test_delete_category_not_found_error(client, session, category_factory):
+async def test_delete_category_not_found_error(client):
 	response = await client.delete(f'/api/v1/categories/{str(uuid4())}')
 
 	assert response.status_code == status.HTTP_404_NOT_FOUND

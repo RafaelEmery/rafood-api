@@ -78,3 +78,48 @@ def build_create_payload():
 		}
 
 	return _build
+
+
+@pytest.fixture
+def build_update_payload():
+	def _build(owner_id=None):
+		return {
+			'name': 'Erick Pulgar',
+			'image_url': 'https://example.com/new-image.jpg',
+			'owner_id': str(owner_id) if owner_id else str(uuid4()),
+			'street': 'Test Street',
+			'number': 101,
+			'neighborhood': 'Test Neighborhood',
+			'city': 'Test City',
+			'state_abbr': 'TS',
+		}
+
+	return _build
+
+
+@pytest.fixture
+def build_schedule_create_payload():
+	def _build():
+		return {
+			'day_type': 'weekday',
+			'start_day': 'monday',
+			'end_day': 'friday',
+			'start_time': '09:00:00',
+			'end_time': '18:00:00',
+		}
+
+	return _build
+
+
+@pytest.fixture
+def build_schedule_update_payload():
+	def _build():
+		return {
+			'day_type': 'weekday',
+			'start_day': 'monday',
+			'end_day': 'tuesday',
+			'start_time': '18:00:00',
+			'end_time': '23:00:00',
+		}
+
+	return _build

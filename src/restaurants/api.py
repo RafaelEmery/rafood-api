@@ -73,9 +73,9 @@ async def find_restaurant(id: UUID, db: AsyncSession = Depends(get_session)):
 
 			return restaurant
 		except Exception as e:
-			raise HTTPException(
-				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-			) from e
+			status_code = e.status_code or status.HTTP_500_INTERNAL_SERVER_ERROR
+
+			raise HTTPException(status_code=status_code, detail=str(e)) from e
 
 
 # TODO: add owner_id validation
@@ -121,7 +121,7 @@ async def update_restaurant(
 			restaurant: Restaurant = result.scalars().first()
 
 			if not restaurant:
-				return HTTPException(
+				raise HTTPException(
 					status_code=status.HTTP_404_NOT_FOUND, detail='Restaurant not found'
 				)
 
@@ -138,9 +138,9 @@ async def update_restaurant(
 
 			return restaurant
 		except Exception as e:
-			raise HTTPException(
-				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-			) from e
+			status_code = e.status_code or status.HTTP_500_INTERNAL_SERVER_ERROR
+
+			raise HTTPException(status_code=status_code, detail=str(e)) from e
 
 
 @router.delete(
@@ -163,9 +163,9 @@ async def delete_restaurant(id: UUID, db: AsyncSession = Depends(get_session)):
 			await session.delete(restaurant)
 			await session.commit()
 		except Exception as e:
-			raise HTTPException(
-				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-			) from e
+			status_code = e.status_code or status.HTTP_500_INTERNAL_SERVER_ERROR
+
+			raise HTTPException(status_code=status_code, detail=str(e)) from e
 
 
 @router.post(
@@ -186,6 +186,9 @@ async def create_restaurant_schedule(
 			new_schedule.restaurant_id = id
 			new_schedule.start_time = datetime.strptime(schedule.start_time, '%H:%M:%S').time()
 			new_schedule.end_time = datetime.strptime(schedule.end_time, '%H:%M:%S').time()
+			new_schedule.day_type = schedule.day_type.value
+			new_schedule.start_day = schedule.start_day.value
+			new_schedule.end_day = schedule.end_day.value
 
 			# TODO: add validation to don't create schedule when there's three active schedules
 			session.add(new_schedule)
@@ -217,7 +220,7 @@ async def update_restaurant_schedule(
 			restaurant: Restaurant = result.scalars().first()
 
 			if not restaurant:
-				return HTTPException(
+				raise HTTPException(
 					status_code=status.HTTP_404_NOT_FOUND, detail='Restaurant not found'
 				)
 
@@ -227,13 +230,13 @@ async def update_restaurant_schedule(
 			schedule: RestaurantSchedule = result.scalars().first()
 
 			if not schedule:
-				return HTTPException(
+				raise HTTPException(
 					status_code=status.HTTP_404_NOT_FOUND, detail='Schedule not found'
 				)
 
-			schedule.day_type = body.day_type
-			schedule.start_day = body.start_day
-			schedule.end_day = body.end_day
+			schedule.day_type = body.day_type.value
+			schedule.start_day = body.start_day.value
+			schedule.end_day = body.end_day.value
 			schedule.start_time = datetime.strptime(body.start_time, '%H:%M:%S').time()
 			schedule.end_time = datetime.strptime(body.end_time, '%H:%M:%S').time()
 
@@ -241,9 +244,9 @@ async def update_restaurant_schedule(
 
 			return schedule
 		except Exception as e:
-			raise HTTPException(
-				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-			) from e
+			status_code = e.status_code or status.HTTP_500_INTERNAL_SERVER_ERROR
+
+			raise HTTPException(status_code=status_code, detail=str(e)) from e
 
 
 @router.delete(
@@ -261,7 +264,7 @@ async def delete_restaurant_schedule(
 			restaurant: Restaurant = result.scalars().first()
 
 			if not restaurant:
-				return HTTPException(
+				raise HTTPException(
 					status_code=status.HTTP_404_NOT_FOUND, detail='Restaurant not found'
 				)
 
@@ -271,13 +274,13 @@ async def delete_restaurant_schedule(
 			schedule: RestaurantSchedule = result.scalars().first()
 
 			if not schedule:
-				return HTTPException(
+				raise HTTPException(
 					status_code=status.HTTP_404_NOT_FOUND, detail='Schedule not found'
 				)
 
 			await session.delete(schedule)
 			await session.commit()
 		except Exception as e:
-			raise HTTPException(
-				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-			) from e
+			status_code = e.status_code or status.HTTP_500_INTERNAL_SERVER_ERROR
+
+			raise HTTPException(status_code=status_code, detail=str(e)) from e
