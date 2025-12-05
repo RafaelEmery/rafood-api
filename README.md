@@ -40,6 +40,12 @@ Based on the ER Model there are 5 folder to separate contexts:
 
 ## Running the API :running:
 
+To show all Makefile commands:
+
+```bash
+make help
+```
+
 To install Python and Pyenv:
 
 ```bash
@@ -98,18 +104,24 @@ make lint
 
 ### Tests
 
-:hourglass: **To be defined**
+To run tests with `pytest`:
+
+```bash
+make test
+```
+
+Be sure to have database container running with `make dep-start`
 
 ______________________________________________________________________
 
 ### :white_check_mark: Major technical TODOs
 
 - [x] Query params on lists endpoints
-- [ ] Improve body data validation
+- [x] Improve body data validation
 - [x] Return all relations correctly on 'get by ID' endpoints
 - [ ] Refactor to use services and core classes
-- [ ] Fix on error on alembic `env.py` file
-- [ ] Add tests for all endpoints and contracts
+- [x] Fix on error on alembic `env.py` file
+- [x] Add tests for all endpoints and contracts
 - [ ] Improve exception handling errors
 - [ ] Improve logging
 - [ ] Solve minor TODOs
