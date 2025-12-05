@@ -74,6 +74,10 @@ async def delete_category(category_id: str, db: AsyncSession = Depends(get_sessi
 			await session.delete(category)
 			await session.commit()
 		except Exception as e:
-			status_code = e.status_code or status.HTTP_500_INTERNAL_SERVER_ERROR
+			status_code = (
+				e.status_code
+				if isinstance(e, HTTPException)
+				else status.HTTP_500_INTERNAL_SERVER_ERROR
+			)
 
 			raise HTTPException(status_code=status_code, detail=str(e)) from e

@@ -73,7 +73,11 @@ async def find_restaurant(id: UUID, db: AsyncSession = Depends(get_session)):
 
 			return restaurant
 		except Exception as e:
-			status_code = e.status_code or status.HTTP_500_INTERNAL_SERVER_ERROR
+			status_code = (
+				e.status_code
+				if isinstance(e, HTTPException)
+				else status.HTTP_500_INTERNAL_SERVER_ERROR
+			)
 
 			raise HTTPException(status_code=status_code, detail=str(e)) from e
 
@@ -138,7 +142,11 @@ async def update_restaurant(
 
 			return restaurant
 		except Exception as e:
-			status_code = e.status_code or status.HTTP_500_INTERNAL_SERVER_ERROR
+			status_code = (
+				e.status_code
+				if isinstance(e, HTTPException)
+				else status.HTTP_500_INTERNAL_SERVER_ERROR
+			)
 
 			raise HTTPException(status_code=status_code, detail=str(e)) from e
 
@@ -163,7 +171,11 @@ async def delete_restaurant(id: UUID, db: AsyncSession = Depends(get_session)):
 			await session.delete(restaurant)
 			await session.commit()
 		except Exception as e:
-			status_code = e.status_code or status.HTTP_500_INTERNAL_SERVER_ERROR
+			status_code = (
+				e.status_code
+				if isinstance(e, HTTPException)
+				else status.HTTP_500_INTERNAL_SERVER_ERROR
+			)
 
 			raise HTTPException(status_code=status_code, detail=str(e)) from e
 
@@ -244,7 +256,11 @@ async def update_restaurant_schedule(
 
 			return schedule
 		except Exception as e:
-			status_code = e.status_code or status.HTTP_500_INTERNAL_SERVER_ERROR
+			status_code = (
+				e.status_code
+				if isinstance(e, HTTPException)
+				else status.HTTP_500_INTERNAL_SERVER_ERROR
+			)
 
 			raise HTTPException(status_code=status_code, detail=str(e)) from e
 
@@ -281,6 +297,10 @@ async def delete_restaurant_schedule(
 			await session.delete(schedule)
 			await session.commit()
 		except Exception as e:
-			status_code = e.status_code or status.HTTP_500_INTERNAL_SERVER_ERROR
+			status_code = (
+				e.status_code
+				if isinstance(e, HTTPException)
+				else status.HTTP_500_INTERNAL_SERVER_ERROR
+			)
 
 			raise HTTPException(status_code=status_code, detail=str(e)) from e

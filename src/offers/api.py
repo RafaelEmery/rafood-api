@@ -60,9 +60,13 @@ async def find_offer(id: UUID, db: AsyncSession = Depends(get_session)):
 
 			return offer
 		except Exception as e:
-			raise HTTPException(
-				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-			) from e
+			status_code = (
+				e.status_code
+				if isinstance(e, HTTPException)
+				else status.HTTP_500_INTERNAL_SERVER_ERROR
+			)
+
+			raise HTTPException(status_code=status_code, detail=str(e)) from e
 
 
 @router.post(
@@ -108,9 +112,13 @@ async def update_offer(id: UUID, body: UpdateOfferSchema, db: AsyncSession = Dep
 
 			return offer
 		except Exception as e:
-			raise HTTPException(
-				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-			) from e
+			status_code = (
+				e.status_code
+				if isinstance(e, HTTPException)
+				else status.HTTP_500_INTERNAL_SERVER_ERROR
+			)
+
+			raise HTTPException(status_code=status_code, detail=str(e)) from e
 
 
 @router.delete(
@@ -131,9 +139,13 @@ async def delete_offer(id: UUID, db: AsyncSession = Depends(get_session)):
 			await session.delete(offer)
 			await session.commit()
 		except Exception as e:
-			raise HTTPException(
-				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-			) from e
+			status_code = (
+				e.status_code
+				if isinstance(e, HTTPException)
+				else status.HTTP_500_INTERNAL_SERVER_ERROR
+			)
+
+			raise HTTPException(status_code=status_code, detail=str(e)) from e
 
 
 @router.post(
@@ -166,9 +178,13 @@ async def create_offer_schedule(
 
 			return CreateOfferScheduleResponseSchema(id=new_schedule.id)
 		except Exception as e:
-			raise HTTPException(
-				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-			) from e
+			status_code = (
+				e.status_code
+				if isinstance(e, HTTPException)
+				else status.HTTP_500_INTERNAL_SERVER_ERROR
+			)
+
+			raise HTTPException(status_code=status_code, detail=str(e)) from e
 
 
 @router.patch(
@@ -210,9 +226,13 @@ async def update_offer_schedule(
 
 			return schedule
 		except Exception as e:
-			raise HTTPException(
-				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-			) from e
+			status_code = (
+				e.status_code
+				if isinstance(e, HTTPException)
+				else status.HTTP_500_INTERNAL_SERVER_ERROR
+			)
+
+			raise HTTPException(status_code=status_code, detail=str(e)) from e
 
 
 @router.delete(
@@ -246,6 +266,10 @@ async def delete_offer_schedule(
 			await session.delete(schedule)
 			await session.commit()
 		except Exception as e:
-			raise HTTPException(
-				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-			) from e
+			status_code = (
+				e.status_code
+				if isinstance(e, HTTPException)
+				else status.HTTP_500_INTERNAL_SERVER_ERROR
+			)
+
+			raise HTTPException(status_code=status_code, detail=str(e)) from e

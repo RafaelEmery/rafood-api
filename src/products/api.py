@@ -69,7 +69,11 @@ async def find_product(id: UUID, db: AsyncSession = Depends(get_session)):
 
 			return product
 		except Exception as e:
-			status_code = e.status_code or status.HTTP_500_INTERNAL_SERVER_ERROR
+			status_code = (
+				e.status_code
+				if isinstance(e, HTTPException)
+				else status.HTTP_500_INTERNAL_SERVER_ERROR
+			)
 
 			raise HTTPException(status_code=status_code, detail=str(e)) from e
 
@@ -125,7 +129,11 @@ async def update_product(
 
 			return product
 		except Exception as e:
-			status_code = e.status_code or status.HTTP_500_INTERNAL_SERVER_ERROR
+			status_code = (
+				e.status_code
+				if isinstance(e, HTTPException)
+				else status.HTTP_500_INTERNAL_SERVER_ERROR
+			)
 
 			raise HTTPException(status_code=status_code, detail=str(e)) from e
 
@@ -150,6 +158,10 @@ async def delete_product(id: UUID, db: AsyncSession = Depends(get_session)):
 			await session.delete(product)
 			await session.commit()
 		except Exception as e:
-			status_code = e.status_code or status.HTTP_500_INTERNAL_SERVER_ERROR
+			status_code = (
+				e.status_code
+				if isinstance(e, HTTPException)
+				else status.HTTP_500_INTERNAL_SERVER_ERROR
+			)
 
 			raise HTTPException(status_code=status_code, detail=str(e)) from e
