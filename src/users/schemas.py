@@ -23,10 +23,10 @@ class UserDetailsSchema(UserSchema):
 
 
 class CreateUserSchema(BaseModel):
-	first_name: str = Field(max_length=256)
-	last_name: str = Field(max_length=256)
+	first_name: str = Field(min_length=1, max_length=256)
+	last_name: str = Field(min_length=1, max_length=256)
 	email: EmailStr
-	password: str = Field(max_length=256)
+	password: str = Field(min_length=1, max_length=256)
 
 
 class CreateUserResponseSchema(BaseModel):
@@ -34,5 +34,5 @@ class CreateUserResponseSchema(BaseModel):
 
 
 class UpdateUserSchema(BaseModel):
-	first_name: str = Field(max_length=256)
-	last_name: str = Field(max_length=256)
+	first_name: str = Field(min_length=1, max_length=256)
+	last_name: str = Field(min_length=1, max_length=256)

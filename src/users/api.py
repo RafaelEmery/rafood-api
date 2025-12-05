@@ -53,9 +53,13 @@ async def find_user(id: UUID, db: AsyncSession = Depends(get_session)):
 
 			return user
 		except Exception as e:
-			raise HTTPException(
-				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-			) from e
+			status_code = (
+				e.status_code
+				if isinstance(e, HTTPException)
+				else status.HTTP_500_INTERNAL_SERVER_ERROR
+			)
+
+			raise HTTPException(status_code=status_code, detail=str(e)) from e
 
 
 @router.post(
@@ -102,9 +106,13 @@ async def update_user(id: UUID, body: UpdateUserSchema, db: AsyncSession = Depen
 
 			return user
 		except Exception as e:
-			raise HTTPException(
-				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-			) from e
+			status_code = (
+				e.status_code
+				if isinstance(e, HTTPException)
+				else status.HTTP_500_INTERNAL_SERVER_ERROR
+			)
+
+			raise HTTPException(status_code=status_code, detail=str(e)) from e
 
 
 @router.delete(
@@ -125,6 +133,10 @@ async def delete_user(id: UUID, db: AsyncSession = Depends(get_session)):
 			await session.delete(user)
 			await session.commit()
 		except Exception as e:
-			raise HTTPException(
-				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-			) from e
+			status_code = (
+				e.status_code
+				if isinstance(e, HTTPException)
+				else status.HTTP_500_INTERNAL_SERVER_ERROR
+			)
+
+			raise HTTPException(status_code=status_code, detail=str(e)) from e
