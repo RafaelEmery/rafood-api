@@ -170,6 +170,7 @@ async def create_offer_schedule(
 
 			new_schedule = OfferSchedule(**schedule.model_dump())
 			new_schedule.offer_id = id
+			new_schedule.day = schedule.day.value
 			new_schedule.start_time = datetime.strptime(schedule.start_time, '%H:%M:%S').time()
 			new_schedule.end_time = datetime.strptime(schedule.end_time, '%H:%M:%S').time()
 
@@ -219,7 +220,7 @@ async def update_offer_schedule(
 					detail='Offer schedule not found',
 				)
 
-			schedule.day = body.day
+			schedule.day = body.day.value
 			schedule.start_time = datetime.strptime(body.start_time, '%H:%M:%S').time()
 			schedule.end_time = datetime.strptime(body.end_time, '%H:%M:%S').time()
 			schedule.repeats = body.repeats

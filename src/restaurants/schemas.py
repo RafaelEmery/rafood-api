@@ -100,23 +100,5 @@ class CreateRestaurantScheduleResponseSchema(BaseModel):
 	id: UUID
 
 
-class UpdateRestaurantScheduleSchema(BaseModel):
-	day_type: DayType
-	start_day: Day
-	end_day: Day
-	start_time: str
-	end_time: str
-
-	@field_validator('start_time', 'end_time')
-	@classmethod
-	def validate_time_format(cls, v):
-		"""Validate time format HH:MM:SS (00:00:00 to 23:59:59)"""
-		try:
-			parsed_time = datetime.strptime(v, '%H:%M:%S')
-
-			if not (0 <= parsed_time.hour <= 23):
-				raise ValueError('Hour must be between 00 and 23')
-
-			return v
-		except ValueError as e:
-			raise ValueError('Time must be in HH:MM:SS format (00:00:00 to 23:59:59)') from e
+class UpdateRestaurantScheduleSchema(CreateRestaurantScheduleSchema):
+	pass
