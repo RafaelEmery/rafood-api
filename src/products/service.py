@@ -39,7 +39,9 @@ class ProductService:
 		product.category_id = product_update.category_id
 		product.image_url = product_update.image_url
 
-		return await self.repository.update(product)
+		await self.repository.update(product)
+
+		return product
 
 	async def delete(self, id: UUID) -> None:
 		product = await self.repository.get(id)

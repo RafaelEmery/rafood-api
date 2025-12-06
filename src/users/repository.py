@@ -37,8 +37,9 @@ class UserRepository:
 
 		return new_user.id
 
-	async def update(self, user: User) -> User:
+	async def update(self, user: User) -> None:
 		self.db.add(user)
+
 		await self.db.commit()
 		await self.db.refresh(user)
 

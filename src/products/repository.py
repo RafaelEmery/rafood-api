@@ -43,13 +43,11 @@ class ProductRepository:
 
 		return new_product.id
 
-	async def update(self, product: Product) -> Product:
+	async def update(self, product: Product) -> None:
 		self.db.add(product)
 
 		await self.db.commit()
 		await self.db.refresh(product)
-
-		return product
 
 	async def delete(self, product: Product) -> None:
 		await self.db.delete(product)

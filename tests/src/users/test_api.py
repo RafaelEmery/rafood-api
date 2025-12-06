@@ -15,8 +15,6 @@ async def test_list_users(session, client, user_factory):
 	response = await client.get('/api/v1/users')
 	data = response.json()
 
-	print(data)
-
 	assert response.status_code == status.HTTP_200_OK
 	assert len(data) == 3
 
@@ -91,8 +89,6 @@ async def test_update_user(client, session, user_factory, build_update_payload):
 
 	response = await client.put(f'/api/v1/users/{user.id}', json=payload)
 	data = response.json()
-
-	print(data)
 
 	assert response.status_code == status.HTTP_200_OK
 	assert data['first_name'] == 'Filipe'
