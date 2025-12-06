@@ -24,10 +24,6 @@ My inicial studies of FastAPI is at [fastapi-studies repository](https://github.
 
 ![er-model](./images/projects-and-pocs-restaurants-ER.jpg)
 
-### Swagger
-
-FastAPI generates an OpenAPI docs on `/docs` endpoint.
-
 ### Contexts
 
 Based on the ER Model there are 5 folder to separate contexts:
@@ -37,6 +33,14 @@ Based on the ER Model there are 5 folder to separate contexts:
 - Offers and offers schedules
 - Categories
 - Users
+
+### Architecture Decision Records (ADRs)
+
+The ADRs are at `adr/` [folder and documents the main decisions](./adr/README.md) of this project.
+
+### Swagger
+
+FastAPI generates an OpenAPI docs on `/docs` endpoint.
 
 ## Running the API :running:
 
