@@ -1,14 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
+from fastapi import APIRouter, HTTPException, status
 
-from src.categories.models import Category
+from src.categories.deps import CategoryServiceDeps
 from src.categories.schemas import (
 	CategorySchema,
 	CreateCategoryResponseSchema,
 	CreateCategorySchema,
 )
-from src.core.deps import get_session
+from src.exceptions import CategoryNotFoundError
 
 router = APIRouter()
 
@@ -20,17 +18,11 @@ router = APIRouter()
 	description='Get all categories',
 	response_model=list[CategorySchema],
 )
-async def get_all_categories(db: AsyncSession = Depends(get_session)):
-	async with db as session:
-		try:
-			result = await session.execute(select(Category))
-			categories: list[CategorySchema] = result.scalars().all()
-
-			return categories
-		except Exception as e:
-			raise HTTPException(
-				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-			) from e
+async def get_all_categories(service: CategoryServiceDeps):
+	try:
+		return await service.list()
+	except Exception as e:
+		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
 
 
 @router.post(
@@ -38,20 +30,13 @@ async def get_all_categories(db: AsyncSession = Depends(get_session)):
 	name='Create category',
 	status_code=status.HTTP_201_CREATED,
 	description='Create a new category',
+	response_model=CreateCategoryResponseSchema,
 )
-async def create_category(category: CreateCategorySchema, db: AsyncSession = Depends(get_session)):
-	async with db as session:
-		try:
-			new_category = Category(**category.model_dump())
-
-			session.add(new_category)
-			await session.commit()
-
-			return CreateCategoryResponseSchema(id=new_category.id)
-		except Exception as e:
-			raise HTTPException(
-				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-			) from e
+async def create_category(category: CreateCategorySchema, service: CategoryServiceDeps):
+	try:
+		return await service.create(category)
+	except Exception as e:
+		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
 
 
 @router.delete(
@@ -60,24 +45,10 @@ async def create_category(category: CreateCategorySchema, db: AsyncSession = Dep
 	status_code=status.HTTP_204_NO_CONTENT,
 	description='Delete a category by id',
 )
-async def delete_category(category_id: str, db: AsyncSession = Depends(get_session)):
-	async with db as session:
-		try:
-			result = await session.execute(select(Category).where(Category.id == category_id))
-			category: Category = result.scalars().first()
-
-			if not category:
-				raise HTTPException(
-					status_code=status.HTTP_404_NOT_FOUND, detail='Category not found'
-				)
-
-			await session.delete(category)
-			await session.commit()
-		except Exception as e:
-			status_code = (
-				e.status_code
-				if isinstance(e, HTTPException)
-				else status.HTTP_500_INTERNAL_SERVER_ERROR
-			)
-
-			raise HTTPException(status_code=status_code, detail=str(e)) from e
+async def delete_category(category_id: str, service: CategoryServiceDeps):
+	try:
+		await service.delete(category_id)
+	except CategoryNotFoundError as e:
+		raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
+	except Exception as e:
+		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e

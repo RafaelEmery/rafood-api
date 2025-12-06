@@ -1,0 +1,17 @@
+# All files
+* @RafaelEmery
+
+# Python files
+*.py @RafaelEmery
+
+# Config files
+*.toml @RafaelEmery
+*.ini @RafaelEmery
+Makefile @RafaelEmery
+
+# Docker
+docker-compose.yml @RafaelEmery
+Dockerfile @RafaelEmery
+
+# GitHub
+/.github/ @RafaelEmery
