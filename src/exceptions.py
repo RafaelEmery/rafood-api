@@ -8,3 +8,11 @@ class UserNotFoundError(Exception):
 
 class ProductNotFoundError(Exception):
 	pass
+
+
+class OfferNotFoundError(Exception):
+	pass
+
+
+class OfferScheduleNotFoundError(Exception):
+	pass
