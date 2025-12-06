@@ -1,11 +1,9 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
+from fastapi import APIRouter, HTTPException, status
 
-from src.core.deps import get_session
-from src.users.models import User
+from src.exceptions import UserNotFoundError
+from src.users.deps import UserServiceDeps
 from src.users.schemas import (
 	CreateUserResponseSchema,
 	CreateUserSchema,
@@ -24,13 +22,9 @@ router = APIRouter()
 	description='Get all users',
 	response_model=list[UserSchema],
 )
-async def list_users(db: AsyncSession = Depends(get_session)):
+async def list_users(service: UserServiceDeps):
 	try:
-		async with db as session:
-			result = await session.execute(select(User))
-			users: list[UserSchema] = result.scalars().unique().all()
-
-			return users
+		return await service.list()
 	except Exception as e:
 		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
 
@@ -42,24 +36,13 @@ async def list_users(db: AsyncSession = Depends(get_session)):
 	description='Get a user by id with all its restaurants',
 	response_model=UserDetailsSchema,
 )
-async def find_user(id: UUID, db: AsyncSession = Depends(get_session)):
-	async with db as session:
-		try:
-			result = await session.execute(select(User).where(User.id == id))
-			user: UserDetailsSchema = result.scalars().first()
-
-			if not user:
-				raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User not found')
-
-			return user
-		except Exception as e:
-			status_code = (
-				e.status_code
-				if isinstance(e, HTTPException)
-				else status.HTTP_500_INTERNAL_SERVER_ERROR
-			)
-
-			raise HTTPException(status_code=status_code, detail=str(e)) from e
+async def find_user(id: UUID, service: UserServiceDeps):
+	try:
+		return await service.get(id)
+	except UserNotFoundError as e:
+		raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
+	except Exception as e:
+		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
 
 
 @router.post(
@@ -69,19 +52,11 @@ async def find_user(id: UUID, db: AsyncSession = Depends(get_session)):
 	description='Create a new user',
 	response_model=CreateUserResponseSchema,
 )
-async def create_user(user: CreateUserSchema, db: AsyncSession = Depends(get_session)):
-	async with db as session:
-		try:
-			new_user = User(**user.model_dump())
-
-			session.add(new_user)
-			await session.commit()
-
-			return CreateUserResponseSchema(id=new_user.id)
-		except Exception as e:
-			raise HTTPException(
-				status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-			) from e
+async def create_user(user: CreateUserSchema, service: UserServiceDeps):
+	try:
+		return await service.create(user)
+	except Exception as e:
+		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
 
 
 @router.put(
@@ -91,28 +66,13 @@ async def create_user(user: CreateUserSchema, db: AsyncSession = Depends(get_ses
 	description='Update a user by ID',
 	response_model=UserSchema,
 )
-async def update_user(id: UUID, body: UpdateUserSchema, db: AsyncSession = Depends(get_session)):
-	async with db as session:
-		try:
-			result = await session.execute(select(User).where(User.id == id))
-			user: User = result.scalars().first()
-
-			if not user:
-				raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User not found')
-
-			user.first_name = body.first_name
-			user.last_name = body.last_name
-			await session.commit()
-
-			return user
-		except Exception as e:
-			status_code = (
-				e.status_code
-				if isinstance(e, HTTPException)
-				else status.HTTP_500_INTERNAL_SERVER_ERROR
-			)
-
-			raise HTTPException(status_code=status_code, detail=str(e)) from e
+async def update_user(id: UUID, user_update: UpdateUserSchema, service: UserServiceDeps):
+	try:
+		return await service.update(id, user_update)
+	except UserNotFoundError as e:
+		raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
+	except Exception as e:
+		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
 
 
 @router.delete(
@@ -121,22 +81,10 @@ async def update_user(id: UUID, body: UpdateUserSchema, db: AsyncSession = Depen
 	status_code=status.HTTP_204_NO_CONTENT,
 	description='Delete a user by ID',
 )
-async def delete_user(id: UUID, db: AsyncSession = Depends(get_session)):
-	async with db as session:
-		try:
-			result = await session.execute(select(User).where(User.id == id))
-			user: User = result.scalars().first()
-
-			if not user:
-				raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User not found')
-
-			await session.delete(user)
-			await session.commit()
-		except Exception as e:
-			status_code = (
-				e.status_code
-				if isinstance(e, HTTPException)
-				else status.HTTP_500_INTERNAL_SERVER_ERROR
-			)
-
-			raise HTTPException(status_code=status_code, detail=str(e)) from e
+async def delete_user(id: UUID, service: UserServiceDeps):
+	try:
+		await service.delete(id)
+	except UserNotFoundError as e:
+		raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
+	except Exception as e:
+		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
