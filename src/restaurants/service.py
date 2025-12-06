@@ -61,11 +61,15 @@ class RestaurantScheduleService:
 	repository: RestaurantScheduleRepository
 	restaurant_repository: RestaurantRepository
 
-	def __init__(self, repository, restaurant_repository):
+	def __init__(
+		self, repository: RestaurantScheduleRepository, restaurant_repository: RestaurantRepository
+	):
 		self.repository = repository
 		self.restaurant_repository = restaurant_repository
 
-	async def create(self, restaurant_id: UUID, schedule: CreateRestaurantScheduleSchema):
+	async def create(
+		self, restaurant_id: UUID, schedule: CreateRestaurantScheduleSchema
+	) -> CreateRestaurantScheduleResponseSchema:
 		restaurant = await self.restaurant_repository.get(restaurant_id)
 		schedule_id = await self.repository.create(schedule, restaurant.id)
 
@@ -90,7 +94,7 @@ class RestaurantScheduleService:
 
 		return schedule
 
-	async def delete(self, restaurant_id: UUID, schedule_id: UUID):
+	async def delete(self, restaurant_id: UUID, schedule_id: UUID) -> None:
 		await self.restaurant_repository.get(restaurant_id)
 		schedule = await self.repository.get(schedule_id)
 

@@ -50,11 +50,13 @@ class OfferScheduleService:
 	repository: OfferScheduleRepository
 	offer_repository: OfferRepository
 
-	def __init__(self, repository, offer_repository):
+	def __init__(self, repository: OfferScheduleRepository, offer_repository: OfferRepository):
 		self.repository = repository
 		self.offer_repository = offer_repository
 
-	async def create(self, offer_id: UUID, schedule: CreateOfferScheduleSchema):
+	async def create(
+		self, offer_id: UUID, schedule: CreateOfferScheduleSchema
+	) -> CreateOfferScheduleResponseSchema:
 		offer = await self.offer_repository.get(offer_id)
 		schedule_id = await self.repository.create(schedule, offer.id)
 
@@ -74,7 +76,7 @@ class OfferScheduleService:
 
 		return schedule
 
-	async def delete(self, offer_id: UUID, schedule_id: UUID):
+	async def delete(self, offer_id: UUID, schedule_id: UUID) -> None:
 		await self.offer_repository.get(offer_id)
 		schedule = await self.repository.get(schedule_id)
 

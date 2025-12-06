@@ -22,9 +22,7 @@ router = APIRouter()
 	response_model=list[ProductWithCategoriesSchema],
 )
 async def list_products(
-	name: str | None = None,
-	category_id: UUID | None = None,
-	service: ProductServiceDeps = None,
+	service: ProductServiceDeps, name: str | None = None, category_id: UUID | None = None
 ):
 	try:
 		return await service.list(name, category_id)

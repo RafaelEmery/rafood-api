@@ -16,13 +16,13 @@ class CategoryRepository:
 
 	async def list(self) -> list[Category]:
 		result = await self.db.execute(select(Category))
-		categories: list[Category] = result.scalars().all()
+		categories: list[Category] = result.scalars().unique().all()
 
 		return categories
 
 	async def get(self, id: UUID) -> Category:
 		result = await self.db.execute(select(Category).where(Category.id == id))
-		category: Category = result.scalars().first()
+		category: Category = result.scalars().unique().first()
 
 		if not category:
 			raise CategoryNotFoundError('Category not found')

@@ -19,7 +19,7 @@ class RestaurantRepository:
 		query = select(Restaurant)
 
 		if name is not None:
-			query = query.filter(Restaurant.name.like(f'%{name}%'))
+			query = query.filter(Restaurant.name.contains(name))
 
 		if owner_id is not None:
 			query = query.filter(Restaurant.owner_id == owner_id)
@@ -30,7 +30,7 @@ class RestaurantRepository:
 
 	async def get(self, id: UUID) -> Restaurant:
 		result = await self.db.execute(select(Restaurant).where(Restaurant.id == id))
-		restaurant = result.scalars().first()
+		restaurant = result.scalars().unique().first()
 
 		if not restaurant:
 			raise RestaurantNotFoundError('Restaurant not found')
@@ -45,13 +45,13 @@ class RestaurantRepository:
 
 		return new_restaurant.id
 
-	async def update(self, restaurant: Restaurant):
+	async def update(self, restaurant: Restaurant) -> None:
 		self.db.add(restaurant)
 
 		await self.db.commit()
 		await self.db.refresh(restaurant)
 
-	async def delete(self, restaurant: Restaurant):
+	async def delete(self, restaurant: Restaurant) -> None:
 		await self.db.delete(restaurant)
 		await self.db.commit()
 
@@ -80,7 +80,7 @@ class RestaurantScheduleRepository:
 		result = await self.db.execute(
 			select(RestaurantSchedule).where(RestaurantSchedule.id == schedule_id)
 		)
-		schedule = result.scalars().first()
+		schedule = result.scalars().unique().first()
 
 		if not schedule:
 			raise RestaurantScheduleNotFoundError('Schedule not found')

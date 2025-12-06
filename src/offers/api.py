@@ -42,9 +42,9 @@ async def find_offer(id: UUID, service: OfferServiceDeps):
 	try:
 		return await service.get(id)
 	except OfferNotFoundError as e:
-		raise HTTPException(404, str(e)) from e
+		raise HTTPException(status.HTTP_404_NOT_FOUND, str(e)) from e
 	except Exception as e:
-		raise HTTPException(500, str(e)) from e
+		raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)) from e
 
 
 @router.post(
@@ -57,7 +57,7 @@ async def create_offer(body: CreateOfferSchema, service: OfferServiceDeps):
 	try:
 		return await service.create(body)
 	except Exception as e:
-		raise HTTPException(500, str(e)) from e
+		raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)) from e
 
 
 @router.patch(
@@ -70,9 +70,9 @@ async def update_offer(id: UUID, body: UpdateOfferSchema, service: OfferServiceD
 	try:
 		return await service.update(id, body)
 	except OfferNotFoundError as e:
-		raise HTTPException(404, str(e)) from e
+		raise HTTPException(status.HTTP_404_NOT_FOUND, str(e)) from e
 	except Exception as e:
-		raise HTTPException(500, str(e)) from e
+		raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)) from e
 
 
 @router.delete(
@@ -84,9 +84,9 @@ async def delete_offer(id: UUID, service: OfferServiceDeps):
 	try:
 		await service.delete(id)
 	except OfferNotFoundError as e:
-		raise HTTPException(404, str(e)) from e
+		raise HTTPException(status.HTTP_404_NOT_FOUND, str(e)) from e
 	except Exception as e:
-		raise HTTPException(500, str(e)) from e
+		raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)) from e
 
 
 @router.post(

@@ -22,7 +22,7 @@ class OfferRepository:
 
 	async def get(self, id: UUID) -> Offer:
 		result = await self.db.execute(select(Offer).where(Offer.id == id))
-		offer = result.scalars().first()
+		offer = result.scalars().unique().first()
 
 		if not offer:
 			raise OfferNotFoundError('Offer not found')
@@ -68,19 +68,19 @@ class OfferScheduleRepository:
 
 	async def get(self, schedule_id: UUID) -> OfferSchedule:
 		result = await self.db.execute(select(OfferSchedule).where(OfferSchedule.id == schedule_id))
-		schedule = result.scalars().first()
+		schedule = result.scalars().unique().first()
 
 		if not schedule:
 			raise OfferScheduleNotFoundError('Offer schedule not found')
 
 		return schedule
 
-	async def update(self, schedule: OfferSchedule):
+	async def update(self, schedule: OfferSchedule) -> None:
 		self.db.add(schedule)
 
 		await self.db.commit()
 		await self.db.refresh(schedule)
 
-	async def delete(self, schedule: OfferSchedule):
+	async def delete(self, schedule: OfferSchedule) -> None:
 		await self.db.delete(schedule)
 		await self.db.commit()

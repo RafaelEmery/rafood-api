@@ -18,7 +18,7 @@ class ProductRepository:
 		query = select(Product)
 
 		if name is not None:
-			query = query.filter(Product.name.like(f'%{name}%'))
+			query = query.filter(Product.name.contains(name))
 		if category_id is not None:
 			query = query.filter(Product.category_id == category_id)
 
@@ -28,7 +28,7 @@ class ProductRepository:
 
 	async def get(self, id: UUID) -> Product:
 		result = await self.db.execute(select(Product).where(Product.id == id))
-		product = result.scalars().first()
+		product = result.scalars().unique().first()
 
 		if not product:
 			raise ProductNotFoundError('Product not found')
