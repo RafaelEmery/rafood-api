@@ -16,3 +16,11 @@ class OfferNotFoundError(Exception):
 
 class OfferScheduleNotFoundError(Exception):
 	pass
+
+
+class RestaurantNotFoundError(Exception):
+	pass
+
+
+class RestaurantScheduleNotFoundError(Exception):
+	pass
