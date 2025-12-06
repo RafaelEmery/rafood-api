@@ -20,7 +20,7 @@ router = APIRouter()
 	description='Get all categories',
 	response_model=list[CategorySchema],
 )
-async def get_all_categories(service: CategoryServiceDeps):
+async def list_category(service: CategoryServiceDeps):
 	try:
 		return await service.list()
 	except Exception as e:
