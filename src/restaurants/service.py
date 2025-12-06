@@ -67,6 +67,7 @@ class RestaurantScheduleService:
 		self.repository = repository
 		self.restaurant_repository = restaurant_repository
 
+	# TODO: add validation to don't create schedule when there's three active schedules
 	async def create(
 		self, restaurant_id: UUID, schedule: CreateRestaurantScheduleSchema
 	) -> CreateRestaurantScheduleResponseSchema:
