@@ -15,32 +15,28 @@ class CategoryRepository:
 		self.db = db
 
 	async def list(self) -> list[Category]:
-		async with self.db as session:
-			result = await session.execute(select(Category))
-			categories: list[Category] = result.scalars().all()
+		result = await self.db.execute(select(Category))
+		categories: list[Category] = result.scalars().all()
 
-			return categories
+		return categories
 
 	async def get(self, id: UUID) -> Category:
-		async with self.db as session:
-			result = await session.execute(select(Category).where(Category.id == id))
-			category: Category = result.scalars().first()
+		result = await self.db.execute(select(Category).where(Category.id == id))
+		category: Category = result.scalars().first()
 
-			if not category:
-				raise CategoryNotFoundError('Category not found')
+		if not category:
+			raise CategoryNotFoundError('Category not found')
 
-			return category
+		return category
 
 	async def create(self, category: CreateCategorySchema) -> UUID:
-		async with self.db as session:
-			new_category = Category(**category.model_dump())
+		new_category = Category(**category.model_dump())
 
-			session.add(new_category)
-			await session.commit()
+		self.db.add(new_category)
+		await self.db.commit()
 
-			return new_category.id
+		return new_category.id
 
 	async def delete(self, category: Category) -> None:
-		async with self.db as session:
-			await session.delete(category)
-			await session.commit()
+		await self.db.delete(category)
+		await self.db.commit()

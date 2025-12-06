@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from fastapi import APIRouter, HTTPException, status
 
 from src.categories.deps import CategoryServiceDeps
@@ -45,7 +47,7 @@ async def create_category(category: CreateCategorySchema, service: CategoryServi
 	status_code=status.HTTP_204_NO_CONTENT,
 	description='Delete a category by id',
 )
-async def delete_category(category_id: str, service: CategoryServiceDeps):
+async def delete_category(category_id: UUID, service: CategoryServiceDeps):
 	try:
 		await service.delete(category_id)
 	except CategoryNotFoundError as e:

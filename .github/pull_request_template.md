@@ -8,7 +8,6 @@
 
 - [ ] 🐛 Bug fix
 - [ ] ✨ New feature
-- [ ] 🖌️ Refactor
 - [ ] 💥 Breaking change
 - [ ] 📝 Documentation
 - [ ] ♻️ Refactoring
