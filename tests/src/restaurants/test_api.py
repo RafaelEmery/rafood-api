@@ -235,7 +235,6 @@ async def test_create_restaurant_schedules(
 async def test_create_restaurant_schedules_not_found_error(
 	client, session, restaurant_factory, build_schedule_create_payload
 ):
-	"""Returns 500 because of FK constraint violation"""
 	_ = restaurant_factory(session, name='Léo Pereira')
 	await session.commit()
 
@@ -243,7 +242,7 @@ async def test_create_restaurant_schedules_not_found_error(
 
 	response = await client.post(f'/api/v1/restaurants/{str(uuid4())}/schedules', json=payload)
 
-	assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+	assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 @pytest.mark.asyncio
