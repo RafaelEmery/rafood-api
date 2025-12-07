@@ -118,19 +118,4 @@ Be sure to have database container running with `make dep-start`
 
 ______________________________________________________________________
 
-### :white_check_mark: Major technical TODOs
-
-- [x] Query params on lists endpoints
-- [x] Improve body data validation
-- [x] Return all relations correctly on 'get by ID' endpoints
-- [ ] Refactor to use services and core classes
-- [x] Fix on error on alembic `env.py` file
-- [x] Add tests for all endpoints and contracts
-- [ ] Improve exception handling errors
-- [ ] Improve logging
-- [ ] Solve minor TODOs
-- [x] Write README docs
-
-______________________________________________________________________
-
 Made with :crystal_ball: for studies by RafaelEmery
