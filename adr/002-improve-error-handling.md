@@ -35,16 +35,17 @@ async def update_restaurant_schedule(
 
 Add custom error handling to provide better messages, context and extra information. Will be used a custom `@app.exception_handler` to get all API/Service/Repository layers.
 
-Payload for `JSONResponse` errors will be like (*to be improved*):
+Payload for `JSONResponse` errors will be like:
 
 ```json
 {
-    "status_code": 500,
-    "content": {
-        "detail": "Some error message",
-        "path": "/api/v1/health",
-        "timestamp": "2024-06-15T12:00:00Z",
-    }
+    "title": "Not Found Error",
+    "error": "category_not_found",
+    "message": "Category a9a4fe0f-3c53-4830-beac-7dcdc6b057e7 not found",
+    "path": "/api/v1/categories/a9a4fe0f-3c53-4830-beac-7dcdc6b057e7",
+    "params": "{'category_id': 'a9a4fe0f-3c53-4830-beac-7dcdc6b057e7'}",
+    "query": null,
+    "timestamp": "2025-12-08T22:45:03.059612+00:00"
 }
 ```
 

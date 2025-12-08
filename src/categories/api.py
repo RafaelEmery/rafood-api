@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, status
 
 from src.categories.deps import CategoryServiceDeps
 from src.categories.schemas import (
@@ -8,7 +8,6 @@ from src.categories.schemas import (
 	CreateCategoryResponseSchema,
 	CreateCategorySchema,
 )
-from src.exceptions import CategoryNotFoundError
 
 router = APIRouter()
 
@@ -21,10 +20,7 @@ router = APIRouter()
 	response_model=list[CategorySchema],
 )
 async def list_category(service: CategoryServiceDeps):
-	try:
-		return await service.list()
-	except Exception as e:
-		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
+	return await service.list()
 
 
 @router.post(
@@ -35,10 +31,7 @@ async def list_category(service: CategoryServiceDeps):
 	response_model=CreateCategoryResponseSchema,
 )
 async def create_category(category: CreateCategorySchema, service: CategoryServiceDeps):
-	try:
-		return await service.create(category)
-	except Exception as e:
-		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
+	return await service.create(category)
 
 
 @router.delete(
@@ -48,9 +41,4 @@ async def create_category(category: CreateCategorySchema, service: CategoryServi
 	description='Delete a category by id',
 )
 async def delete_category(category_id: UUID, service: CategoryServiceDeps):
-	try:
-		await service.delete(category_id)
-	except CategoryNotFoundError as e:
-		raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
-	except Exception as e:
-		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
+	await service.delete(category_id)

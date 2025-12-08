@@ -6,6 +6,7 @@ from src.categories.schemas import (
 	CreateCategoryResponseSchema,
 	CreateCategorySchema,
 )
+from src.categories.exceptions import CategoriesInternalError, CategoryNotFoundError
 
 
 class CategoryService:
@@ -15,13 +16,24 @@ class CategoryService:
 		self.repository = repository
 
 	async def list(self) -> list[CategorySchema]:
-		return await self.repository.list()
+		try:
+			return await self.repository.list()
+		except Exception as e:
+			raise CategoriesInternalError(message=str(e)) from e
 
 	async def create(self, category: CreateCategorySchema) -> CreateCategoryResponseSchema:
-		category_id = await self.repository.create(category)
+		try:
+			category_id = await self.repository.create(category)
 
-		return CreateCategoryResponseSchema(id=category_id)
+			return CreateCategoryResponseSchema(id=category_id)
+		except Exception as e:
+			raise CategoriesInternalError(message=str(e)) from e
 
 	async def delete(self, id: UUID) -> None:
-		category = await self.repository.get(id)
-		await self.repository.delete(category)
+		try:
+			category = await self.repository.get(id)
+			await self.repository.delete(category)
+		except CategoryNotFoundError:
+			raise
+		except Exception as e:
+			raise CategoriesInternalError(message=str(e)) from e
