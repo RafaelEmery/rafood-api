@@ -2,6 +2,7 @@ from fastapi import FastAPI
 
 from src.api import api_router
 from src.core.config import settings
+from src.core.exception_handlers import register_exception_handlers
 
 app = FastAPI(
 	title=settings.APP_NAME,
@@ -9,6 +10,7 @@ app = FastAPI(
 	version=settings.APP_VERSION,
 )
 app.include_router(api_router, prefix=settings.APP_V1_PREFIX)
+register_exception_handlers(app)
 
 
 @app.get(

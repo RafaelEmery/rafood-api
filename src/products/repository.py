@@ -3,7 +3,7 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from src.exceptions import ProductNotFoundError
+from src.products.exceptions import ProductNotFoundError
 from src.products.models import Product
 from src.products.schemas import CreateProductSchema
 

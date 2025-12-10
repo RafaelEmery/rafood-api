@@ -1,5 +1,6 @@
 from uuid import UUID
 
+from src.products.exceptions import ProductNotFoundError, ProductsInternalError
 from src.products.repository import ProductRepository
 from src.products.schemas import (
 	CreateProductResponseSchema,
@@ -19,31 +20,52 @@ class ProductService:
 	async def list(
 		self, name: str | None, category_id: UUID | None
 	) -> list[ProductWithCategoriesSchema]:
-		return await self.repository.list(name, category_id)
+		try:
+			return await self.repository.list(name, category_id)
+		except Exception as e:
+			raise ProductsInternalError(message=str(e)) from e
 
 	# TODO: Validate if can return offers or some flag to offers
 	async def get(self, id: UUID) -> ProductSchema:
-		return await self.repository.get(id)
+		try:
+			return await self.repository.get(id)
+		except ProductNotFoundError:
+			raise
+		except Exception as e:
+			raise ProductsInternalError(message=str(e)) from e
 
 	async def create(self, product: CreateProductSchema) -> CreateProductResponseSchema:
-		product_id = await self.repository.create(product)
+		try:
+			product_id = await self.repository.create(product)
 
-		return CreateProductResponseSchema(id=product_id)
+			return CreateProductResponseSchema(id=product_id)
+		except Exception as e:
+			raise ProductsInternalError(message=str(e)) from e
 
 	async def update(self, id: UUID, product_update: UpdateProductSchema) -> ProductSchema:
-		product = await self.repository.get(id)
+		try:
+			product = await self.repository.get(id)
 
-		product.restaurant_id = product_update.restaurant_id
-		product.name = product_update.name
-		product.price = product_update.price
-		product.category_id = product_update.category_id
-		product.image_url = product_update.image_url
+			product.restaurant_id = product_update.restaurant_id
+			product.name = product_update.name
+			product.price = product_update.price
+			product.category_id = product_update.category_id
+			product.image_url = product_update.image_url
 
-		await self.repository.update(product)
+			await self.repository.update(product)
 
-		return product
+			return product
+		except ProductNotFoundError:
+			raise
+		except Exception as e:
+			raise ProductsInternalError(message=str(e)) from e
 
 	async def delete(self, id: UUID) -> None:
-		product = await self.repository.get(id)
+		try:
+			product = await self.repository.get(id)
 
-		await self.repository.delete(product)
+			await self.repository.delete(product)
+		except ProductNotFoundError:
+			raise
+		except Exception as e:
+			raise ProductsInternalError(message=str(e)) from e

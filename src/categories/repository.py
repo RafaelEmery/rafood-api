@@ -3,9 +3,9 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
+from src.categories.exceptions import CategoryNotFoundError
 from src.categories.models import Category
 from src.categories.schemas import CreateCategorySchema
-from src.exceptions import CategoryNotFoundError
 
 
 class CategoryRepository:
@@ -25,7 +25,7 @@ class CategoryRepository:
 		category: Category = result.scalars().unique().first()
 
 		if not category:
-			raise CategoryNotFoundError('Category not found')
+			raise CategoryNotFoundError(category_id=str(id))
 
 		return category
 

@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.exceptions import RestaurantNotFoundError, RestaurantScheduleNotFoundError
+from src.restaurants.exceptions import RestaurantNotFoundError, RestaurantScheduleNotFoundError
 from src.restaurants.models import Restaurant, RestaurantSchedule
 from src.restaurants.schemas import CreateRestaurantScheduleSchema, CreateRestaurantSchema
 

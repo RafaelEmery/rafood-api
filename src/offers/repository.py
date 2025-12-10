@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.exceptions import OfferNotFoundError, OfferScheduleNotFoundError
+from src.offers.exceptions import OfferNotFoundError, OfferScheduleNotFoundError
 from src.offers.models import Offer, OfferSchedule
 from src.offers.schemas import CreateOfferScheduleSchema, CreateOfferSchema
 
