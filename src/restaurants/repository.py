@@ -93,6 +93,15 @@ class RestaurantScheduleRepository:
 		await self.db.commit()
 		await self.db.refresh(schedule)
 
+	async def get_by_restaurant(self, restaurant_id: UUID) -> list[RestaurantSchedule]:
+		result = await self.db.execute(
+			select(RestaurantSchedule).where(
+				RestaurantSchedule.restaurant_id == restaurant_id,
+			)
+		)
+
+		return result.scalars().unique().all()
+
 	async def delete(self, schedule: RestaurantSchedule) -> None:
 		await self.db.delete(schedule)
 		await self.db.commit()

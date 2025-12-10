@@ -276,6 +276,28 @@ async def test_create_restaurant_schedules_bad_request_error(
 
 
 @pytest.mark.asyncio
+async def test_create_restaurant_schedules_limit_error(
+	client, session, restaurant_factory, restaurant_schedule_factory, build_schedule_create_payload
+):
+	restaurant = restaurant_factory(session, name='Adriano Imperador')
+	await session.commit()
+
+	restaurant_schedule_factory(session, restaurant_id=restaurant.id, day_type='weekday')
+	restaurant_schedule_factory(session, restaurant_id=restaurant.id, day_type='weekend')
+	restaurant_schedule_factory(session, restaurant_id=restaurant.id, day_type='holiday')
+	await session.commit()
+
+	payload = build_schedule_create_payload()
+	payload.update({'restaurant_id': str(restaurant.id)})
+
+	response = await client.post(f'/api/v1/restaurants/{restaurant.id}/schedules', json=payload)
+	data = response.json()
+
+	assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+	assert data['message'] == 'Cannot create more than three active schedules for a restaurant'
+
+
+@pytest.mark.asyncio
 async def test_update_restaurant_schedule(
 	client, session, restaurant_schedule_factory, build_schedule_update_payload
 ):

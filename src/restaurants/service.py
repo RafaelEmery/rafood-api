@@ -94,12 +94,13 @@ class RestaurantScheduleService:
 		self.repository = repository
 		self.restaurant_repository = restaurant_repository
 
-	# TODO: add validation to don't create schedule when there's three active schedules
 	async def create(
 		self, restaurant_id: UUID, schedule: CreateRestaurantScheduleSchema
 	) -> CreateRestaurantScheduleResponseSchema:
 		try:
 			restaurant = await self.restaurant_repository.get(restaurant_id)
+			await self._validate_schedules_limit(restaurant.id)
+
 			schedule_id = await self.repository.create(schedule, restaurant.id)
 
 			return CreateRestaurantScheduleResponseSchema(id=schedule_id)
@@ -107,6 +108,14 @@ class RestaurantScheduleService:
 			raise
 		except Exception as e:
 			raise RestaurantSchedulesInternalError(message=str(e)) from e
+
+	async def _validate_schedules_limit(self, restaurant_id: UUID) -> None:
+		schedules = await self.repository.get_by_restaurant(restaurant_id)
+
+		if len(schedules) >= 3:
+			raise RestaurantSchedulesInternalError(
+				message='Cannot create more than three active schedules for a restaurant'
+			)
 
 	async def update(
 		self,
