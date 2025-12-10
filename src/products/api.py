@@ -1,8 +1,7 @@
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, status
 
-from src.exceptions import ProductNotFoundError
 from src.products.deps import ProductServiceDeps
 from src.products.schemas import (
 	CreateProductResponseSchema,
@@ -24,10 +23,7 @@ router = APIRouter()
 async def list_products(
 	service: ProductServiceDeps, name: str | None = None, category_id: UUID | None = None
 ):
-	try:
-		return await service.list(name, category_id)
-	except Exception as e:
-		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
+	return await service.list(name, category_id)
 
 
 @router.get(
@@ -37,12 +33,7 @@ async def list_products(
 	response_model=ProductSchema,
 )
 async def find_product(id: UUID, service: ProductServiceDeps):
-	try:
-		return await service.get(id)
-	except ProductNotFoundError as e:
-		raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
-	except Exception as e:
-		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
+	return await service.get(id)
 
 
 @router.post(
@@ -52,10 +43,7 @@ async def find_product(id: UUID, service: ProductServiceDeps):
 	response_model=CreateProductResponseSchema,
 )
 async def create_product(body: CreateProductSchema, service: ProductServiceDeps):
-	try:
-		return await service.create(body)
-	except Exception as e:
-		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
+	return await service.create(body)
 
 
 @router.patch(
@@ -67,12 +55,7 @@ async def create_product(body: CreateProductSchema, service: ProductServiceDeps)
 async def update_product(
 	id: UUID, product_update: UpdateProductSchema, service: ProductServiceDeps
 ):
-	try:
-		return await service.update(id, product_update)
-	except ProductNotFoundError as e:
-		raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
-	except Exception as e:
-		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
+	return await service.update(id, product_update)
 
 
 @router.delete(
@@ -81,9 +64,4 @@ async def update_product(
 	status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_product(id: UUID, service: ProductServiceDeps):
-	try:
-		await service.delete(id)
-	except ProductNotFoundError as e:
-		raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
-	except Exception as e:
-		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
+	await service.delete(id)

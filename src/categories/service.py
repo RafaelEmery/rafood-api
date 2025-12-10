@@ -1,12 +1,12 @@
 from uuid import UUID
 
+from src.categories.exceptions import CategoriesInternalError, CategoryNotFoundError
 from src.categories.repository import CategoryRepository
 from src.categories.schemas import (
 	CategorySchema,
 	CreateCategoryResponseSchema,
 	CreateCategorySchema,
 )
-from src.categories.exceptions import CategoriesInternalError, CategoryNotFoundError
 
 
 class CategoryService:

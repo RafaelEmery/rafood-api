@@ -1,8 +1,7 @@
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, status
 
-from src.exceptions import OfferNotFoundError, OfferScheduleNotFoundError
 from src.offers.deps import OfferScheduleServiceDeps, OfferServiceDeps
 from src.offers.schemas import (
 	CreateOfferResponseSchema,
@@ -26,10 +25,7 @@ router = APIRouter()
 	response_model=list[OfferSchema],
 )
 async def list_offers(service: OfferServiceDeps):
-	try:
-		return await service.list()
-	except Exception as e:
-		raise HTTPException(500, str(e)) from e
+	return await service.list()
 
 
 @router.get(
@@ -39,12 +35,7 @@ async def list_offers(service: OfferServiceDeps):
 	response_model=OfferWithSchedulesSchema,
 )
 async def find_offer(id: UUID, service: OfferServiceDeps):
-	try:
-		return await service.get(id)
-	except OfferNotFoundError as e:
-		raise HTTPException(status.HTTP_404_NOT_FOUND, str(e)) from e
-	except Exception as e:
-		raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)) from e
+	return await service.get(id)
 
 
 @router.post(
@@ -54,10 +45,7 @@ async def find_offer(id: UUID, service: OfferServiceDeps):
 	response_model=CreateOfferResponseSchema,
 )
 async def create_offer(body: CreateOfferSchema, service: OfferServiceDeps):
-	try:
-		return await service.create(body)
-	except Exception as e:
-		raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)) from e
+	return await service.create(body)
 
 
 @router.patch(
@@ -67,12 +55,7 @@ async def create_offer(body: CreateOfferSchema, service: OfferServiceDeps):
 	response_model=OfferSchema,
 )
 async def update_offer(id: UUID, body: UpdateOfferSchema, service: OfferServiceDeps):
-	try:
-		return await service.update(id, body)
-	except OfferNotFoundError as e:
-		raise HTTPException(status.HTTP_404_NOT_FOUND, str(e)) from e
-	except Exception as e:
-		raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)) from e
+	return await service.update(id, body)
 
 
 @router.delete(
@@ -81,12 +64,7 @@ async def update_offer(id: UUID, body: UpdateOfferSchema, service: OfferServiceD
 	status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_offer(id: UUID, service: OfferServiceDeps):
-	try:
-		await service.delete(id)
-	except OfferNotFoundError as e:
-		raise HTTPException(status.HTTP_404_NOT_FOUND, str(e)) from e
-	except Exception as e:
-		raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)) from e
+	await service.delete(id)
 
 
 @router.post(
@@ -100,12 +78,7 @@ async def create_offer_schedule(
 	schedule: CreateOfferScheduleSchema,
 	service: OfferScheduleServiceDeps,
 ):
-	try:
-		return await service.create(id, schedule)
-	except OfferNotFoundError as e:
-		raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
-	except Exception as e:
-		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
+	return await service.create(id, schedule)
 
 
 @router.patch(
@@ -120,14 +93,7 @@ async def update_offer_schedule(
 	body: UpdateOfferScheduleSchema,
 	service: OfferScheduleServiceDeps,
 ):
-	try:
-		return await service.update(id, schedule_id, body)
-	except OfferNotFoundError as e:
-		raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
-	except OfferScheduleNotFoundError as e:
-		raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
-	except Exception as e:
-		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
+	return await service.update(id, schedule_id, body)
 
 
 @router.delete(
@@ -140,11 +106,4 @@ async def delete_offer_schedule(
 	schedule_id: UUID,
 	service: OfferScheduleServiceDeps,
 ):
-	try:
-		await service.delete(id, schedule_id)
-	except OfferNotFoundError as e:
-		raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
-	except OfferScheduleNotFoundError as e:
-		raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
-	except Exception as e:
-		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
+	await service.delete(id, schedule_id)

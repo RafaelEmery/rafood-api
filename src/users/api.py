@@ -1,8 +1,7 @@
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, status
 
-from src.exceptions import UserNotFoundError
 from src.users.deps import UserServiceDeps
 from src.users.schemas import (
 	CreateUserResponseSchema,
@@ -23,10 +22,7 @@ router = APIRouter()
 	response_model=list[UserSchema],
 )
 async def list_users(service: UserServiceDeps):
-	try:
-		return await service.list()
-	except Exception as e:
-		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
+	return await service.list()
 
 
 @router.get(
@@ -37,12 +33,7 @@ async def list_users(service: UserServiceDeps):
 	response_model=UserDetailsSchema,
 )
 async def find_user(id: UUID, service: UserServiceDeps):
-	try:
-		return await service.get(id)
-	except UserNotFoundError as e:
-		raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
-	except Exception as e:
-		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
+	return await service.get(id)
 
 
 @router.post(
@@ -53,10 +44,7 @@ async def find_user(id: UUID, service: UserServiceDeps):
 	response_model=CreateUserResponseSchema,
 )
 async def create_user(user: CreateUserSchema, service: UserServiceDeps):
-	try:
-		return await service.create(user)
-	except Exception as e:
-		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
+	return await service.create(user)
 
 
 @router.put(
@@ -67,12 +55,7 @@ async def create_user(user: CreateUserSchema, service: UserServiceDeps):
 	response_model=UserSchema,
 )
 async def update_user(id: UUID, user_update: UpdateUserSchema, service: UserServiceDeps):
-	try:
-		return await service.update(id, user_update)
-	except UserNotFoundError as e:
-		raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
-	except Exception as e:
-		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
+	return await service.update(id, user_update)
 
 
 @router.delete(
@@ -82,9 +65,4 @@ async def update_user(id: UUID, user_update: UpdateUserSchema, service: UserServ
 	description='Delete a user by ID',
 )
 async def delete_user(id: UUID, service: UserServiceDeps):
-	try:
-		await service.delete(id)
-	except UserNotFoundError as e:
-		raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
-	except Exception as e:
-		raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)) from e
+	await service.delete(id)

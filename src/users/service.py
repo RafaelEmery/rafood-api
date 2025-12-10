@@ -1,5 +1,6 @@
 from uuid import UUID
 
+from src.users.exceptions import UserNotFoundError, UsersInternalError
 from src.users.repository import UserRepository
 from src.users.schemas import (
 	CreateUserResponseSchema,
@@ -17,28 +18,49 @@ class UserService:
 		self.repository = repository
 
 	async def list(self) -> list[UserSchema]:
-		return await self.repository.list()
+		try:
+			return await self.repository.list()
+		except Exception as e:
+			raise UsersInternalError(message=str(e)) from e
 
 	# TODO: return restaurants on user details
 	async def get(self, id: UUID) -> UserDetailsSchema:
-		return await self.repository.get(id)
+		try:
+			return await self.repository.get(id)
+		except UserNotFoundError:
+			raise
+		except Exception as e:
+			raise UsersInternalError(message=str(e)) from e
 
 	async def create(self, user: CreateUserSchema) -> CreateUserResponseSchema:
-		user_id = await self.repository.create(user)
+		try:
+			user_id = await self.repository.create(user)
 
-		return CreateUserResponseSchema(id=user_id)
+			return CreateUserResponseSchema(id=user_id)
+		except Exception as e:
+			raise UsersInternalError(message=str(e)) from e
 
 	async def update(self, id: UUID, user_update: UpdateUserSchema) -> UserSchema:
-		user = await self.repository.get(id)
+		try:
+			user = await self.repository.get(id)
 
-		user.first_name = user_update.first_name
-		user.last_name = user_update.last_name
+			user.first_name = user_update.first_name
+			user.last_name = user_update.last_name
 
-		await self.repository.update(user)
+			await self.repository.update(user)
 
-		return user
+			return user
+		except UserNotFoundError:
+			raise
+		except Exception as e:
+			raise UsersInternalError(message=str(e)) from e
 
 	async def delete(self, id: UUID) -> None:
-		user = await self.repository.get(id)
+		try:
+			user = await self.repository.get(id)
 
-		await self.repository.delete(user)
+			await self.repository.delete(user)
+		except UserNotFoundError:
+			raise
+		except Exception as e:
+			raise UsersInternalError(message=str(e)) from e

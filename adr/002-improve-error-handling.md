@@ -49,7 +49,7 @@ Payload for `JSONResponse` errors will be like:
 }
 ```
 
-Basic logging will be improved either!
+Basic logging will be improved as well!
 
 - [ ] Handling all application exceptions
 - [ ] Handling specific layers exceptions correctly

@@ -1,12 +1,11 @@
-import logging, traceback
-
+import logging
+import traceback
 from datetime import datetime, timezone
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
 from src.exceptions import AppError, AppNotFoundError
-
 
 logger = logging.getLogger(__name__)
 

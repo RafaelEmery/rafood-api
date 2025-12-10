@@ -1,4 +1,4 @@
-from src.exceptions import AppNotFoundError, AppInternalServerError
+from src.exceptions import AppInternalServerError, AppNotFoundError
 
 
 class CategoriesInternalError(AppInternalServerError):

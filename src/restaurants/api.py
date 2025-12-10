@@ -1,11 +1,7 @@
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, status
 
-from src.exceptions import (
-	RestaurantNotFoundError,
-	RestaurantScheduleNotFoundError,
-)
 from src.restaurants.deps import (
 	RestaurantScheduleServiceDeps,
 	RestaurantServiceDeps,
@@ -37,10 +33,7 @@ async def list_restaurants(
 	name: str | None = None,
 	owner_id: UUID | None = None,
 ):
-	try:
-		return await service.list(name=name, owner_id=owner_id)
-	except Exception as e:
-		raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)) from e
+	return await service.list(name=name, owner_id=owner_id)
 
 
 @router.get(
@@ -50,12 +43,7 @@ async def list_restaurants(
 	response_model=RestaurantWithProductsSchema,
 )
 async def find_restaurant(id: UUID, service: RestaurantServiceDeps):
-	try:
-		return await service.get(id)
-	except RestaurantNotFoundError as e:
-		raise HTTPException(status.HTTP_404_NOT_FOUND, str(e)) from e
-	except Exception as e:
-		raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)) from e
+	return await service.get(id)
 
 
 @router.post(
@@ -68,10 +56,7 @@ async def create_restaurant(
 	body: CreateRestaurantSchema,
 	service: RestaurantServiceDeps,
 ):
-	try:
-		return await service.create(body)
-	except Exception as e:
-		raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)) from e
+	return await service.create(body)
 
 
 @router.patch(
@@ -85,12 +70,7 @@ async def update_restaurant(
 	body: UpdateRestaurantSchema,
 	service: RestaurantServiceDeps,
 ):
-	try:
-		return await service.update(id, body)
-	except RestaurantNotFoundError as e:
-		raise HTTPException(status.HTTP_404_NOT_FOUND, str(e)) from e
-	except Exception as e:
-		raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)) from e
+	return await service.update(id, body)
 
 
 @router.delete(
@@ -99,12 +79,7 @@ async def update_restaurant(
 	status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_restaurant(id: UUID, service: RestaurantServiceDeps):
-	try:
-		await service.delete(id)
-	except RestaurantNotFoundError as e:
-		raise HTTPException(status.HTTP_404_NOT_FOUND, str(e)) from e
-	except Exception as e:
-		raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)) from e
+	await service.delete(id)
 
 
 @router.post(
@@ -118,12 +93,7 @@ async def create_restaurant_schedule(
 	schedule: CreateRestaurantScheduleSchema,
 	service: RestaurantScheduleServiceDeps,
 ):
-	try:
-		return await service.create(id, schedule)
-	except RestaurantNotFoundError as e:
-		raise HTTPException(status.HTTP_404_NOT_FOUND, str(e)) from e
-	except Exception as e:
-		raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)) from e
+	return await service.create(id, schedule)
 
 
 @router.patch(
@@ -138,14 +108,7 @@ async def update_restaurant_schedule(
 	body: UpdateRestaurantScheduleSchema,
 	service: RestaurantScheduleServiceDeps,
 ):
-	try:
-		return await service.update(id, schedule_id, body)
-	except RestaurantNotFoundError as e:
-		raise HTTPException(status.HTTP_404_NOT_FOUND, str(e)) from e
-	except RestaurantScheduleNotFoundError as e:
-		raise HTTPException(status.HTTP_404_NOT_FOUND, str(e)) from e
-	except Exception as e:
-		raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)) from e
+	return await service.update(id, schedule_id, body)
 
 
 @router.delete(
@@ -158,11 +121,4 @@ async def delete_restaurant_schedule(
 	schedule_id: UUID,
 	service: RestaurantScheduleServiceDeps,
 ):
-	try:
-		await service.delete(id, schedule_id)
-	except RestaurantNotFoundError as e:
-		raise HTTPException(status.HTTP_404_NOT_FOUND, str(e)) from e
-	except RestaurantScheduleNotFoundError as e:
-		raise HTTPException(status.HTTP_404_NOT_FOUND, str(e)) from e
-	except Exception as e:
-		raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, str(e)) from e
+	await service.delete(id, schedule_id)
