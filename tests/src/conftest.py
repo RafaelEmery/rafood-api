@@ -54,7 +54,7 @@ def restaurant_factory(user_factory):
 @pytest.fixture
 def category_factory():
 	def create(session, **kwargs):
-		obj = Category(id=uuid4(), name=kwargs.get('name', 'By Factory'))
+		obj = Category(id=uuid4(), name=kwargs.get('name', f'By Factory {str(uuid4())}'))
 		session.add(obj)
 
 		return obj
