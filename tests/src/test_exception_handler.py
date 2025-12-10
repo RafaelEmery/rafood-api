@@ -1,6 +1,6 @@
-import pytest
-
 from uuid import uuid4
+
+import pytest
 from fastapi import status
 
 from src.exceptions import NOT_FOUND_ERROR
