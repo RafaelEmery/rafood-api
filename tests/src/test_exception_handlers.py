@@ -36,3 +36,6 @@ async def test_handled_app_not_found_error(client):
 	assert data['error'] == 'category_not_found'
 	assert data['message'] == f'Category {category_id} not found'
 	assert data['timestamp'] is not None
+	assert 'path' not in data
+	assert 'params' not in data
+	assert 'query' not in data

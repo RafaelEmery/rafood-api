@@ -16,7 +16,7 @@ def register_exception_handlers(app):
 		request: Request,
 		exc: AppError,
 	):
-		logger.exception(f'Application error on {request.url.path}')
+		logger.exception(f'Handled AppError on {request.url.path}')
 
 		return JSONResponse(
 			status_code=int(exc.status_code),
@@ -52,6 +52,9 @@ def register_exception_handlers(app):
 
 	@app.exception_handler(Exception)
 	async def catch_all_handler(request: Request, exc: Exception):
+		"""
+		Catch all unhandled exceptions to log them and return a generic 500 error response.
+		"""
 		logger.error(
 			'UnhandledException:\n%s',
 			''.join(
@@ -66,7 +69,9 @@ def register_exception_handlers(app):
 			status_code=500,
 			content={
 				'title': 'Unexpected Error',
-				'type': str(exc.__class__.__name__),
+				'error': str(exc.__class__.__name__),
 				'message': str(exc),
+				'path': request.url.path,
+				'timestamp': datetime.now(timezone.utc).isoformat(),
 			},
 		)
