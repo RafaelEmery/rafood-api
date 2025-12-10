@@ -16,7 +16,7 @@ def register_exception_handlers(app):
 		request: Request,
 		exc: AppError,
 	):
-		logger.exception(f'{exc.message}')
+		logger.exception(f'Application error on {request.url.path}')
 
 		return JSONResponse(
 			status_code=int(exc.status_code),
@@ -36,6 +36,10 @@ def register_exception_handlers(app):
 		request: Request,
 		exc: AppNotFoundError,
 	):
+		"""
+		Handle not found errors separately to avoid logging them as exceptions
+		and return simplified response since it's a common case.
+		"""
 		return JSONResponse(
 			status_code=int(exc.status_code),
 			content={

@@ -2,7 +2,7 @@
 
 ## Context
 
-Actually the only exceptions on application are `HTTPException` from FastAPI with only status_code `404` or `500` with only a `detail` on payload.
+Currently the only exceptions on application are `HTTPException` from FastAPI with only status_code `404` or `500` with only a `detail` on payload.
 
 There are the FastAPI/Pydantic exceptions for `400` and/or `422` but it won't be changed.
 
@@ -58,7 +58,7 @@ Basic logging will be improved as well!
 
 ## Consequences
 
-- Better errors payloads
+- Better error payloads
 - Better separation of layers when raising exceptions
 - Generic error handling for all cases
 - Better logging on exceptions
