@@ -29,5 +29,5 @@ Tools used:
 
 - [Part 1 - Building a Powerful Observability Stack for FastAPI with Prometheus, Grafana, and Loki](https://dimasyotama.medium.com/building-a-powerful-observability-stack-for-fastapi-with-prometheus-grafana-loki-426822422fd6)
 - [Part 2 - Elevating FastAPI Observability: Integrating Grafana Tempo for Distributed Tracing](https://dimasyotama.medium.com/elevating-fastapi-observability-integrating-grafana-tempo-for-distributed-tracing-7a9c72dedac4)
-- [Getting Started: Monitoring a FastAPI App with Grafana and Prometheus](https://dev.to/ken_mwaura1/getting-started-monitoring-a-fastapi-app-with-grafana-and-prometheus-a-step-by-step-guide-3fbn) - Good references of Prometheus and Grafana setup
+- [Getting Started: Monitoring a FastAPI App with Grafana and Prometheus](https://dev.to/ken_mwaura1/getting-started-monitoring-a-fastapi-app-with-grafana-and-prometheus-a-step-by-step-guide-3fbn) - Good reference for Prometheus and Grafana setup
 - [FastAPI Observability Lab with Prometheus and Grafana: Complete Guide](https://pub.towardsai.net/fastapi-observability-lab-with-prometheus-and-grafana-complete-guide-f12da15a15fd) - Complete guide for FastAPI observability with Prometheus and Grafana
