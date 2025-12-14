@@ -23,7 +23,6 @@ class UserService:
 		except Exception as e:
 			raise UsersInternalError(message=str(e)) from e
 
-	# TODO: return restaurants on user details
 	async def get(self, id: UUID) -> UserDetailsSchema:
 		try:
 			return await self.repository.get(id)
