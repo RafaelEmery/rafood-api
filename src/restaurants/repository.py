@@ -33,7 +33,7 @@ class RestaurantRepository:
 		restaurant = result.scalars().unique().first()
 
 		if not restaurant:
-			raise RestaurantNotFoundError('Restaurant not found')
+			raise RestaurantNotFoundError(restaurant_id=str(id))
 
 		return restaurant
 
@@ -83,7 +83,7 @@ class RestaurantScheduleRepository:
 		schedule = result.scalars().unique().first()
 
 		if not schedule:
-			raise RestaurantScheduleNotFoundError('Schedule not found')
+			raise RestaurantScheduleNotFoundError(schedule_id=str(schedule_id))
 
 		return schedule
 

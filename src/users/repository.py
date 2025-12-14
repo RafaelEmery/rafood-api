@@ -27,7 +27,7 @@ class UserRepository:
 		user: User = result.scalars().unique().first()
 
 		if not user:
-			raise UserNotFoundError('User not found')
+			raise UserNotFoundError(user_id=str(id))
 
 		return user
 

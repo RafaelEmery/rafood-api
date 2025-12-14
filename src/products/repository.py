@@ -33,7 +33,7 @@ class ProductRepository:
 		product = result.scalars().unique().first()
 
 		if not product:
-			raise ProductNotFoundError('Product not found')
+			raise ProductNotFoundError(product_id=str(id))
 
 		return product
 

@@ -30,7 +30,7 @@ async def test_find_offer_by_id(session, client, offer_factory):
 	assert response.status_code == status.HTTP_200_OK
 	assert data['id'] == str(offer.id)
 	assert data['price'] == 12.50
-	assert data['active'] == True
+	assert data['active'] is True
 
 
 @pytest.mark.asyncio
