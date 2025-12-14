@@ -75,6 +75,7 @@ def offer_factory(product_factory):
 			id=uuid4(),
 			product_id=kwargs['product_id'],
 			price=kwargs.get('price', 19.99),
+			active=kwargs.get('active', True),
 		)
 		session.add(obj)
 

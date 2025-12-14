@@ -21,7 +21,7 @@ async def test_list_offers(session, client, offer_factory):
 
 @pytest.mark.asyncio
 async def test_find_offer_by_id(session, client, offer_factory):
-	offer = offer_factory(session, price=12.50)
+	offer = offer_factory(session, price=12.50, active=True)
 	await session.commit()
 
 	response = await client.get(f'/api/v1/offers/{offer.id}')
@@ -30,6 +30,7 @@ async def test_find_offer_by_id(session, client, offer_factory):
 	assert response.status_code == status.HTTP_200_OK
 	assert data['id'] == str(offer.id)
 	assert data['price'] == 12.50
+	assert data['active'] == True
 
 
 @pytest.mark.asyncio
@@ -92,6 +93,7 @@ async def test_update_offer(client, session, offer_factory, build_update_payload
 
 	assert response.status_code == status.HTTP_200_OK
 	assert data['price'] == 25.99
+	assert data['active'] is True
 
 
 @pytest.mark.asyncio
@@ -107,10 +109,13 @@ async def test_update_offer_not_found_error(client, build_update_payload):
 @pytest.mark.parametrize(
 	'payload_override',
 	[
-		{'price': -10},
-		{'price': 0},
-		{'price': 'invalid'},
-		{'price': None},
+		{'price': -10, 'active': True},
+		{'price': 0, 'active': True},
+		{'price': 'invalid', 'active': True},
+		{'price': None, 'active': True},
+		{'price': 20.00, 'active': None},
+		{'price': 20.00, 'active': 'invalid'},
+		{'price': 20.00, 'active': 'Falsy'},
 	],
 )
 async def test_update_offer_bad_request_error(

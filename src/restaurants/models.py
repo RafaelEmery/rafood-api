@@ -31,7 +31,6 @@ class Restaurant(SQLModel, table=True):
 	)
 
 
-# TODO: add active boolean column
 class RestaurantSchedule(SQLModel, table=True):
 	__tablename__ = 'restaurant_schedules'
 

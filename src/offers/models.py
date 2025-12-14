@@ -5,13 +5,13 @@ from uuid import UUID, uuid4
 from sqlmodel import Field, Relationship, SQLModel
 
 
-# TODO: add is active column
 class Offer(SQLModel, table=True):
 	__tablename__ = 'offers'
 
 	id: UUID = Field(default_factory=uuid4, primary_key=True)
 	product_id: UUID = Field(foreign_key='products.id')
 	price: float
+	active: bool = Field(default=True)
 	created_at: datetime = Field(default_factory=datetime.now)
 	updated_at: datetime = Field(
 		default_factory=datetime.now, sa_column_kwargs={'onupdate': datetime.now}

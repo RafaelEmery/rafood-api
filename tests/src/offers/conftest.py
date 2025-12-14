@@ -45,6 +45,7 @@ def build_update_payload():
 	def _build():
 		return {
 			'price': 25.99,
+			'active': True,
 		}
 
 	return _build
