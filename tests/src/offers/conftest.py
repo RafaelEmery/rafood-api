@@ -3,27 +3,7 @@ from uuid import uuid4
 
 import pytest
 
-from src.offers.models import Offer, OfferSchedule
-
-
-@pytest.fixture
-def offer_factory(product_factory):
-	def create(session, **kwargs):
-		# Create product if not provided
-		if 'product_id' not in kwargs:
-			product = product_factory(session)
-			kwargs['product_id'] = product.id
-
-		obj = Offer(
-			id=uuid4(),
-			product_id=kwargs['product_id'],
-			price=kwargs.get('price', 19.99),
-		)
-		session.add(obj)
-
-		return obj
-
-	return create
+from src.offers.models import OfferSchedule
 
 
 @pytest.fixture

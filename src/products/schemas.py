@@ -4,6 +4,7 @@ from uuid import UUID
 from pydantic import BaseModel, Field, HttpUrl, field_validator
 
 from src.categories.schemas import CategorySchema
+from src.offers.schemas import OfferSchema
 
 
 class ProductSchema(BaseModel):
@@ -18,6 +19,10 @@ class ProductSchema(BaseModel):
 
 	class Config:
 		from_attributes = True
+
+
+class ProductWithOffersSchema(ProductSchema):
+	offers: list[OfferSchema]
 
 
 class ProductWithCategoriesSchema(ProductSchema):

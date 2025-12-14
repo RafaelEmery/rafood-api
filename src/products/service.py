@@ -7,6 +7,7 @@ from src.products.schemas import (
 	CreateProductSchema,
 	ProductSchema,
 	ProductWithCategoriesSchema,
+	ProductWithOffersSchema,
 	UpdateProductSchema,
 )
 
@@ -25,8 +26,7 @@ class ProductService:
 		except Exception as e:
 			raise ProductsInternalError(message=str(e)) from e
 
-	# TODO: Validate if can return offers or some flag to offers
-	async def get(self, id: UUID) -> ProductSchema:
+	async def get(self, id: UUID) -> ProductWithOffersSchema:
 		try:
 			return await self.repository.get(id)
 		except ProductNotFoundError:

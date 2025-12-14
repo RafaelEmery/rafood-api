@@ -2,6 +2,7 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy.orm import selectinload
 
 from src.products.exceptions import ProductNotFoundError
 from src.products.models import Product
@@ -27,7 +28,8 @@ class ProductRepository:
 		return result.scalars().unique().all()
 
 	async def get(self, id: UUID) -> Product:
-		result = await self.db.execute(select(Product).where(Product.id == id))
+		query = select(Product).options(selectinload(Product.offers)).where(Product.id == id)
+		result = await self.db.execute(query)
 		product = result.scalars().unique().first()
 
 		if not product:
