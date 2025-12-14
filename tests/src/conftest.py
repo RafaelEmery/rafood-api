@@ -3,6 +3,7 @@ from uuid import uuid4
 import pytest
 
 from src.categories.models import Category
+from src.offers.models import Offer
 from src.products.models import Product
 from src.restaurants.models import Restaurant
 from src.users.models import User
@@ -55,6 +56,27 @@ def restaurant_factory(user_factory):
 def category_factory():
 	def create(session, **kwargs):
 		obj = Category(id=uuid4(), name=kwargs.get('name', f'By Factory {str(uuid4())}'))
+		session.add(obj)
+
+		return obj
+
+	return create
+
+
+@pytest.fixture
+def offer_factory(product_factory):
+	def create(session, **kwargs):
+		# Create product if not provided
+		if 'product_id' not in kwargs:
+			product = product_factory(session)
+			kwargs['product_id'] = product.id
+
+		obj = Offer(
+			id=uuid4(),
+			product_id=kwargs['product_id'],
+			price=kwargs.get('price', 19.99),
+			active=kwargs.get('active', True),
+		)
 		session.add(obj)
 
 		return obj

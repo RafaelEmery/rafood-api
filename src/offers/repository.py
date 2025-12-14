@@ -25,7 +25,7 @@ class OfferRepository:
 		offer = result.scalars().unique().first()
 
 		if not offer:
-			raise OfferNotFoundError('Offer not found')
+			raise OfferNotFoundError(offer_id=str(id))
 
 		return offer
 
@@ -71,7 +71,7 @@ class OfferScheduleRepository:
 		schedule = result.scalars().unique().first()
 
 		if not schedule:
-			raise OfferScheduleNotFoundError('Offer schedule not found')
+			raise OfferScheduleNotFoundError(schedule_id=str(schedule_id))
 
 		return schedule
 

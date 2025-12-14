@@ -10,6 +10,7 @@ class OfferSchema(BaseModel):
 	id: UUID
 	product_id: UUID
 	price: float
+	active: bool
 	created_at: datetime
 	updated_at: datetime
 
@@ -47,6 +48,7 @@ class CreateOfferResponseSchema(BaseModel):
 
 class UpdateOfferSchema(BaseModel):
 	price: float = Field(gt=0)
+	active: bool
 
 
 class CreateOfferScheduleSchema(BaseModel):

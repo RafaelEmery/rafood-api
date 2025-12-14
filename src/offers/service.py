@@ -54,6 +54,7 @@ class OfferService:
 			offer = await self.repository.get(id)
 
 			offer.price = offer_update.price
+			offer.active = offer_update.active
 			await self.repository.update(offer)
 
 			return offer

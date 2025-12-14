@@ -73,6 +73,27 @@ async def test_find_product_by_id(session, client, product_factory):
 
 
 @pytest.mark.asyncio
+async def test_find_product_by_id_with_offers(session, client, product_factory, offer_factory):
+	product = product_factory(session, name='Ibson', price=60.00)
+	first_offer = offer_factory(session, product_id=product.id, price=10.0)
+	second_offer = offer_factory(session, product_id=product.id, price=15.0)
+	await session.commit()
+
+	response = await client.get(f'/api/v1/products/{product.id}')
+	data = response.json()
+	offer_ids = [offer['id'] for offer in data['offers']]
+
+	assert response.status_code == status.HTTP_200_OK
+	assert data['id'] == str(product.id)
+	assert data['name'] == 'Ibson'
+	assert data['price'] == 60.00
+	assert 'offers' in data
+	assert len(data['offers']) == 2
+	assert str(first_offer.id) in offer_ids
+	assert str(second_offer.id) in offer_ids
+
+
+@pytest.mark.asyncio
 async def test_find_product_by_id_not_found_error(client):
 	response = await client.get(f'/api/v1/products/{str(uuid4())}')
 
