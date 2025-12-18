@@ -37,6 +37,10 @@ async def ok():
 
 
 if __name__ == '__main__':
+	"""
+	Main entry point for running the FastAPI application using Uvicorn.
+	Possibly deprecated in favor of using Docker and `make start` command.
+	"""
 	import uvicorn
 
 	uvicorn.run(

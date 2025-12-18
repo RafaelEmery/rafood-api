@@ -26,7 +26,7 @@ down: ## Remove the Docker containers
 
 restart: ## Restart the Docker containers
 	@echo "Restarting containers... 🔄"
-	@docker compose down
+	@docker compose stop
 	@docker compose up -d
 
 logs: ## Show logs for all services
