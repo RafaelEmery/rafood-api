@@ -1,6 +1,18 @@
-# TODO: validate if needs to separate in some monitoring profile and add on Makefile
 services:
-  # TODO: add API service here and link with prometheus
+  api:
+    build: .
+    image: rafood-api:latest
+    container_name: rafood_api
+    volumes:
+      - .:/app
+    ports:
+      - "${APP_PORT}:8000"
+    env_file:
+      - .env
+    stdin_open: true
+    tty: true
+    depends_on:
+      - database
   database:
     container_name: rafood_db
     image: postgres
@@ -19,9 +31,6 @@ services:
       - "${PROMETHEUS_PORT}:9090"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-    # FIXME: remove extra_hosts when add API service to docker-compose
-    extra_hosts: # For Docker to access host machine
-      - "host.docker.internal:host-gateway"
   grafana:
     image: grafana/grafana
     container_name: grafana

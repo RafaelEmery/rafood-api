@@ -2,7 +2,7 @@
 
 ## Context
 
-There's a lack of observability in rafood-api, making it difficult to monitor performance, trace requests, and diagnose issues effectively. 
+There's a lack of observability in rafood-api, making it difficult to monitor performance, trace requests, and diagnose issues effectively.
 
 Implementing Open Telemetry will provide a standardized way to collect and export telemetry data, enhancing our ability to observe and analyze the system's behavior.
 
@@ -13,6 +13,7 @@ We are proposing to integrate Open Telemetry into the rafood-api codebase.
 This will involve instrumenting the code to collect telemetry data such as traces, metrics, and logs, and exporting this data to a backend for analysis and visualization.
 
 Tools used:
+
 - OpenTelemetry SDKs for instrumentation
 - Prometheus for metrics collection
 - Grafana for visualization

@@ -63,23 +63,27 @@ pyenv activate rafood-api
 To install the application:
 
 ```bash
-poetry install --no-root
+make build
 ```
 
-To run the API:
+To run the API and dependencies with Docker:
 
 ```bash
-make run
+make start
 ```
 
-### Start dependencies
-
-To start and stop the Docker dependencies:
+To stop the API and dependencies:
 
 ```bash
-make dep-start
+make stop
+```
 
-make dep-stop
+You can also use `restart` and `build` commands.
+
+To check API logs:
+
+```bash
+make logs
 ```
 
 ### Alembic migrations
@@ -114,7 +118,7 @@ To run tests with `pytest`:
 make test
 ```
 
-Be sure to have database container running with `make dep-start`
+Be sure to have database container running with `make start`
 
 ______________________________________________________________________
 
