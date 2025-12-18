@@ -2,6 +2,7 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy.orm import selectinload
 
 from src.users.exceptions import UserNotFoundError
 from src.users.models import User
@@ -21,11 +22,12 @@ class UserRepository:
 		return users
 
 	async def get(self, id: UUID) -> User:
-		result = await self.db.execute(select(User).where(User.id == id))
+		query = select(User).options(selectinload(User.restaurants)).where(User.id == id)
+		result = await self.db.execute(query)
 		user: User = result.scalars().unique().first()
 
 		if not user:
-			raise UserNotFoundError('User not found')
+			raise UserNotFoundError(user_id=str(id))
 
 		return user
 

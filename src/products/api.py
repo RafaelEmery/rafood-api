@@ -8,6 +8,7 @@ from src.products.schemas import (
 	CreateProductSchema,
 	ProductSchema,
 	ProductWithCategoriesSchema,
+	ProductWithOffersSchema,
 	UpdateProductSchema,
 )
 
@@ -30,7 +31,7 @@ async def list_products(
 	'/{id}',
 	name='Find product',
 	status_code=status.HTTP_200_OK,
-	response_model=ProductSchema,
+	response_model=ProductWithOffersSchema,
 )
 async def find_product(id: UUID, service: ProductServiceDeps):
 	return await service.get(id)
