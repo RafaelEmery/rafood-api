@@ -15,6 +15,10 @@ dep-stop: ## Stop dependencies
 dep-down: ## Remove dependencies
 	@docker compose down
 
+dep-restart: ## Restart dependencies
+	@docker compose down && docker compose up -d
+
+
 dep-logs: ## Show database logs
 	@docker compose logs -f database
 

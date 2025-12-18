@@ -1,4 +1,6 @@
+# TODO: validate if needs to separate in some monitoring profile and add on Makefile
 services:
+  # TODO: add API service here and link with prometheus
   database:
     container_name: rafood_db
     image: postgres
@@ -10,6 +12,30 @@ services:
       POSTGRES_DB: "${DB_NAME}"
       POSTGRES_USER: "${DB_USER}"
       POSTGRES_PASSWORD: "${DB_PASSWORD}"
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "${PROMETHEUS_PORT}:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    # FIXME: remove extra_hosts when add API service to docker-compose
+    extra_hosts: # For Docker to access host machine
+      - "host.docker.internal:host-gateway"
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "${GRAFANA_PORT}:3000"
+    depends_on:
+      - prometheus
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
 
+# TODO: create monitoring network for prometheus and grafana
 volumes:
   postgres_data:
