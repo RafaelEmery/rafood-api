@@ -16,8 +16,9 @@ class Settings(BaseSettings):
 	DB_PORT: int
 
 	class Config:
-		case_sensitive = True
-		env_file = '.env'
+		case_sensitive = True  # Environment variables are case sensitive
+		env_file = '.env'  # Load environment variables from .env file
+		extra = 'ignore'  # Ignore extra environment variables
 
 
 settings = Settings()

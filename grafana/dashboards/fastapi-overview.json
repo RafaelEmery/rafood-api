@@ -1,0 +1,88 @@
+{
+    "uid": "fastapi",
+    "title": "FastAPI - Overview",
+    "timezone": "browser",
+    "schemaVersion": 38,
+    "version": 1,
+    "refresh": "5s",
+    "panels": [
+        {
+            "type": "stat",
+            "title": "Requests / second",
+            "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
+            "targets": [
+                {
+                    "expr": "sum(rate(http_requests_total[1m]))",
+                    "refId": "A"
+                }
+            ]
+        },
+        {
+        "type": "stat",
+        "title": "5xx errors / second",
+        "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 },
+        "targets": [
+            {
+            "expr": "sum(rate(http_requests_total{status=~\"5..\"}[1m]))",
+            "refId": "A"
+            }
+        ]
+        },
+        {
+        "type": "timeseries",
+        "title": "Latency (p50 / p90 / p99)",
+        "gridPos": { "x": 0, "y": 4, "w": 12, "h": 6 },
+        "targets": [
+            {
+            "expr": "histogram_quantile(0.5, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))",
+            "legendFormat": "p50",
+            "refId": "A"
+            },
+            {
+            "expr": "histogram_quantile(0.9, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))",
+            "legendFormat": "p90",
+            "refId": "B"
+            },
+            {
+            "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))",
+            "legendFormat": "p99",
+            "refId": "C"
+            }
+        ]
+        },
+        {
+        "type": "timeseries",
+        "title": "Requests by endpoint",
+        "gridPos": { "x": 0, "y": 10, "w": 12, "h": 6 },
+        "targets": [
+            {
+            "expr": "sum(rate(http_requests_total[1m])) by (handler)",
+            "legendFormat": "{{handler}}",
+            "refId": "A"
+            }
+        ]
+        },
+        {
+        "type": "timeseries",
+        "title": "HTTP status codes",
+        "gridPos": { "x": 0, "y": 16, "w": 12, "h": 6 },
+        "targets": [
+            {
+            "expr": "sum(rate(http_requests_total{status=~\"2..\"}[1m]))",
+            "legendFormat": "2xx",
+            "refId": "A"
+            },
+            {
+            "expr": "sum(rate(http_requests_total{status=~\"4..\"}[1m]))",
+            "legendFormat": "4xx",
+            "refId": "B"
+            },
+            {
+            "expr": "sum(rate(http_requests_total{status=~\"5..\"}[1m]))",
+            "legendFormat": "5xx",
+            "refId": "C"
+            }
+        ]
+        }
+    ]
+}

@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from src.api import api_router
 from src.core.config import settings
@@ -9,6 +10,17 @@ app = FastAPI(
 	description=settings.APP_DESCRIPTION,
 	version=settings.APP_VERSION,
 )
+
+Instrumentator(
+	should_group_status_codes=True,
+	should_ignore_untemplated=True,
+	excluded_handlers=['/metrics', '/ping'],
+).instrument(app).expose(
+	app,
+	endpoint='/metrics',
+	include_in_schema=False,
+)
+
 app.include_router(api_router, prefix=settings.APP_V1_PREFIX)
 register_exception_handlers(app)
 
@@ -25,6 +37,8 @@ async def ok():
 
 
 if __name__ == '__main__':
+	# Main entry point for running the FastAPI application using Uvicorn.
+	# Possibly deprecated in favor of using Docker and `make start` command.
 	import uvicorn
 
 	uvicorn.run(
