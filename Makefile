@@ -29,6 +29,21 @@ restart: ## Restart the Docker containers
 	@docker compose stop
 	@docker compose up -d
 
+list-containers: ## List running Docker containers
+	@echo "Listing running containers... 📋"
+	@docker compose ps --format "table {{.Service}}\t{{.Image}}\t{{.State}}\t{{.Status}}\t{{.Size}}\t{{.Ports}}" | awk 'BEGIN{OFS="\t"} { \
+		gsub(/0\.0\.0\.0:/, ""); \
+		gsub(/->/, " → "); \
+		gsub(/\/tcp.*/, ""); \
+		gsub(/running/, "\033[32mrunning\033[0m"); \
+		gsub(/exited/, "\033[31mexited\033[0m"); \
+		gsub(/paused/, "\033[33mpaused\033[0m"); \
+		gsub(/^api/, "\033[35mapi\033[0m"); \
+		gsub(/rafood-api:latest/, "\033[35mrafood-api:latest\033[0m"); \
+		gsub(/8000/, "\033[35m8000\033[0m"); \
+		print \
+	}'
+
 logs: ## Show logs for all services
 	@echo "Showing API logs... 📜"
 	@docker compose logs -f api
