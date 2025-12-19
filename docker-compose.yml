@@ -31,6 +31,8 @@ services:
       - "${PROMETHEUS_PORT}:9090"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - api
   grafana:
     image: grafana/grafana
     container_name: grafana

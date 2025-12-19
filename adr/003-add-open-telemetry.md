@@ -14,7 +14,7 @@ This will involve instrumenting the code to collect telemetry data such as trace
 
 Tools used:
 
-- OpenTelemetry SDKs for instrumentation
+- OpenTelemetry related libs for Python and FastAPI (`prometheus-fastapi-instrumentator`)
 - Prometheus for metrics collection
 - Grafana for visualization
 - Loki for log aggregation (*extra*)

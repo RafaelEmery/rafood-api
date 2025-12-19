@@ -22,7 +22,7 @@ My inicial studies of FastAPI is at [fastapi-studies repository](https://github.
 
 ### ER Model
 
-![er-model](./images/projects-and-pocs-restaurants-ER.jpg)
+![er-model](./docs/images/projects-and-pocs-restaurants-ER.jpg)
 
 ### Contexts
 
@@ -41,6 +41,10 @@ The ADRs are at `adr/` [folder and documents the main decisions](./adr/README.md
 ### Swagger
 
 FastAPI generates an OpenAPI docs on `/docs` endpoint.
+
+### Monitoring
+
+More about monitoring setup can be found at [docs/monitoring.md](./docs/monitoring.md).
 
 ## Running the API :running:
 

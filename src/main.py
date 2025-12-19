@@ -14,7 +14,7 @@ app = FastAPI(
 Instrumentator(
 	should_group_status_codes=True,
 	should_ignore_untemplated=True,
-	excluded_handlers=['/metrics', '/health'],
+	excluded_handlers=['/metrics', '/ping'],
 ).instrument(app).expose(
 	app,
 	endpoint='/metrics',
@@ -37,10 +37,8 @@ async def ok():
 
 
 if __name__ == '__main__':
-	"""
-	Main entry point for running the FastAPI application using Uvicorn.
-	Possibly deprecated in favor of using Docker and `make start` command.
-	"""
+	# Main entry point for running the FastAPI application using Uvicorn.
+	# Possibly deprecated in favor of using Docker and `make start` command.
 	import uvicorn
 
 	uvicorn.run(
