@@ -15,7 +15,7 @@
       }
     ]
   },
-  "description": "All basic Rafood Database (Postgres) metrics.",
+  "description": "All basic Rafood Database (Postgres) metrics",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
@@ -37,7 +37,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "description": "Percentage of used connections relative to the configured maximum.",
+          "description": "Percentage of used connections relative to the configured maximum",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -96,7 +96,7 @@
               "refId": "A"
             }
           ],
-          "title": "Connections Usage Percentage ",
+          "title": "Connections Usage Percentage",
           "type": "gauge"
         },
         {
@@ -104,7 +104,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "description": "Number of active client connections to the database.",
+          "description": "Number of active client connections to the database",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -171,7 +171,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "description": "Queries with opened pools but without use.",
+          "description": "Queries with open pools but without use",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -230,7 +230,7 @@
             "type": "prometheus",
             "uid": "PBFA97CFB590B2093"
           },
-          "description": "Connections with transaction still opened or somehow stuck.",
+          "description": "Connections with transaction still opened or somehow stuck",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -285,7 +285,7 @@
           "type": "gauge"
         }
       ],
-      "title": "Connections ",
+      "title": "Connections",
       "type": "row"
     },
     {
