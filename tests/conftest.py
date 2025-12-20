@@ -9,10 +9,13 @@ from src.core.config import settings
 from src.core.deps import get_session
 from src.main import app
 
+# Since tests are not on Docker, we use localhost as DB host
+# instead of 'database' (Docker service name)
+TEST_DB_HOST = 'localhost'
 TEST_DB_NAME = f'{settings.DB_NAME}_test'
 TEST_DB_URL = (
 	f'postgresql+asyncpg://{settings.DB_USER}:{settings.DB_PASSWORD}'
-	f'@{settings.DB_HOST}:{settings.DB_PORT}/{TEST_DB_NAME}'
+	f'@{TEST_DB_HOST}:{settings.DB_PORT}/{TEST_DB_NAME}'
 )
 
 
@@ -26,7 +29,7 @@ def create_test_db():
 		dbname='postgres',
 		user=settings.DB_USER,
 		password=settings.DB_PASSWORD,
-		host=settings.DB_HOST,
+		host=TEST_DB_HOST,
 		port=settings.DB_PORT,
 	)
 	conn.autocommit = True
