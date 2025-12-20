@@ -63,3 +63,7 @@ You can access dashboards at `Dashboards`, open the specific folder and open das
 ![folder](./images/grafana-folder.png)
 
 Those are the dashboards defined at `grafana/dashboards` as JSON files.
+
+#### To save dashboard changes
+
+After editing dashboards, go to `Save dashboard` > `Copy JSON to clipboard` and then paste JSON content on desired JSON file on `grafana/dashboards`.

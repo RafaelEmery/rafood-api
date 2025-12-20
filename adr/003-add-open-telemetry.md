@@ -32,6 +32,7 @@ Goals:
 - [Part 2 - Elevating FastAPI Observability: Integrating Grafana Tempo for Distributed Tracing](https://dimasyotama.medium.com/elevating-fastapi-observability-integrating-grafana-tempo-for-distributed-tracing-7a9c72dedac4)
 - [Getting Started: Monitoring a FastAPI App with Grafana and Prometheus](https://dev.to/ken_mwaura1/getting-started-monitoring-a-fastapi-app-with-grafana-and-prometheus-a-step-by-step-guide-3fbn) - Good reference for Prometheus and Grafana setup
 - [FastAPI Observability Lab with Prometheus and Grafana: Complete Guide](https://pub.towardsai.net/fastapi-observability-lab-with-prometheus-and-grafana-complete-guide-f12da15a15fd) - Complete guide for FastAPI observability with Prometheus and Grafana
+- [How to Monitor Posgresql with Prometheus and Grafana using Docker](https://dev.to/nelsonmendezz_/how-to-monitor-posgresql-with-prometheus-and-grafana-docker-24c8) - Reference for Postgres Exporter and Grafana dashboard created by community to monitor Postgres
 - [Docker Container Monitoring with cAdvisor, Prometheus, and Grafana using Docker Compose](https://medium.com/@sohammohite/docker-container-monitoring-with-cadvisor-prometheus-and-grafana-using-docker-compose-b47ec78efbc) - Reference for using cAdvisor with Prometheus and Grafana and dashboard example
 
 ______________________________________________________________________
