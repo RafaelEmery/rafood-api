@@ -34,6 +34,10 @@ Access Grafana at `http://localhost:3000` and the credentials are set in the `.e
 - Username: `GRAFANA_ADMIN_USER`
 - Password: `GRAFANA_ADMIN_PASSWORD`
 
+#### cAdvisor
+
+Thought cAdvisor metrics is collected by Prometheus and can be visualized on Grafana dashboards, you can access at `http://localhost:8080`.
+
 ## Prometheus
 
 #### Queries

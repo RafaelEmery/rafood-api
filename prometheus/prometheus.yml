@@ -10,3 +10,6 @@ scrape_configs:
   - job_name: rafood-database-local
     static_configs:
       - targets: ["database-exporter:9187"]
+  - job_name: "rafood-cadvisor-local"
+    static_configs:
+      - targets: ["cadvisor:8080"]

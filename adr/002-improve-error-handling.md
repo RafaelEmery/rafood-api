@@ -51,10 +51,10 @@ Payload for `JSONResponse` errors will be like:
 
 Basic logging will be improved as well!
 
-- [ ] Handling all application exceptions
-- [ ] Handling specific layers exceptions correctly
-- [ ] Handling dependency injection exceptions
-- [ ] Logging exceptions contexts in each case
+- Handling all application exceptions :white_check_mark:
+- Handling specific layers exceptions correctly :white_check_mark:
+- Handling dependency injection exceptions :white_check_mark:
+- Logging exceptions contexts in each case :white_check_mark:
 
 ## Consequences
 

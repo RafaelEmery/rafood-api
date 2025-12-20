@@ -55,6 +55,17 @@ services:
       - "${POSTGRES_EXPORTER_PORT}:9187"
     depends_on:
       - database
+  container-metrics-exporter:
+    container_name: cadvisor
+    image: gcr.io/cadvisor/cadvisor:latest
+    ports:
+      - "${CADVISOR_PORT}:8080"
+    volumes:
+      - "/:/rootfs"
+      - "/var/run:/var/run"
+      - "/sys:/sys"
+      - "/var/lib/docker/:/var/lib/docker"
+      - "/dev/disk/:/dev/disk"
 
 volumes:
   postgres_data:
