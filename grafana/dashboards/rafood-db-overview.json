@@ -304,7 +304,10 @@
   ],
   "preload": false,
   "schemaVersion": 42,
-  "tags": [],
+  "tags": [
+    "database",
+    "postgres"
+  ],
   "templating": {
     "list": []
   },
