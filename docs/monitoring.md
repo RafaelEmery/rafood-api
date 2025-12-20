@@ -24,7 +24,7 @@ To stop the services, run:
 
 ```bash
 make down-monitoring
-``
+```
 
 #### Prometheus
 
