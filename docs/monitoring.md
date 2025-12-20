@@ -23,11 +23,11 @@ make restart
 make restart-down
 ```
 
-### Prometheus
+#### Prometheus
 
 Access Prometheus at `http://localhost:9090` and by default, it scrapes metrics from the API at `http://api:8000/metrics`.
 
-### Grafana
+#### Grafana
 
 Access Grafana at `http://localhost:3000` and the credentials are set in the `.env` file:
 
@@ -40,7 +40,7 @@ Access Grafana at `http://localhost:3000` and the credentials are set in the `.e
 
 To check the metrics, go to `http://localhost:9090/metrics` and start writing some function, operation, metric and label name to test it.
 
-![alt text](./images/prometheus-metrics.png)
+![metrics](./images/prometheus-metrics.png)
 
 #### Targets
 

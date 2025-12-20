@@ -7,6 +7,6 @@ scrape_configs:
     static_configs:
       - targets:
           - api:8000
-  - job_name: postgres
+  - job_name: rafood-database-local
     static_configs:
-      - targets: ['database-exporter:9187']
+      - targets: ["database-exporter:9187"]
