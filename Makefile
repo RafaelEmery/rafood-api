@@ -78,10 +78,21 @@ restart: ## Restart the Docker containers
 	@echo "\nContainers restarted! 🎉\n"
 	@docker compose ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
 
-restart-down: ## Restart the Docker containers (from down state)
+start-monitoring: ## Start the monitoring Docker containers
+	@echo "$$BANNER"
+	@echo "Starting monitoring containers... 🚀\n"
+	@docker compose --profile monitoring up -d
+	@echo "\nMonitoring containers started! 🎉\n"
+	@docker compose ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
+
+down-monitoring: ## Remove the monitoring Docker containers
+	@echo "Removing monitoring containers... 🗑️\n"
+	@docker compose --profile monitoring down
+
+restart-monitoring: ## Restart the Docker containers (from down state)
 	@echo "Stopping and restarting Docker containers (full down/up cycle) ... 🔄\n"
-	@docker compose down
-	@docker compose up -d
+	@docker compose --profile monitoring down
+	@docker compose --profile monitoring up -d
 	@echo "\nContainers restarted! 🎉\n"
 	@docker compose ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
 
