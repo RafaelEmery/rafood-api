@@ -492,7 +492,7 @@
       },
       "gridPos": {
         "h": 10,
-        "w": 23,
+        "w": 24,
         "x": 0,
         "y": 28
       },
@@ -539,6 +539,7 @@
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
+      "description": "Rafood API container CPU usage",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -551,9 +552,9 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
+            "barWidthFactor": 0.5,
+            "drawStyle": "bars",
+            "fillOpacity": 21,
             "gradientMode": "none",
             "hideFrom": {
               "legend": false,
@@ -562,7 +563,7 @@
             },
             "insertNulls": false,
             "lineInterpolation": "linear",
-            "lineWidth": 1,
+            "lineWidth": 2,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
@@ -575,9 +576,10 @@
               "mode": "none"
             },
             "thresholdsStyle": {
-              "mode": "off"
+              "mode": "dashed"
             }
           },
+          "fieldMinMax": false,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -585,6 +587,10 @@
               {
                 "color": "green",
                 "value": 0
+              },
+              {
+                "color": "#EAB839",
+                "value": 50
               },
               {
                 "color": "red",
@@ -608,7 +614,7 @@
           "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": false
         },
         "tooltip": {
           "hideZeros": false,
@@ -619,7 +625,9 @@
       "pluginVersion": "12.3.1",
       "targets": [
         {
-          "expr": "rate(process_cpu_seconds_total[1m]) * 100",
+          "editorMode": "code",
+          "expr": "rate(process_cpu_seconds_total{instance=\"api:8000\"}[1m]) * 100",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -631,6 +639,7 @@
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
       },
+      "description": "Rafood API memory usage",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -644,7 +653,7 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "barWidthFactor": 0.6,
-            "drawStyle": "line",
+            "drawStyle": "bars",
             "fillOpacity": 0,
             "gradientMode": "none",
             "hideFrom": {
@@ -667,7 +676,7 @@
               "mode": "none"
             },
             "thresholdsStyle": {
-              "mode": "off"
+              "mode": "dashed"
             }
           },
           "mappings": [],
@@ -679,8 +688,12 @@
                 "value": 0
               },
               {
+                "color": "#EAB839",
+                "value": 1024
+              },
+              {
                 "color": "red",
-                "value": 80
+                "value": 2048
               }
             ]
           },
@@ -700,7 +713,7 @@
           "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": false
         },
         "tooltip": {
           "hideZeros": false,
@@ -711,132 +724,23 @@
       "pluginVersion": "12.3.1",
       "targets": [
         {
-          "expr": "process_resident_memory_bytes / 1024 / 1024",
+          "editorMode": "code",
+          "expr": "process_resident_memory_bytes{instance=\"api:8000\"} / 1024 / 1024",
+          "range": true,
           "refId": "A"
         }
       ],
       "title": "Memory (MB)",
       "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
-      "description": "Active threads in the process.\nContinuous growth indicates leaks or blocking sync operations.\nShould remain mostly stable.",
-      "fieldConfig": {
-        "defaults": {
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 13,
-        "x": 0,
-        "y": 49
-      },
-      "id": 103,
-      "options": {
-        "minVizHeight": 75,
-        "minVizWidth": 75,
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "sizing": "auto"
-      },
-      "pluginVersion": "12.3.1",
-      "targets": [
-        {
-          "expr": "process_threads",
-          "refId": "A"
-        }
-      ],
-      "title": "Threads",
-      "type": "gauge"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PBFA97CFB590B2093"
-      },
-      "description": "Open files and connections used by the process.\nContinuous growth indicates leaked or unclosed resources.\nShould remain stable.",
-      "fieldConfig": {
-        "defaults": {
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 11,
-        "x": 13,
-        "y": 49
-      },
-      "id": 104,
-      "options": {
-        "minVizHeight": 75,
-        "minVizWidth": 75,
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "sizing": "auto"
-      },
-      "pluginVersion": "12.3.1",
-      "targets": [
-        {
-          "expr": "process_open_fds",
-          "refId": "A"
-        }
-      ],
-      "title": "Open file descriptors",
-      "type": "gauge"
     }
   ],
   "preload": false,
   "refresh": "5s",
   "schemaVersion": 42,
-  "tags": [],
+  "tags": [
+    "api",
+    "fastapi"
+  ],
   "templating": {
     "list": []
   },
@@ -846,7 +750,7 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Rafood API metrics",
+  "title": "Rafood API Metrics",
   "uid": "fastapi",
-  "version": 5
+  "version": 1
 }

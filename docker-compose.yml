@@ -27,6 +27,7 @@ services:
   prometheus:
     image: prom/prometheus
     container_name: prometheus
+    profiles: ["monitoring"]
     ports:
       - "${PROMETHEUS_PORT}:9090"
     volumes:
@@ -36,6 +37,7 @@ services:
   grafana:
     image: grafana/grafana
     container_name: grafana
+    profiles: ["monitoring"]
     ports:
       - "${GRAFANA_PORT}:3000"
     depends_on:
@@ -46,6 +48,28 @@ services:
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning
       - ./grafana/dashboards:/var/lib/grafana/dashboards
+  database-exporter:
+    image: prometheuscommunity/postgres-exporter
+    container_name: postgres-exporter
+    profiles: ["monitoring"]
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${DB_USER}:${DB_PASSWORD}@database:5432/${DB_NAME}?sslmode=disable"
+    ports:
+      - "${POSTGRES_EXPORTER_PORT}:9187"
+    depends_on:
+      - database
+  container-metrics-exporter:
+    container_name: cadvisor
+    image: gcr.io/cadvisor/cadvisor:latest
+    profiles: ["monitoring"]
+    ports:
+      - "${CADVISOR_PORT}:8080"
+    volumes:
+      - "/:/rootfs"
+      - "/var/run:/var/run"
+      - "/sys:/sys"
+      - "/var/lib/docker/:/var/lib/docker"
+      - "/dev/disk/:/dev/disk"
 
 volumes:
   postgres_data:
