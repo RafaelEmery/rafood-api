@@ -2,6 +2,22 @@
 
 FastAPI project to manage restaurants, products and offers :hamburger:
 
+## Table of Contents
+
+- [RaFood API](#rafood-api)
+  - [Table of Contents](#table-of-contents)
+  - [About the project](#about-the-project)
+    - [Tools used :hammer:](#tools-used-hammer)
+    - [ER Model](#er-model)
+    - [Contexts](#contexts)
+    - [Architecture Decision Records (ADRs)](#architecture-decision-records-adrs)
+    - [Swagger](#swagger)
+    - [Monitoring](#monitoring)
+  - [Running the API :running:](#running-the-api-running)
+    - [Alembic migrations](#alembic-migrations)
+    - [Linter](#linter)
+    - [Tests](#tests)
+
 ## About the project
 
 It was based on [this](https://github.com/goomerdev/job-dev-backend-interview) backend challenge and a opportunity to learn and apply some concepts of FastAPI.
@@ -10,15 +26,14 @@ My inicial studies of FastAPI is at [fastapi-studies repository](https://github.
 
 ### Tools used :hammer:
 
-- Python (3.10.7)
+- Python (`3.10.7`)
 - Poetry
 - FastAPI
-- Pydantic
-- SQLAlchemy
-- Alembic
-- Pre-commit
+- SQLModel & Alembic
+- Pytest
 - PostgreSQL
 - Docker & Docker Compose
+- Prometheus & Grafana
 
 ### ER Model
 
@@ -126,4 +141,4 @@ Be sure to have database container running with `make start`
 
 ______________________________________________________________________
 
-Made with :crystal_ball: for studies by RafaelEmery
+Made for studies by RafaelEmery
