@@ -78,6 +78,13 @@ restart: ## Restart the Docker containers
 	@echo "\nContainers restarted! 🎉\n"
 	@docker compose ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
 
+restart-down: ## Restart the Docker containers (from down state)
+	@echo "Restarting containers (with down) ... 🔄\n"
+	@docker compose down
+	@docker compose up -d
+	@echo "\nContainers restarted! 🎉\n"
+	@docker compose ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
+
 list-containers: ## List running Docker containers
 	@echo "Listing running containers... 📋\n"
 	@docker compose ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)

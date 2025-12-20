@@ -46,6 +46,15 @@ services:
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning
       - ./grafana/dashboards:/var/lib/grafana/dashboards
+  database-exporter:
+    image: prometheuscommunity/postgres-exporter
+    container_name: postgres-exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${DB_USER}:${DB_PASSWORD}@database:${DB_PORT}/${DB_NAME}?sslmode=disable"
+    ports:
+      - "${POSTGRES_EXPORTER_PORT}:9187"
+    depends_on:
+      - database
 
 volumes:
   postgres_data:
