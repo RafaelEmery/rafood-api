@@ -6,10 +6,10 @@ Uses Prometheus and Grafana for monitoring the API performance and health.
 
 ## Setup and access
 
-Start the containers using Docker Compose:
+Start the containers using Docker Compose and `monitoring` profile:
 
 ```bash
-make start
+make start-monitoring
 ```
 
 This will start the API along with Prometheus and Grafana services.
@@ -17,11 +17,14 @@ This will start the API along with Prometheus and Grafana services.
 For any changes on services, run:
 
 ```bash
-make restart
-
-# Or preferred
-make restart-down
+make restart-monitoring
 ```
+
+To stop the services, run:
+
+```bash
+make down-monitoring
+``
 
 #### Prometheus
 
@@ -67,3 +70,4 @@ Those are the dashboards defined at `grafana/dashboards` as JSON files.
 #### To save dashboard changes
 
 After editing dashboards, go to `Save dashboard` > `Copy JSON to clipboard` and then paste JSON content on desired JSON file on `grafana/dashboards`.
+```
