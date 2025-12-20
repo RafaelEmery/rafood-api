@@ -33,9 +33,6 @@ Tools used:
 - [Getting Started: Monitoring a FastAPI App with Grafana and Prometheus](https://dev.to/ken_mwaura1/getting-started-monitoring-a-fastapi-app-with-grafana-and-prometheus-a-step-by-step-guide-3fbn) - Good reference for Prometheus and Grafana setup
 - [FastAPI Observability Lab with Prometheus and Grafana: Complete Guide](https://pub.towardsai.net/fastapi-observability-lab-with-prometheus-and-grafana-complete-guide-f12da15a15fd) - Complete guide for FastAPI observability with Prometheus and Grafana
 
-# Results
+______________________________________________________________________
 
-## Tips
-
-- To validate prometheus is scraping the metrics from the API, access `http://localhost:9090/targets` after starting the containers with `make start` and check if the API target is listed as "UP".
-- To access Grafana, go to `http://localhost:3000` (credentials on `.env`).
+More details at [docs/monitoring.md](../docs/monitoring.md)

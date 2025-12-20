@@ -1,0 +1,5 @@
+# Docs and Guides
+
+This folder contains documentation and guides related to the project.
+
+- [monitoring.md](monitoring.md): Guide for monitoring tools used in the project.
