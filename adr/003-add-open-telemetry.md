@@ -34,6 +34,13 @@ Goals:
 - [FastAPI Observability Lab with Prometheus and Grafana: Complete Guide](https://pub.towardsai.net/fastapi-observability-lab-with-prometheus-and-grafana-complete-guide-f12da15a15fd) - Complete guide for FastAPI observability with Prometheus and Grafana
 - [How to Monitor Posgresql with Prometheus and Grafana using Docker](https://dev.to/nelsonmendezz_/how-to-monitor-posgresql-with-prometheus-and-grafana-docker-24c8) - Reference for Postgres Exporter and Grafana dashboard created by community to monitor Postgres
 - [Docker Container Monitoring with cAdvisor, Prometheus, and Grafana using Docker Compose](https://medium.com/@sohammohite/docker-container-monitoring-with-cadvisor-prometheus-and-grafana-using-docker-compose-b47ec78efbc) - Reference for using cAdvisor with Prometheus and Grafana and dashboard example
+- [fastapi-observability](https://github.com/blueswen/fastapi-observability) - Example repository with FastAPI, Grafana, Prometheus, Loki and Tempo setup.
+
+## To be done
+
+- Implement alerting rules in Prometheus for critical metrics (e.g., high latency, error rates).
+- Set up Grafana Loki for log visualization.
+- Set up Grafana Tempo for distributed tracing.
 
 ______________________________________________________________________
 
