@@ -8,6 +8,71 @@ Status: `WIP`
 - Coupled dependencies and infrastructure (e.g. database as Postgres).
 - Testing only on APIs and not much of unit tests.
 
+Current project structure (*as is*):
+![module structure](../docs/images/module-structure.png)
+
+Tree view:
+
+```
+src
+├── api.py
+├── categories
+│   ├── api.py
+│   ├── deps.py
+│   ├── exceptions.py
+│   ├── __init__.py
+│   ├── models.py
+│   ├── repository.py
+│   ├── schemas.py
+│   └── service.py
+├── core
+│   ├── config.py
+│   ├── database.py
+│   ├── deps.py
+│   ├── exception_handlers.py
+│   └── __init__.py
+├── enums.py
+├── exceptions.py
+├── __init__.py
+├── main.py
+├── offers
+│   ├── api.py
+│   ├── deps.py
+│   ├── exceptions.py
+│   ├── __init__.py
+│   ├── models.py
+│   ├── repository.py
+│   ├── schemas.py
+│   └── service.py
+├── products
+│   ├── api.py
+│   ├── deps.py
+│   ├── exceptions.py
+│   ├── __init__.py
+│   ├── models.py
+│   ├── repository.py
+│   ├── schemas.py
+│   └── service.py
+├── restaurants
+│   ├── api.py
+│   ├── deps.py
+│   ├── exceptions.py
+│   ├── __init__.py
+│   ├── models.py
+│   ├── repository.py
+│   ├── schemas.py
+│   └── service.py
+└── users
+    ├── api.py
+    ├── deps.py
+    ├── exceptions.py
+    ├── __init__.py
+    ├── models.py
+    ├── repository.py
+    ├── schemas.py
+    └── service.py
+```
+
 ## Decision
 
 Refactor into a more *"hexagonalish"* or *"hexagonal-like"* architecture.

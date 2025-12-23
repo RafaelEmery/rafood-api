@@ -155,3 +155,7 @@ clean-test: ## Clean test cache files
 	@find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 	@find . -type f -name "*.pyc" -delete
 	@rm -rf .pytest_cache/ .ruff_cache/ .coverage htmlcov/
+
+tree: ## Show project file tree
+	@echo "Project file tree... 🌲\n"
+	@tree src -I "__pycache__|*.pyc|.pytest_cache|.ruff_cache|.venv|venv|.mypy_cache|.git|.idea|__pypackages__|.venv|venv|node_modules"
