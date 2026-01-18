@@ -42,8 +42,8 @@ DOCKER_PS_AWK = 'BEGIN{OFS="\t"} { \
 
 help: ## Show this help message
 	@echo "$$BANNER"
-	@echo 'Showing all available make targets... 🤔\n'
-	@echo 'Available targets:'
+	@echo "\nShowing all available make targets... 🤔\n"
+	@echo "Available targets:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 banner: ## Show the banner
@@ -159,3 +159,14 @@ clean-test: ## Clean test cache files
 tree: ## Show project file tree
 	@echo "Project file tree... 🌲\n"
 	@tree src -I "__pycache__|*.pyc|.pytest_cache|.ruff_cache|.venv|venv|.mypy_cache|.git|.idea|__pypackages__|.venv|venv|node_modules"
+
+create-adr: ## Create a new Architecture Decision Record. Usage: make create-adr name='<descriptive-name>'
+	@echo "Creating new Architecture Decision Record... 🆕"
+	@echo "Usage: make create-adr name='<descriptive-name>'"
+	@if [ -z "$(name)" ]; then \
+		echo "Error: Please provide a descriptive name using name='<descriptive-name>'"; \
+		exit 1; \
+	fi
+	@NUM=$$(ls adr/ | grep -E '^[0-9]{3}-' | grep -v '^000-' | wc -l | awk '{printf "%03d", $$1 + 1}'); \
+	cp adr/000-base-adr-template.md adr/$$NUM-$(name).md; \
+	echo "Created adr/$$NUM-$(name).md"
