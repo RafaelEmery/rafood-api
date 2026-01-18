@@ -1,4 +1,4 @@
-# Title
+# \<*Add ADR Title Here*>
 
 ## Context
 

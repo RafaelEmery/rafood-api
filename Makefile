@@ -170,3 +170,8 @@ create-adr: ## Create a new Architecture Decision Record. Usage: make create-adr
 	@NUM=$$(ls adr/ | grep -E '^[0-9]{3}-' | grep -v '^000-' | wc -l | awk '{printf "%03d", $$1 + 1}'); \
 	cp adr/000-base-adr-template.md adr/$$NUM-$(name).md; \
 	echo "Created adr/$$NUM-$(name).md"
+
+load-test: ## Run load tests with Locust
+	@echo "Running load tests with Locust... 🔥\n"
+	@echo "Warning: Make sure the API is running before executing load tests! ⚠️\n"
+	@poetry run locust -f locust/locustfile.py
