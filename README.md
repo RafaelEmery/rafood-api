@@ -35,6 +35,7 @@ My inicial studies of FastAPI is at [fastapi-studies repository](https://github.
 - PostgreSQL
 - Docker & Docker Compose
 - Prometheus & Grafana
+- Locust
 
 ### ER Model
 

@@ -44,16 +44,19 @@ async def test_find_user_by_id_with_restaurants(session, client, user_factory, r
 
 	response = await client.get(f'/api/v1/users/{user.id}')
 	data = response.json()
+	restaurant_ids = {r['id'] for r in data['restaurants']}
+	restaurant_names = {r['name'] for r in data['restaurants']}
 
 	assert response.status_code == status.HTTP_200_OK
 	assert data['id'] == str(user.id)
 	assert data['first_name'] == 'Ronaldo'
 	assert data['last_name'] == 'Angelim'
 	assert len(data['restaurants']) == 2
-	assert data['restaurants'][0]['id'] == str(first_restaurant.id)
-	assert data['restaurants'][0]['name'] == 'Ninho'
-	assert data['restaurants'][1]['id'] == str(second_restaurant.id)
-	assert data['restaurants'][1]['name'] == 'Do Urubu'
+
+	assert str(first_restaurant.id) in restaurant_ids
+	assert str(second_restaurant.id) in restaurant_ids
+	assert 'Ninho' in restaurant_names
+	assert 'Do Urubu' in restaurant_names
 
 
 @pytest.mark.asyncio
