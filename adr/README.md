@@ -16,24 +16,12 @@ Example: `001-choose-database.md` or `002-improve-exception-handling.md`
 
 ## Records structure
 
-Based on [Michael Nygard template](https://github.com/joelparkerhenderson/architecture-decision-record/tree/main/locales/en/templates/decision-record-template-by-michael-nygard)
+Based on [Michael Nygard template](https://github.com/joelparkerhenderson/architecture-decision-record/tree/main/locales/en/templates/decision-record-template-by-michael-nygard) and at [base-adr-template](./000-base-adr-template.md).
 
-```
-# Title
+## Creating a new record
 
-## Context
+To create a new Architecture Decision Record, use the following command:
 
-What is the issue that we're seeing that is motivating this decision or change?
-
-## Decision
-
-What is the change that we're proposing and/or doing?
-
-## Consequences
-
-What becomes easier or more difficult to do because of this change?
-
-## References
-
-Docs, links or any other references to this change.
+```bash
+make create-adr name='some-adr-descriptive-name'
 ```

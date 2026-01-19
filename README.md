@@ -17,6 +17,7 @@ FastAPI project to manage restaurants, products and offers :hamburger:
     - [Alembic migrations](#alembic-migrations)
     - [Linter](#linter)
     - [Tests](#tests)
+    - [Load Tests](#load-tests)
 
 ## About the project
 
@@ -34,6 +35,7 @@ My inicial studies of FastAPI is at [fastapi-studies repository](https://github.
 - PostgreSQL
 - Docker & Docker Compose
 - Prometheus & Grafana
+- Locust
 
 ### ER Model
 
@@ -138,6 +140,16 @@ make test
 ```
 
 Be sure to have database container running with `make start`
+
+### Load Tests
+
+To run load tests with `locust`:
+
+```bash
+make load-test
+```
+
+More about load tests can be found at [docs/load-testing.md](./docs/load-testing.md).
 
 ______________________________________________________________________
 
