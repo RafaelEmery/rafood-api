@@ -38,7 +38,7 @@ class RestaurantTasks(TaskSet):
 			'image_url': faker.image_url(),
 			'owner_id': owner_id,
 			'street': faker.street_name(),
-			'number': faker.random_int(min=1, max=9999),  # noqa: S311
+			'number': faker.random_int(min=1, max=9999),
 			'neighborhood': faker.city_suffix(),
 			'city': faker.city(),
 			'state_abbr': faker.state_abbr(),
