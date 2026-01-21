@@ -100,7 +100,7 @@ list-containers: ## List running Docker containers
 	@echo "Listing running containers... 📋\n"
 	@docker compose ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
 
-logs: ## Show logs for all services
+logs: ## Show logs for API service
 	@echo "Showing API logs... 📜\n"
 	@docker compose logs -f api
 
