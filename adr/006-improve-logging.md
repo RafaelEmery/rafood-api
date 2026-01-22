@@ -2,8 +2,6 @@
 
 ## Context
 
-What is the issue that we're seeing that is motivating this decision or change?
-
 Currently, the logging setup for Rafood API has a basic configuration that does not provide sufficient detail for effective monitoring and debugging. Example:
 
 ```bash
@@ -38,9 +36,10 @@ The log message should be organized, JSON formatted, and include relevant metada
 
 Docs, links or any other references to this change.
 
+- [XI. Logs](https://12factor.net/logs) - The Twelve-Factor App: Logs
 - [Logging with FastAPI](https://betterstack.com/community/guides/logging/logging-with-fastapi/) - A guide on setting up logging in FastAPI applications with different configurations (dict, JSON, file, console).
 - [How to log every request and response in FastAPI](https://medium.com/@joerosborne/how-to-log-every-request-and-response-in-fastapi-dcf8d2be2055) - How to log every request and response in FastAPI (saving on database).
 - [Backend logging in Python and applied to FastAPI](https://medium.com/@v0220225/backend-logging-in-python-and-applied-to-fastapi-7b47118d1d92) - Defining logging best practices and logging requests and responses with a middleware.
 - [Creating a middleware in FastAPI for logging request and responses](https://dev.to/rajathkumarks/creating-a-middleware-in-fastapi-for-logging-request-and-responses-379o) - Simpler middleware example for logging requests and responses in FastAPI.
 - [Sharpen Your Code: Using the right tools](https://pythonbynight.com/blog/sharpen-your-code) - Rich Logging lib for Python applications.
-- [FastAPI Structlog Integration](https://wazaari.dev/blog/fastapi-structlog-integration) - Guide on integrating Structlog with FastAPI for structured logging (*that's a good one*). Has `correlation_id` implementation, request and simple `log.info()`.
+- [FastAPI Structlog Integration](https://wazaari.dev/blog/fastapi-structlog-integration) - Guide on integrating Structlog with FastAPI for structured logging (*that's a good one*). Has `correlation_id` implementation, request and simple `log.info()`. That's the main reference for this ADR.
