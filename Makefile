@@ -56,12 +56,12 @@ start: ## Start the Docker containers (also run the API)
 	@echo "\nContainers started! 🎉\n"
 	@docker compose ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
 
-build: ## Build the Docker images
+build: ## Build the Docker images. Tip: use 'make build' after changing dependencies in pyproject.toml
 	@echo "Building Docker images... 🏗️"
 	@echo "Tip: use 'make build' after changing dependencies in pyproject.toml 😎\n"
 	@docker compose down && docker compose build
 	@echo "\nDocker images built! 🎉\n"
-	@docker compose ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
+	@make start && make list-containers
 
 stop: ## Stop the Docker containers
 	@echo "Stopping containers... 🛑\n"
@@ -89,8 +89,8 @@ down-monitoring: ## Remove the monitoring Docker containers
 	@echo "Removing monitoring containers... 🗑️\n"
 	@docker compose --profile monitoring down
 
-restart-monitoring: ## Restart the Docker containers (from down state)
-	@echo "Stopping and restarting Docker containers (full down/up cycle) ... 🔄\n"
+restart-monitoring: ## Restart the monitoring Docker containers (from down state)
+	@echo "Stopping and restarting monitoring Docker containers (full down/up cycle) ... 🔄\n"
 	@docker compose --profile monitoring down
 	@docker compose --profile monitoring up -d
 	@echo "\nContainers restarted! 🎉\n"
@@ -100,13 +100,13 @@ list-containers: ## List running Docker containers
 	@echo "Listing running containers... 📋\n"
 	@docker compose ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
 
-logs: ## Show logs for API service
-	@echo "Showing API logs... 📜\n"
-	@docker compose logs -f api
+logs: ## Show logs for a container. Usage: make logs container=<container_name> (default: api)
+	@echo "Showing logs... 📜\n"
+	@docker compose logs -f $(or $(container),api)
 
-database-logs: ## Show logs for the database service
-	@echo "Showing database logs... 📜\n"
-	@docker compose logs -f database
+bash: ## Access bash in a container. Usage: make bash container=<container_name> (default: api)
+	@echo "Accessing bash in container... 💻\n"
+	@docker compose exec $(or $(container),api) bash
 
 create-migration: ## Create a new database migration. Usage: make create-migration name='<revision message>'
 	@echo "Creating new migration... 🆕"

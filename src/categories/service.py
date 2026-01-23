@@ -7,6 +7,9 @@ from src.categories.schemas import (
 	CreateCategoryResponseSchema,
 	CreateCategorySchema,
 )
+from src.core.logger import StructLogger
+
+logger = StructLogger()
 
 
 class CategoryService:
@@ -17,13 +20,17 @@ class CategoryService:
 
 	async def list(self) -> list[CategorySchema]:
 		try:
-			return await self.repository.list()
+			categories = await self.repository.list()
+			logger.bind(listed_categories_count=len(categories))
+
+			return categories
 		except Exception as e:
 			raise CategoriesInternalError(message=str(e)) from e
 
 	async def create(self, category: CreateCategorySchema) -> CreateCategoryResponseSchema:
 		try:
 			category_id = await self.repository.create(category)
+			logger.bind(created_category_id=category_id)
 
 			return CreateCategoryResponseSchema(id=category_id)
 		except Exception as e:
@@ -33,6 +40,8 @@ class CategoryService:
 		try:
 			category = await self.repository.get(id)
 			await self.repository.delete(category)
+
+			logger.bind(deleted_category_id=id)
 		except CategoryNotFoundError:
 			raise
 		except Exception as e:

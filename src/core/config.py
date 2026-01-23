@@ -9,6 +9,15 @@ class Settings(BaseSettings):
 	APP_HOST: str
 	APP_PORT: int
 
+	LOG_LEVEL: str = 'INFO'
+	LOG_JSON_FORMAT: bool = True
+	LOG_NAME: str = 'rafood-api'  # Application logs name
+	LOG_ACCESS_NAME: str = (
+		'rafood-api-access'  # Uvicorn access logs, re-emitted using structured information
+	)
+	LOG_INCLUDE_STACK: bool = True
+	LOGS_CORRELATION_HEADER_NAME: str = 'X-Request-ID'
+
 	DB_USER: str
 	DB_PASSWORD: str
 	DB_HOST: str
