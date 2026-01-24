@@ -104,6 +104,12 @@ class StructLogger:
 		return re.sub(r'(?<!^)(?=[A-Z])', '_', name).lower()
 
 	def bind(self, *args, **new_values: Any):
+		"""
+		Binds the given arguments to the logger context.
+		Any value added here will be added to all subsequent logs made with this logger.
+		Args can be either unnamed SQLModel subclasses, which will bind the model name in snake_case
+		to the model's ID, or named arguments, which will be bound as-is.
+		"""
 		for arg in args:
 			if not issubclass(type(arg), SQLModel):
 				self.logger.error(

@@ -33,6 +33,10 @@ class StructLogMiddleware:
 		# The correlation_id value is defined by X-Request-ID header on request
 		# but the name of the header can be customized when adding the middleware
 		# and currently is using the environment variable LOGS_CORRELATION_HEADER_NAME
+		# If no X-Request-ID header is provided, a new UUIDv4 is generated automatically
+		# by asgi-correlation-id middleware
+		# This function binds the correlation_id to structlog contextvars so every log
+		# made during this request will have the request_id field set
 		structlog.contextvars.bind_contextvars(request_id=correlation_id.get())
 
 		info = AccessInfo()
@@ -45,6 +49,7 @@ class StructLogMiddleware:
 
 		try:
 			info['start_time'] = time.perf_counter_ns()
+
 			await self.app(scope, receive, inner_send)
 		except Exception as e:
 			# Raising exception to be handled at exception_handlers.catch_all_handler.
@@ -56,17 +61,30 @@ class StructLogMiddleware:
 			http_method = scope['method']
 			http_version = scope['http_version']
 			url = get_path_with_query_string(scope)
+			headers = {k.decode().lower(): v.decode() for k, v in scope.get('headers', [])}
+			user_agent = headers.get('user-agent')
+			http_host = headers.get('host')
+			function_name = scope['endpoint'].__name__
+			route_name = scope['route'].name
+			path_params = scope['path_params'] if scope['path_params'] else None
 
 			# Recreate the Uvicorn access log format, but add all parameters as structured information
 			access_logger.info(
-				f"""{client_host}:{client_port} - "{http_method} {scope['path']} HTTP/{http_version}" {info['status_code']}""",
+				f'Called - {http_method} {scope["path"]} | HTTP/{http_version} | {info["status_code"]}',
 				http={
 					'url': str(url),
 					'status_code': info['status_code'],
 					'method': http_method,
-					'request_id': correlation_id.get(),
 					'version': http_version,
+					'host': http_host,
 				},
 				network={'client': {'ip': client_host, 'port': client_port}},
+				details={
+					'function': function_name,
+					'name': route_name,
+					'path_params': path_params,
+				},
+				request_id=correlation_id.get(),
+				user_agent=user_agent,
 				duration=process_time,
 			)

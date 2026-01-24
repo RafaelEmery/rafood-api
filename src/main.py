@@ -29,8 +29,8 @@ register_exception_handlers(app)
 
 app.include_router(api_router, prefix=settings.APP_V1_PREFIX)
 
-app.add_middleware(CorrelationIdMiddleware, header_name=settings.LOGS_CORRELATION_HEADER_NAME)
 app.add_middleware(StructLogMiddleware)
+app.add_middleware(CorrelationIdMiddleware, header_name=settings.LOGS_CORRELATION_HEADER_NAME)
 
 
 @app.get(

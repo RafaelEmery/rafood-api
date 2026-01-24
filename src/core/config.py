@@ -10,7 +10,7 @@ class Settings(BaseSettings):
 	APP_PORT: int
 
 	LOG_LEVEL: str = 'INFO'
-	LOG_JSON_FORMAT: bool = True
+	LOG_JSON_FORMAT: bool = True  # Use JSON format for logs (ideal for production)
 	LOG_NAME: str = 'rafood-api'  # Application logs name
 	LOG_ACCESS_NAME: str = (
 		'rafood-api-access'  # Uvicorn access logs, re-emitted using structured information

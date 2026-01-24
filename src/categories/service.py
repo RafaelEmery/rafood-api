@@ -30,7 +30,7 @@ class CategoryService:
 	async def create(self, category: CreateCategorySchema) -> CreateCategoryResponseSchema:
 		try:
 			category_id = await self.repository.create(category)
-			logger.bind(created_category_id=category_id)
+			logger.bind(created_category_id=str(category_id))
 
 			return CreateCategoryResponseSchema(id=category_id)
 		except Exception as e:
