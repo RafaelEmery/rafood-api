@@ -7,7 +7,7 @@ from src.categories.schemas import (
 	CreateCategoryResponseSchema,
 	CreateCategorySchema,
 )
-from src.core.logger import StructLogger
+from src.core.logging.logger import StructLogger
 
 logger = StructLogger()
 

@@ -5,8 +5,8 @@ from prometheus_fastapi_instrumentator import Instrumentator
 from src.api import api_router
 from src.core.config import settings
 from src.core.exception_handlers import register_exception_handlers
-from src.core.logger import setup_logging
-from src.core.middlewares.struct_log import StructLogMiddleware
+from src.core.logging.logger import setup_logging
+from src.core.logging.middleware import StructLogMiddleware
 
 app = FastAPI(
 	title=settings.APP_NAME,
