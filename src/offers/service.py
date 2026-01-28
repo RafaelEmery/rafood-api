@@ -1,6 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
+from src.core.logging.logger import StructLogger
 from src.offers.exceptions import (
 	OfferNotFoundError,
 	OfferScheduleNotFoundError,
@@ -20,6 +21,8 @@ from src.offers.schemas import (
 	UpdateOfferSchema,
 )
 
+logger = StructLogger()
+
 
 class OfferService:
 	repository: OfferRepository
@@ -29,13 +32,19 @@ class OfferService:
 
 	async def list(self) -> list[OfferSchema]:
 		try:
-			return await self.repository.list()
+			offers = await self.repository.list()
+			logger.bind(listed_offers_count=len(offers))
+
+			return offers
 		except Exception as e:
 			raise OffersInternalError(message=str(e)) from e
 
 	async def get(self, id: UUID) -> OfferWithSchedulesSchema:
 		try:
-			return await self.repository.get(id)
+			offer = await self.repository.get(id)
+			logger.bind(retrieved_offer_id=offer.id)
+
+			return offer
 		except OfferNotFoundError:
 			raise
 		except Exception as e:
@@ -44,6 +53,7 @@ class OfferService:
 	async def create(self, offer: CreateOfferSchema) -> CreateOfferResponseSchema:
 		try:
 			offer_id = await self.repository.create(offer)
+			logger.bind(created_offer_id=str(offer_id))
 
 			return CreateOfferResponseSchema(id=offer_id)
 		except Exception as e:
@@ -56,6 +66,7 @@ class OfferService:
 			offer.price = offer_update.price
 			offer.active = offer_update.active
 			await self.repository.update(offer)
+			logger.bind(updated_offer_id=offer.id)
 
 			return offer
 		except OfferNotFoundError:
@@ -68,6 +79,7 @@ class OfferService:
 			offer = await self.repository.get(id)
 
 			await self.repository.delete(offer)
+			logger.bind(deleted_offer_id=id)
 		except OfferNotFoundError:
 			raise
 		except Exception as e:
@@ -88,6 +100,7 @@ class OfferScheduleService:
 		try:
 			offer = await self.offer_repository.get(offer_id)
 			schedule_id = await self.repository.create(schedule, offer.id)
+			logger.bind(created_offer_schedule_id=str(schedule_id))
 
 			return CreateOfferScheduleResponseSchema(id=schedule_id)
 		except OfferNotFoundError:
@@ -107,6 +120,7 @@ class OfferScheduleService:
 			schedule.end_time = datetime.strptime(schedule_update.end_time, '%H:%M:%S').time()
 			schedule.repeats = schedule_update.repeats
 			await self.repository.update(schedule)
+			logger.bind(updated_offer_schedule_id=schedule.id)
 
 			return schedule
 		except (OfferNotFoundError, OfferScheduleNotFoundError):
@@ -120,6 +134,7 @@ class OfferScheduleService:
 			schedule = await self.repository.get(schedule_id)
 
 			await self.repository.delete(schedule)
+			logger.bind(deleted_offer_schedule_id=schedule.id)
 		except (OfferNotFoundError, OfferScheduleNotFoundError):
 			raise
 		except Exception as e:

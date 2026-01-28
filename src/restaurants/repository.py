@@ -20,7 +20,6 @@ class RestaurantRepository:
 
 		if name is not None:
 			query = query.filter(Restaurant.name.contains(name))
-
 		if owner_id is not None:
 			query = query.filter(Restaurant.owner_id == owner_id)
 
