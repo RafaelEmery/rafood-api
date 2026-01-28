@@ -118,6 +118,7 @@ class StructLogger:
 				)
 				continue
 
+			# If a Model is binded, we convert its class name to snake_case and bind its ID
 			key = self._to_snake_case(type(arg).__name__)
 
 			structlog.contextvars.bind_contextvars(**{key: arg.id})
