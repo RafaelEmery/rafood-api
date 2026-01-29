@@ -17,21 +17,11 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: Install Poetry
-        run: |
-          pip install poetry==2.1.4
-          poetry config virtualenvs.create false
-
-      - name: Enable Poetry cache
-        uses: actions/cache@v4
+      - name: Setup Poetry and Install Dev/Test Dependencies
+        uses: ./.github/actions/setup-poetry
         with:
-          path: |
-            ~/.cache/pypoetry
-            ~/.cache/pip
-          key: poetry-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
-
-      - name: Install dependencies
-        run: poetry install --no-interaction --no-ansi --no-root --with dev
+          python-version: "3.10"
+          poetry-extras: "--with dev"
 
       - name: Ruff check
         run: poetry run ruff check .
