@@ -2,10 +2,10 @@ name: Setup Poetry and Install Dependencies
 description: Instala o Poetry e as dependências do projeto
 inputs:
   python-version:
-    description: Versão do Python
+    description: Poetry version to install
     required: true
   poetry-extras:
-    description: "Extras do poetry (ex: \"--with dev\")"
+    description: "Poetry extras (e.g., \"--with dev\")"
     required: false
     default: ""
 runs:
