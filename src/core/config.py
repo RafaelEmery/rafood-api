@@ -15,7 +15,6 @@ class Settings(BaseSettings):
 	LOG_ACCESS_NAME: str = (
 		'rafood-api-access'  # Uvicorn access logs, re-emitted using structured information
 	)
-	LOG_INCLUDE_STACK: bool = True
 	LOGS_CORRELATION_HEADER_NAME: str = 'X-Request-ID'
 
 	DB_USER: str

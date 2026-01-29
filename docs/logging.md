@@ -42,7 +42,6 @@ LOG_NAME: str = 'rafood-api'  # Application logs name
 LOG_ACCESS_NAME: str = (
 	'rafood-api-access'  # Uvicorn access logs, re-emitted using structured information
 )
-LOG_INCLUDE_STACK: bool = True
 LOGS_CORRELATION_HEADER_NAME: str = 'X-Request-ID'
 ```
 
@@ -59,7 +58,7 @@ As mentioned before, the Uvicorn logs are overwritten and it's recommended to us
 Import the `StructLogger` class and use it as your logger. Example on `CategoryService`:
 
 ```python
-from src.core.logger import StructLogger
+from src.core.logging.logger import StructLogger
 
 logger = StructLogger()
 
@@ -118,7 +117,7 @@ This logger is called `rafood-api-access` (defined at `LOG_ACCESS_NAME` environm
 Example of log message:
 
 ```python
-from src.core.logger import StructLogger
+from src.core.logging.logger import StructLogger
 
 logger = StructLogger()
 

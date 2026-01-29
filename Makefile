@@ -58,7 +58,6 @@ start: ## Start the Docker containers (also run the API)
 
 build: ## Build the Docker images. Tip: use 'make build' after changing dependencies in pyproject.toml
 	@echo "Building Docker images... 🏗️"
-	@echo "Tip: use 'make build' after changing dependencies in pyproject.toml 😎\n"
 	@docker compose down && docker compose build
 	@echo "\nDocker images built! 🎉\n"
 	@make start && make list-containers

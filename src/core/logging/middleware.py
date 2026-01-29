@@ -21,7 +21,6 @@ class AccessInfo(TypedDict, total=False):
 class StructLogMiddleware:
 	def __init__(self, app: ASGIApp):
 		self.app = app
-		pass
 
 	async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
 		# If the request is not an HTTP request, we don't need to do anything special
@@ -51,13 +50,13 @@ class StructLogMiddleware:
 			info['start_time'] = time.perf_counter_ns()
 
 			await self.app(scope, receive, inner_send)
-		except Exception as e:
+		except Exception:
 			# Raising exception to be handled at exception_handlers.catch_all_handler.
 			# Will be correctly logged and returned to caller
-			raise e
+			raise
 		finally:
 			process_time = time.perf_counter_ns() - info['start_time']
-			client_host, client_port = scope['client']
+			client_host, client_port = scope.get('client') or ('unknown', 0)
 			http_method = scope['method']
 			http_version = scope['http_version']
 			url = get_path_with_query_string(scope)
@@ -69,11 +68,12 @@ class StructLogMiddleware:
 			path_params = scope['path_params'] if scope['path_params'] else None
 
 			# Recreate the Uvicorn access log format, but add all parameters as structured information
+			# Returning 420 (https://http.cat/status/420) if status_code is missing
 			access_logger.info(
-				f'Called - {http_method} {scope["path"]} | HTTP/{http_version} | {info["status_code"]}',
+				f'Called - {http_method} {scope["path"]} | HTTP/{http_version} | {info.get("status_code", 420)} ',
 				http={
 					'url': str(url),
-					'status_code': info['status_code'],
+					'status_code': info.get('status_code', 420),
 					'method': http_method,
 					'version': http_version,
 					'host': http_host,

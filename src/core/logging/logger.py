@@ -93,7 +93,7 @@ def setup_logging(json_logs: bool = False, log_level: str = 'INFO'):
 class StructLogger:
 	"""
 	A thin wrapper, which translates the easy to use bind and unbind syntax to the _contextvars
-	methods and handles SQLAlchemy models for us. Models will be translated to snake case.
+	methods and handles SQLModel instances for us. Models will be translated to snake case.
 	"""
 
 	def __init__(self, log_name=settings.LOG_NAME):
@@ -114,11 +114,11 @@ class StructLogger:
 			if not issubclass(type(arg), SQLModel):
 				self.logger.error(
 					'Unsupported argument when trying to log.'
-					f'Unnamed argument must be a subclass of Base. Invalid argument: {type(arg).__name__}'
+					f'Unnamed argument must be a subclass of SQLModel. Invalid argument: {type(arg).__name__}'
 				)
 				continue
 
-			# If a Model is binded, we convert its class name to snake_case and bind its ID
+			# If a Model is bound, we convert its class name to snake_case and bind its ID
 			key = self._to_snake_case(type(arg).__name__)
 
 			structlog.contextvars.bind_contextvars(**{key: arg.id})
