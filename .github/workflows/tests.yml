@@ -42,7 +42,7 @@ jobs:
           poetry config virtualenvs.create false
 
       - name: Install dependencies
-        run: poetry install --no-interaction --no-ansi --with dev,test
+        run: poetry install --no-interaction --no-ansi --no-root --with dev,test
 
       - name: Run tests
         run: |
