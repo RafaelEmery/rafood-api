@@ -1,6 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
+from src.core.logging.logger import StructLogger
 from src.restaurants.exceptions import (
 	RestaurantNotFoundError,
 	RestaurantScheduleNotFoundError,
@@ -21,6 +22,8 @@ from src.restaurants.schemas import (
 	UpdateRestaurantSchema,
 )
 
+logger = StructLogger()
+
 
 class RestaurantService:
 	repository: RestaurantRepository
@@ -32,13 +35,19 @@ class RestaurantService:
 		self, name: str | None, owner_id: UUID | None
 	) -> list[RestaurantWithSchedulesSchema]:
 		try:
-			return await self.repository.list(name, owner_id)
+			restaurants = await self.repository.list(name, owner_id)
+			logger.bind(listed_restaurants_count=len(restaurants))
+
+			return restaurants
 		except Exception as e:
 			raise RestaurantsInternalError(message=str(e)) from e
 
 	async def get(self, id: UUID) -> RestaurantWithProductsSchema:
 		try:
-			return await self.repository.get(id)
+			restaurant = await self.repository.get(id)
+			logger.bind(retrieved_restaurant_id=restaurant.id)
+
+			return restaurant
 		except RestaurantNotFoundError:
 			raise
 		except Exception as e:
@@ -47,6 +56,7 @@ class RestaurantService:
 	async def create(self, restaurant: CreateRestaurantSchema) -> CreateRestaurantResponseSchema:
 		try:
 			restaurant_id = await self.repository.create(restaurant)
+			logger.bind(created_restaurant_id=str(restaurant_id))
 
 			return CreateRestaurantResponseSchema(id=restaurant_id)
 		except Exception as e:
@@ -66,6 +76,7 @@ class RestaurantService:
 			restaurant.state_abbr = restaurant_update.state_abbr
 
 			await self.repository.update(restaurant)
+			logger.bind(updated_restaurant_id=restaurant.id)
 
 			return restaurant
 		except RestaurantNotFoundError:
@@ -78,6 +89,7 @@ class RestaurantService:
 			restaurant = await self.repository.get(id)
 
 			await self.repository.delete(restaurant)
+			logger.bind(deleted_restaurant_id=id)
 		except RestaurantNotFoundError:
 			raise
 		except Exception as e:
@@ -102,6 +114,7 @@ class RestaurantScheduleService:
 			await self._validate_schedules_limit(restaurant.id)
 
 			schedule_id = await self.repository.create(schedule, restaurant.id)
+			logger.bind(created_restaurant_schedule_id=str(schedule_id))
 
 			return CreateRestaurantScheduleResponseSchema(id=schedule_id)
 		except RestaurantNotFoundError:
@@ -113,6 +126,11 @@ class RestaurantScheduleService:
 		schedules = await self.repository.get_by_restaurant(restaurant_id)
 
 		if len(schedules) >= 3:
+			logger.warning(
+				'Cannot create more than three active schedules for a restaurant',
+				restaurant_id=str(restaurant_id),
+				active_schedules_count=len(schedules),
+			)
 			raise RestaurantSchedulesInternalError(
 				message='Cannot create more than three active schedules for a restaurant'
 			)
@@ -134,6 +152,7 @@ class RestaurantScheduleService:
 			schedule.end_time = datetime.strptime(schedule_update.end_time, '%H:%M:%S').time()
 
 			await self.repository.update(schedule)
+			logger.bind(updated_restaurant_schedule_id=schedule.id)
 
 			return schedule
 		except (RestaurantNotFoundError, RestaurantScheduleNotFoundError):
@@ -147,6 +166,7 @@ class RestaurantScheduleService:
 			schedule = await self.repository.get(schedule_id)
 
 			await self.repository.delete(schedule)
+			logger.bind(deleted_restaurant_schedule_id=schedule_id)
 		except (RestaurantNotFoundError, RestaurantScheduleNotFoundError):
 			raise
 		except Exception as e:

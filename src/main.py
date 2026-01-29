@@ -1,9 +1,12 @@
+from asgi_correlation_id import CorrelationIdMiddleware
 from fastapi import FastAPI
 from prometheus_fastapi_instrumentator import Instrumentator
 
 from src.api import api_router
 from src.core.config import settings
 from src.core.exception_handlers import register_exception_handlers
+from src.core.logging.logger import setup_logging
+from src.core.logging.middleware import StructLogMiddleware
 
 app = FastAPI(
 	title=settings.APP_NAME,
@@ -21,8 +24,13 @@ Instrumentator(
 	include_in_schema=False,
 )
 
-app.include_router(api_router, prefix=settings.APP_V1_PREFIX)
+setup_logging(json_logs=settings.LOG_JSON_FORMAT, log_level=settings.LOG_LEVEL)
 register_exception_handlers(app)
+
+app.include_router(api_router, prefix=settings.APP_V1_PREFIX)
+
+app.add_middleware(StructLogMiddleware)
+app.add_middleware(CorrelationIdMiddleware, header_name=settings.LOGS_CORRELATION_HEADER_NAME)
 
 
 @app.get(

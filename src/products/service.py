@@ -1,5 +1,6 @@
 from uuid import UUID
 
+from src.core.logging.logger import StructLogger
 from src.products.exceptions import ProductNotFoundError, ProductsInternalError
 from src.products.repository import ProductRepository
 from src.products.schemas import (
@@ -10,6 +11,8 @@ from src.products.schemas import (
 	ProductWithOffersSchema,
 	UpdateProductSchema,
 )
+
+logger = StructLogger()
 
 
 class ProductService:
@@ -22,13 +25,19 @@ class ProductService:
 		self, name: str | None, category_id: UUID | None
 	) -> list[ProductWithCategoriesSchema]:
 		try:
-			return await self.repository.list(name, category_id)
+			products = await self.repository.list(name, category_id)
+			logger.bind(listed_products_count=len(products))
+
+			return products
 		except Exception as e:
 			raise ProductsInternalError(message=str(e)) from e
 
 	async def get(self, id: UUID) -> ProductWithOffersSchema:
 		try:
-			return await self.repository.get(id)
+			product = await self.repository.get(id)
+			logger.bind(retrieved_product_id=product.id)
+
+			return product
 		except ProductNotFoundError:
 			raise
 		except Exception as e:
@@ -37,6 +46,7 @@ class ProductService:
 	async def create(self, product: CreateProductSchema) -> CreateProductResponseSchema:
 		try:
 			product_id = await self.repository.create(product)
+			logger.bind(created_product_id=str(product_id))
 
 			return CreateProductResponseSchema(id=product_id)
 		except Exception as e:
@@ -53,6 +63,7 @@ class ProductService:
 			product.image_url = product_update.image_url
 
 			await self.repository.update(product)
+			logger.bind(updated_product_id=product.id)
 
 			return product
 		except ProductNotFoundError:
@@ -65,6 +76,7 @@ class ProductService:
 			product = await self.repository.get(id)
 
 			await self.repository.delete(product)
+			logger.bind(deleted_product_id=id)
 		except ProductNotFoundError:
 			raise
 		except Exception as e:
