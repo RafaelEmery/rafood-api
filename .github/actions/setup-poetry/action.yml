@@ -1,8 +1,8 @@
 name: Setup Poetry and Install Dependencies
-description: Instala o Poetry e as dependências do projeto
+description: Setup Poetry and install dependencies with optional extras.
 inputs:
   python-version:
-    description: Poetry version to install
+    description: Python version to install
     required: true
   poetry-extras:
     description: "Poetry extras (e.g., \"--with dev\")"
@@ -19,7 +19,6 @@ runs:
       shell: bash
       run: |
         pip install poetry==2.1.4
-        poetry config virtualenvs.create false
 
     - name: Enable Poetry cache
       uses: actions/cache@v4
@@ -28,6 +27,8 @@ runs:
           ~/.cache/pypoetry
           ~/.cache/pip
         key: poetry-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+        restore-keys: |
+          poetry-${{ runner.os }}-
 
     - name: Install dependencies
       shell: bash
