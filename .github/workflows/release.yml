@@ -4,8 +4,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
   lint:
@@ -18,6 +17,9 @@ jobs:
   release:
     needs: tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
 
     steps:
       - name: Run release-please
@@ -28,20 +30,16 @@ jobs:
           package-name: rafood-api
           default-branch: main
 
-      - name: Fail if no release was created
-        if: steps.release.outputs.release_created == 'false'
-        run: |
-          echo "❌ No release was created."
-          echo "Ensure there is at least one feat:, fix: or BREAKING CHANGE commit."
-          exit 1
-
       - name: Checkout code
+        if: steps.release.outputs.release_created == 'true'
         uses: actions/checkout@v4
 
       - name: Set up Docker
+        if: steps.release.outputs.release_created == 'true'
         uses: docker/setup-buildx-action@v3
 
       - name: Build Docker image (versioned)
+        if: steps.release.outputs.release_created == 'true'
         run: |
           VERSION="${{ steps.release.outputs.tag_name }}"
           docker build \
