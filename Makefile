@@ -166,9 +166,9 @@ create-adr: ## Create a new Architecture Decision Record. Usage: make create-adr
 		echo "Error: Please provide a descriptive name using name='<descriptive-name>'"; \
 		exit 1; \
 	fi
-	@NUM=$$(ls adr/ | grep -E '^[0-9]{3}-' | grep -v '^000-' | wc -l | awk '{printf "%03d", $$1 + 1}'); \
-	cp adr/000-base-adr-template.md adr/$$NUM-$(name).md; \
-	echo "Created adr/$$NUM-$(name).md"
+	@NUM=$$(ls docs/adr/ | grep -E '^[0-9]{3}-' | grep -v '^000-' | wc -l | awk '{printf "%03d", $$1 + 1}'); \
+	cp docs/adr/000-base-adr-template.md docs/adr/$$NUM-$(name).md; \
+	echo "Created docs/adr/$$NUM-$(name).md"
 
 load-test: ## Run load tests with Locust
 	@echo "Running load tests with Locust... 🔥\n"

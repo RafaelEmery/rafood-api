@@ -55,7 +55,7 @@ Based on the ER Model there are 5 folder to separate contexts:
 
 ### Architecture Decision Records (ADRs)
 
-The ADRs are at `adr/` [folder and documents the main decisions](./adr/README.md) of this project.
+The ADRs are at `adr/` [folder and documents the main decisions](./docs/adr/README.md) of this project.
 
 ### Swagger
 
