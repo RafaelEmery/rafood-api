@@ -28,13 +28,16 @@ Automates the release process by creating a tag and new release on GitHub and bu
 
 Uses `Run Lint` and `Run Tests` workflows to ensure code quality before proceeding with the release. The release version is determined based on the conventional commit messages since the last release using `googleapis/release-please-action` ([GitHub repository and docs](https://github.com/googleapis/release-please-action)).
 
-**Important:** uses semantic versioning and updates the version based on the commit types:
-
-- `feat`: minor version bump
-- `fix`: patch version bump
-- `BREAKING CHANGE` or `feat!`: major version bump
+> [!NOTE]
+> Uses semantic versioning and updates the version based on the commit types:
+>
+> - `feat`: minor version bump
+> - `fix`: patch version bump
+> - `BREAKING CHANGE` or `feat!`: major version bump
 
 Uses a dedicated GitHub token stored in the repository secrets as `RELEASE_PLEASE_TOKEN` to create releases.
+
+![release workflow details](./images/release-workflow-details.png)
 
 ## Pull Request Workflows
 
@@ -44,6 +47,35 @@ The `Run Lint`, `Run Tests`, and `Check PR Title` workflows are configured to ru
 
 ## Creating Releases
 
+### Trigger `Release` Workflow (first time)
+
 To start the release process, navigate to the `Actions` tab in your GitHub repository, select the `Release` workflow from the left sidebar, and click the `Run workflow` button.
 
 ![trigger release action](./images/release-action.png)
+
+The release workflow will execute the following steps:
+
+![release workflow](./images/release-workflow.png)
+
+> [!WARNING]
+> At the first time, the `Release` workflow will not create a release directly and a Docker image. Instead, it will generate a Pull Request with the proposed version bump and changelog.
+
+### Merge the Release Pull Request
+
+Will create a Pull Request with the new version and changelog (`CHANGELOG.md`). After reviewing the changes, merge the PR to create the release.
+
+![release pull request](./images/release-pr.png)
+
+A `chore(X.X.X): release X.X.X` commit will be added to the `main` branch. You can check the first release PR [here](https://github.com/RafaelEmery/rafood-api/pull/11).
+
+### Trigger `Release` Workflow (second time)
+
+You must trigger the release workflow on `Actions` again to **create the release and build Docker image**.
+
+![release workflow complete](./images/release-workflow-complete.png)
+
+The release created:
+
+![release created](./images/release-created.png)
+
+There you go, you have successfully created a new release using GitHub Actions 🚀🚀🚀

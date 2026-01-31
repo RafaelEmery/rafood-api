@@ -18,6 +18,7 @@ FastAPI project to manage restaurants, products and offers :hamburger:
     - [Linter](#linter)
     - [Tests](#tests)
     - [Load Tests](#load-tests)
+  - [Creating a new release](#creating-a-new-release)
 
 ## About the project
 
@@ -36,6 +37,7 @@ My inicial studies of FastAPI is at [fastapi-studies repository](https://github.
 - Docker & Docker Compose
 - Prometheus & Grafana
 - Locust
+- GitHub Actions
 
 ### ER Model
 
@@ -150,6 +152,10 @@ make load-test
 ```
 
 More about load tests can be found at [docs/load-testing.md](./docs/load-testing.md).
+
+## Creating a new release
+
+More about the release process and GitHub Actions workflows can be found at [docs/workflows.md](./docs/workflows.md) on `Creating Releases` section.
 
 ______________________________________________________________________
 
