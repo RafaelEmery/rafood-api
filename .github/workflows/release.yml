@@ -29,6 +29,7 @@ jobs:
           release-type: python
           package-name: rafood-api
           default-branch: main
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
 
       - name: Checkout code
         if: steps.release.outputs.release_created == 'true'

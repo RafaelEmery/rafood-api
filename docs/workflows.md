@@ -26,13 +26,15 @@ Uses `amannn/action-semantic-pull-request` GitHub Action to enforce the commit m
 
 Automates the release process by creating a tag and new release on GitHub and building a Docker image. It runs manually via the GitHub Actions interface.
 
-Uses `Run Lint` and `Run Tests` workflows to ensure code quality before proceeding with the release. The release version is determined based on the conventional commit messages since the last release using `googleapis/release-please-action`.
+Uses `Run Lint` and `Run Tests` workflows to ensure code quality before proceeding with the release. The release version is determined based on the conventional commit messages since the last release using `googleapis/release-please-action` ([GitHub repository and docs](https://github.com/googleapis/release-please-action)).
 
 **Important:** uses semantic versioning and updates the version based on the commit types:
 
 - `feat`: minor version bump
 - `fix`: patch version bump
 - `BREAKING CHANGE` or `feat!`: major version bump
+
+Uses a dedicated GitHub token stored in the repository secrets as `RELEASE_PLEASE_TOKEN` to create releases.
 
 ## Pull Request Workflows
 
@@ -42,4 +44,6 @@ The `Run Lint`, `Run Tests`, and `Check PR Title` workflows are configured to ru
 
 ## Creating Releases
 
-*To be updated...*
+To start the release process, navigate to the `Actions` tab in your GitHub repository, select the `Release` workflow from the left sidebar, and click the `Run workflow` button.
+
+![trigger release action](./images/release-action.png)
