@@ -1,4 +1,5 @@
 name: Tests & Coverage Check
+description: Running tests with pytest and checking test coverage using pytest-cov.
 
 on:
   pull_request:

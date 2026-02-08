@@ -2,15 +2,18 @@
 
 ## Overview
 
-### `Run Lint` Workflow
+### `Lint & Type Check` Workflow
 
-Uses `ruff` to check code style and linting issues across the codebase. It runs on pushes, pull requests to the `main` branch and can be called from another workflow.
+Uses `ruff` to check code style and linting issues across the codebase and `mypy` for type checking. It runs on pushes, pull requests to the `main` branch and can be called from another workflow.
 
 ![lint workflow](./images/lint-workflow.png)
 
-### `Run Tests` Workflow
+### `Tests & Coverage Check` Workflow
 
 Uses `pytest` to run the test suite, ensuring that all tests pass before code is merged. It runs on pushes, pull requests to the `main` branch and can be called from another workflow.
+
+> [!TIP]
+> It also checks the test coverage using `pytest-cov` and fails if the coverage is below **85%**.
 
 ![test workflow](./images/test-workflow.png)
 
