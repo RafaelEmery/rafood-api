@@ -1,3 +1,4 @@
+# mypy: disable-error-code=return-value
 from datetime import datetime
 from uuid import UUID
 

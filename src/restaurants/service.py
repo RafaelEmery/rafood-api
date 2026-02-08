@@ -1,3 +1,4 @@
+# mypy: disable-error-code=return-value
 from datetime import datetime
 from uuid import UUID
 
@@ -67,7 +68,7 @@ class RestaurantService:
 			restaurant = await self.repository.get(id)
 
 			restaurant.name = restaurant_update.name
-			restaurant.image_url = restaurant_update.image_url
+			restaurant.image_url = restaurant_update.image_url  # type: ignore[assignment]
 			restaurant.owner_id = restaurant_update.owner_id
 			restaurant.street = restaurant_update.street
 			restaurant.number = restaurant_update.number

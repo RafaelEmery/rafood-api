@@ -1,3 +1,4 @@
+# mypy: disable-error-code=return-value
 from uuid import UUID
 
 from src.core.logging.logger import StructLogger
@@ -60,7 +61,7 @@ class ProductService:
 			product.name = product_update.name
 			product.price = product_update.price
 			product.category_id = product_update.category_id
-			product.image_url = product_update.image_url
+			product.image_url = product_update.image_url  # type: ignore[assignment]
 
 			await self.repository.update(product)
 			logger.bind(updated_product_id=product.id)

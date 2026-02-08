@@ -140,6 +140,14 @@ format: ## Format the codebase
 	@echo "Formatting code... 🎨\n"
 	@poetry run ruff format .
 
+type-check: ## Run the type checker
+	@echo "Running type checker... 🔍\n"
+	@poetry run mypy src
+
+lint-complete: ## Run the linter, type checker, and formatter
+	@echo "Running linter, type checker, and formatter... 🧹🔍🎨\n"
+	@make lint-fix && make type-check && make format
+
 run: ## Run the application (not recommended for use with Docker)
 	@echo "⚠️ Possibly deprecated. Can't be used with API running on Docker ⚠️\n"
 	@poetry run python -m src.main

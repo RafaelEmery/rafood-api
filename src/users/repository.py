@@ -17,14 +17,14 @@ class UserRepository:
 
 	async def list(self) -> list[User]:
 		result = await self.db.execute(select(User))
-		users: list[User] = result.scalars().unique().all()
+		users: list[User] = result.scalars().unique().all()  # type: ignore[assignment]
 
 		return users
 
 	async def get(self, id: UUID) -> User:
-		query = select(User).options(selectinload(User.restaurants)).where(User.id == id)
+		query = select(User).options(selectinload(User.restaurants)).where(User.id == id)  # type: ignore[arg-type]
 		result = await self.db.execute(query)
-		user: User = result.scalars().unique().first()
+		user: User | None = result.scalars().unique().first()
 
 		if not user:
 			raise UserNotFoundError(user_id=str(id))

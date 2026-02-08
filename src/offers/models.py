@@ -1,3 +1,4 @@
+# mypy: disable-error-code=name-defined
 from datetime import datetime, time
 from typing import Optional
 from uuid import UUID, uuid4

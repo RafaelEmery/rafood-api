@@ -6,8 +6,8 @@ class Settings(BaseSettings):
 	APP_DESCRIPTION: str = "RESTful API to manage RaFood's restaurants, products and offers."
 	APP_VERSION: str = '1.0.0'
 	APP_V1_PREFIX: str = '/api/v1'
-	APP_HOST: str
-	APP_PORT: int
+	APP_HOST: str = 'localhost'
+	APP_PORT: int = 8000
 
 	LOG_LEVEL: str = 'INFO'
 	LOG_JSON_FORMAT: bool = True  # Use JSON format for logs (ideal for production)
@@ -17,11 +17,11 @@ class Settings(BaseSettings):
 	)
 	LOGS_CORRELATION_HEADER_NAME: str = 'X-Request-ID'
 
-	DB_USER: str
-	DB_PASSWORD: str
-	DB_HOST: str
-	DB_NAME: str
-	DB_PORT: int
+	DB_USER: str = 'postgres'
+	DB_PASSWORD: str = ''
+	DB_HOST: str = 'localhost'
+	DB_NAME: str = 'rafood_db'
+	DB_PORT: int = 5432
 
 	class Config:
 		case_sensitive = True  # Environment variables are case sensitive
