@@ -1,4 +1,4 @@
-name: Run Tests
+name: Tests & Coverage Check
 
 on:
   pull_request:
@@ -48,8 +48,20 @@ jobs:
           python-version: "3.10"
           poetry-extras: "--with dev,test"
 
-      - name: Run tests
+      - name: Run tests with coverage gate
+        shell: bash
         run: |
+          set +e
           poetry run pytest -vv \
             --cov=src \
-            --cov-report=term-missing
+            --cov-report=term-missing \
+            --cov-fail-under=85
+          STATUS=$?
+
+          if [ $STATUS -ne 0 ]; then
+            echo ""
+            echo "❌ Coverage check failed"
+            echo "❌ Total coverage is below 85%"
+            echo "❌ Please add tests before merging"
+            exit 1
+          fi
