@@ -1,4 +1,5 @@
-name: Run Lint
+name: Lint & Type Check
+description: Running Ruff linter and Mypy type checker on the codebase.
 
 on:
   pull_request:
@@ -22,3 +23,18 @@ jobs:
 
       - name: Ruff check
         run: poetry run ruff check .
+
+  mypy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Poetry and Install Dev/Test Dependencies
+        uses: ./.github/actions/setup-poetry
+        with:
+          python-version: "3.10"
+          poetry-extras: "--with dev"
+
+      - name: Mypy check
+        run: poetry run mypy src
