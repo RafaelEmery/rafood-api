@@ -10,7 +10,7 @@ from structlog.types import EventDict, Processor
 from src.core.config import settings
 
 
-def drop_color_message_key(_, __, event_dict: EventDict) -> EventDict:
+def drop_color_message_key(_, __, event_dict: EventDict) -> EventDict:  # type: ignore[no-untyped-def]
 	"""
 	Uvicorn logs the message a second time in the extra `color_message`, but we don't
 	need it. This processor drops the key from the event dict if it exists.
@@ -19,7 +19,7 @@ def drop_color_message_key(_, __, event_dict: EventDict) -> EventDict:
 	return event_dict
 
 
-def setup_logging(json_logs: bool = False, log_level: str = 'INFO'):
+def setup_logging(json_logs: bool = False, log_level: str = 'INFO') -> None:
 	"""
 	Configure structlog with shared processors and formatters for Rafood API.
 	Uses JSON renderer for production (json_logs=True) or console renderer for development.
@@ -96,14 +96,14 @@ class StructLogger:
 	methods and handles SQLModel instances for us. Models will be translated to snake case.
 	"""
 
-	def __init__(self, log_name=settings.LOG_NAME):
+	def __init__(self, log_name: str = settings.LOG_NAME) -> None:
 		self.logger = structlog.stdlib.get_logger(log_name)
 
 	@staticmethod
-	def _to_snake_case(name):
+	def _to_snake_case(name: str) -> str:
 		return re.sub(r'(?<!^)(?=[A-Z])', '_', name).lower()
 
-	def bind(self, *args, **new_values: Any):
+	def bind(self, *args, **new_values: Any) -> None:  # type: ignore[no-untyped-def]
 		"""
 		Binds the given arguments to the logger context.
 		Any value added here will be added to all subsequent logs made with this logger.
@@ -126,25 +126,25 @@ class StructLogger:
 		structlog.contextvars.bind_contextvars(**new_values)
 
 	@staticmethod
-	def unbind(*keys: str):
+	def unbind(*keys: str) -> None:
 		structlog.contextvars.unbind_contextvars(*keys)
 
-	def debug(self, event: str | None = None, *args: Any, **kw: Any):
+	def debug(self, event: str | None = None, *args: Any, **kw: Any) -> None:
 		self.logger.debug(event, *args, **kw)
 
-	def info(self, event: str | None = None, *args: Any, **kw: Any):
+	def info(self, event: str | None = None, *args: Any, **kw: Any) -> None:
 		self.logger.info(event, *args, **kw)
 
-	def warning(self, event: str | None = None, *args: Any, **kw: Any):
+	def warning(self, event: str | None = None, *args: Any, **kw: Any) -> None:
 		self.logger.warning(event, *args, **kw)
 
 	warn = warning
 
-	def error(self, event: str | None = None, *args: Any, **kw: Any):
+	def error(self, event: str | None = None, *args: Any, **kw: Any) -> None:
 		self.logger.error(event, *args, **kw)
 
-	def critical(self, event: str | None = None, *args: Any, **kw: Any):
+	def critical(self, event: str | None = None, *args: Any, **kw: Any) -> None:
 		self.logger.critical(event, *args, **kw)
 
-	def exception(self, event: str | None = None, *args: Any, **kw: Any):
+	def exception(self, event: str | None = None, *args: Any, **kw: Any) -> None:
 		self.logger.exception(event, *args, **kw)

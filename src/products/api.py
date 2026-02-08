@@ -23,7 +23,7 @@ router = APIRouter()
 )
 async def list_products(
 	service: ProductServiceDeps, name: str | None = None, category_id: UUID | None = None
-):
+) -> list[ProductWithCategoriesSchema]:
 	return await service.list(name, category_id)
 
 
@@ -33,7 +33,7 @@ async def list_products(
 	status_code=status.HTTP_200_OK,
 	response_model=ProductWithOffersSchema,
 )
-async def find_product(id: UUID, service: ProductServiceDeps):
+async def find_product(id: UUID, service: ProductServiceDeps) -> ProductWithOffersSchema:
 	return await service.get(id)
 
 
@@ -43,7 +43,9 @@ async def find_product(id: UUID, service: ProductServiceDeps):
 	status_code=status.HTTP_201_CREATED,
 	response_model=CreateProductResponseSchema,
 )
-async def create_product(body: CreateProductSchema, service: ProductServiceDeps):
+async def create_product(
+	body: CreateProductSchema, service: ProductServiceDeps
+) -> CreateProductResponseSchema:
 	return await service.create(body)
 
 
@@ -55,7 +57,7 @@ async def create_product(body: CreateProductSchema, service: ProductServiceDeps)
 )
 async def update_product(
 	id: UUID, product_update: UpdateProductSchema, service: ProductServiceDeps
-):
+) -> ProductSchema:
 	return await service.update(id, product_update)
 
 
@@ -64,5 +66,5 @@ async def update_product(
 	name='Delete product',
 	status_code=status.HTTP_204_NO_CONTENT,
 )
-async def delete_product(id: UUID, service: ProductServiceDeps):
+async def delete_product(id: UUID, service: ProductServiceDeps) -> None:
 	await service.delete(id)

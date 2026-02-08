@@ -18,10 +18,10 @@ class OfferRepository:
 	async def list(self) -> list[Offer]:
 		result = await self.db.execute(select(Offer))
 
-		return result.scalars().unique().all()
+		return result.scalars().unique().all()  # type: ignore[return-value]
 
 	async def get(self, id: UUID) -> Offer:
-		result = await self.db.execute(select(Offer).where(Offer.id == id))
+		result = await self.db.execute(select(Offer).where(Offer.id == id))  # type: ignore[arg-type]
 		offer = result.scalars().unique().first()
 
 		if not offer:
@@ -37,7 +37,7 @@ class OfferRepository:
 
 		return new_offer.id
 
-	async def update(self, offer: Offer) -> Offer:
+	async def update(self, offer: Offer) -> None:
 		self.db.add(offer)
 
 		await self.db.commit()
@@ -67,7 +67,7 @@ class OfferScheduleRepository:
 		return new_schedule.id
 
 	async def get(self, schedule_id: UUID) -> OfferSchedule:
-		result = await self.db.execute(select(OfferSchedule).where(OfferSchedule.id == schedule_id))
+		result = await self.db.execute(select(OfferSchedule).where(OfferSchedule.id == schedule_id))  # type: ignore[arg-type]
 		schedule = result.scalars().unique().first()
 
 		if not schedule:

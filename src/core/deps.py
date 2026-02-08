@@ -10,7 +10,7 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
 	Get an async session from the database.
 	Starts a session, yields it and then closes it when it ends.
 	"""
-	session: AsyncSession = Session()
+	session: AsyncSession = Session()  # type: ignore[operator]
 
 	try:
 		yield session

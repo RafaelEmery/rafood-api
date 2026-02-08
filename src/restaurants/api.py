@@ -32,7 +32,7 @@ async def list_restaurants(
 	service: RestaurantServiceDeps,
 	name: str | None = None,
 	owner_id: UUID | None = None,
-):
+) -> list[RestaurantWithSchedulesSchema]:
 	return await service.list(name=name, owner_id=owner_id)
 
 
@@ -42,7 +42,7 @@ async def list_restaurants(
 	status_code=status.HTTP_200_OK,
 	response_model=RestaurantWithProductsSchema,
 )
-async def find_restaurant(id: UUID, service: RestaurantServiceDeps):
+async def find_restaurant(id: UUID, service: RestaurantServiceDeps) -> RestaurantWithProductsSchema:
 	return await service.get(id)
 
 
@@ -55,7 +55,7 @@ async def find_restaurant(id: UUID, service: RestaurantServiceDeps):
 async def create_restaurant(
 	body: CreateRestaurantSchema,
 	service: RestaurantServiceDeps,
-):
+) -> CreateRestaurantResponseSchema:
 	return await service.create(body)
 
 
@@ -69,7 +69,7 @@ async def update_restaurant(
 	id: UUID,
 	body: UpdateRestaurantSchema,
 	service: RestaurantServiceDeps,
-):
+) -> RestaurantSchema:
 	return await service.update(id, body)
 
 
@@ -78,7 +78,7 @@ async def update_restaurant(
 	name='Delete restaurant',
 	status_code=status.HTTP_204_NO_CONTENT,
 )
-async def delete_restaurant(id: UUID, service: RestaurantServiceDeps):
+async def delete_restaurant(id: UUID, service: RestaurantServiceDeps) -> None:
 	await service.delete(id)
 
 
@@ -92,7 +92,7 @@ async def create_restaurant_schedule(
 	id: UUID,
 	schedule: CreateRestaurantScheduleSchema,
 	service: RestaurantScheduleServiceDeps,
-):
+) -> CreateRestaurantScheduleResponseSchema:
 	return await service.create(id, schedule)
 
 
@@ -107,7 +107,7 @@ async def update_restaurant_schedule(
 	schedule_id: UUID,
 	body: UpdateRestaurantScheduleSchema,
 	service: RestaurantScheduleServiceDeps,
-):
+) -> RestaurantScheduleSchema:
 	return await service.update(id, schedule_id, body)
 
 
@@ -120,5 +120,5 @@ async def delete_restaurant_schedule(
 	id: UUID,
 	schedule_id: UUID,
 	service: RestaurantScheduleServiceDeps,
-):
+) -> None:
 	await service.delete(id, schedule_id)

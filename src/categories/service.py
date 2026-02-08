@@ -1,3 +1,4 @@
+# mypy: disable-error-code=return-value
 from uuid import UUID
 
 from src.categories.exceptions import CategoriesInternalError, CategoryNotFoundError

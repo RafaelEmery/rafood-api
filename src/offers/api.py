@@ -24,7 +24,7 @@ router = APIRouter()
 	status_code=status.HTTP_200_OK,
 	response_model=list[OfferSchema],
 )
-async def list_offers(service: OfferServiceDeps):
+async def list_offers(service: OfferServiceDeps) -> list[OfferSchema]:
 	return await service.list()
 
 
@@ -34,7 +34,7 @@ async def list_offers(service: OfferServiceDeps):
 	status_code=status.HTTP_200_OK,
 	response_model=OfferWithSchedulesSchema,
 )
-async def find_offer(id: UUID, service: OfferServiceDeps):
+async def find_offer(id: UUID, service: OfferServiceDeps) -> OfferWithSchedulesSchema:
 	return await service.get(id)
 
 
@@ -44,7 +44,9 @@ async def find_offer(id: UUID, service: OfferServiceDeps):
 	status_code=status.HTTP_201_CREATED,
 	response_model=CreateOfferResponseSchema,
 )
-async def create_offer(body: CreateOfferSchema, service: OfferServiceDeps):
+async def create_offer(
+	body: CreateOfferSchema, service: OfferServiceDeps
+) -> CreateOfferResponseSchema:
 	return await service.create(body)
 
 
@@ -54,7 +56,7 @@ async def create_offer(body: CreateOfferSchema, service: OfferServiceDeps):
 	status_code=status.HTTP_200_OK,
 	response_model=OfferSchema,
 )
-async def update_offer(id: UUID, body: UpdateOfferSchema, service: OfferServiceDeps):
+async def update_offer(id: UUID, body: UpdateOfferSchema, service: OfferServiceDeps) -> OfferSchema:
 	return await service.update(id, body)
 
 
@@ -63,7 +65,7 @@ async def update_offer(id: UUID, body: UpdateOfferSchema, service: OfferServiceD
 	name='Delete offer',
 	status_code=status.HTTP_204_NO_CONTENT,
 )
-async def delete_offer(id: UUID, service: OfferServiceDeps):
+async def delete_offer(id: UUID, service: OfferServiceDeps) -> None:
 	await service.delete(id)
 
 
@@ -77,7 +79,7 @@ async def create_offer_schedule(
 	id: UUID,
 	schedule: CreateOfferScheduleSchema,
 	service: OfferScheduleServiceDeps,
-):
+) -> CreateOfferScheduleResponseSchema:
 	return await service.create(id, schedule)
 
 
@@ -92,7 +94,7 @@ async def update_offer_schedule(
 	schedule_id: UUID,
 	body: UpdateOfferScheduleSchema,
 	service: OfferScheduleServiceDeps,
-):
+) -> OfferScheduleSchema:
 	return await service.update(id, schedule_id, body)
 
 
@@ -105,5 +107,5 @@ async def delete_offer_schedule(
 	id: UUID,
 	schedule_id: UUID,
 	service: OfferScheduleServiceDeps,
-):
+) -> None:
 	await service.delete(id, schedule_id)

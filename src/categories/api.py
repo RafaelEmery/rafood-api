@@ -19,7 +19,7 @@ router = APIRouter()
 	description='Get all categories',
 	response_model=list[CategorySchema],
 )
-async def list_category(service: CategoryServiceDeps):
+async def list_category(service: CategoryServiceDeps) -> list[CategorySchema]:
 	return await service.list()
 
 
@@ -30,7 +30,9 @@ async def list_category(service: CategoryServiceDeps):
 	description='Create a new category',
 	response_model=CreateCategoryResponseSchema,
 )
-async def create_category(category: CreateCategorySchema, service: CategoryServiceDeps):
+async def create_category(
+	category: CreateCategorySchema, service: CategoryServiceDeps
+) -> CreateCategoryResponseSchema:
 	return await service.create(category)
 
 
@@ -40,5 +42,5 @@ async def create_category(category: CreateCategorySchema, service: CategoryServi
 	status_code=status.HTTP_204_NO_CONTENT,
 	description='Delete a category by id',
 )
-async def delete_category(category_id: UUID, service: CategoryServiceDeps):
+async def delete_category(category_id: UUID, service: CategoryServiceDeps) -> None:
 	await service.delete(category_id)

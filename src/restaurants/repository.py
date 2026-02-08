@@ -19,16 +19,16 @@ class RestaurantRepository:
 		query = select(Restaurant)
 
 		if name is not None:
-			query = query.filter(Restaurant.name.contains(name))
+			query = query.filter(Restaurant.name.contains(name))  # type: ignore[attr-defined]
 		if owner_id is not None:
-			query = query.filter(Restaurant.owner_id == owner_id)
+			query = query.filter(Restaurant.owner_id == owner_id)  # type: ignore[arg-type]
 
 		result = await self.db.execute(query)
 
-		return result.scalars().unique().all()
+		return result.scalars().unique().all()  # type: ignore[return-value]
 
 	async def get(self, id: UUID) -> Restaurant:
-		result = await self.db.execute(select(Restaurant).where(Restaurant.id == id))
+		result = await self.db.execute(select(Restaurant).where(Restaurant.id == id))  # type: ignore[arg-type]
 		restaurant = result.scalars().unique().first()
 
 		if not restaurant:
@@ -77,7 +77,7 @@ class RestaurantScheduleRepository:
 
 	async def get(self, schedule_id: UUID) -> RestaurantSchedule:
 		result = await self.db.execute(
-			select(RestaurantSchedule).where(RestaurantSchedule.id == schedule_id)
+			select(RestaurantSchedule).where(RestaurantSchedule.id == schedule_id)  # type: ignore[arg-type]
 		)
 		schedule = result.scalars().unique().first()
 
@@ -95,11 +95,11 @@ class RestaurantScheduleRepository:
 	async def get_by_restaurant(self, restaurant_id: UUID) -> list[RestaurantSchedule]:
 		result = await self.db.execute(
 			select(RestaurantSchedule).where(
-				RestaurantSchedule.restaurant_id == restaurant_id,
+				RestaurantSchedule.restaurant_id == restaurant_id,  # type: ignore[arg-type]
 			)
 		)
 
-		return result.scalars().unique().all()
+		return result.scalars().unique().all()  # type: ignore[return-value]
 
 	async def delete(self, schedule: RestaurantSchedule) -> None:
 		await self.db.delete(schedule)

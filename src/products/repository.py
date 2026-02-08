@@ -19,16 +19,16 @@ class ProductRepository:
 		query = select(Product)
 
 		if name is not None:
-			query = query.filter(Product.name.contains(name))
+			query = query.filter(Product.name.contains(name))  # type: ignore[attr-defined]
 		if category_id is not None:
-			query = query.filter(Product.category_id == category_id)
+			query = query.filter(Product.category_id == category_id)  # type: ignore[arg-type]
 
 		result = await self.db.execute(query)
 
-		return result.scalars().unique().all()
+		return result.scalars().unique().all()  # type: ignore[return-value]
 
 	async def get(self, id: UUID) -> Product:
-		query = select(Product).options(selectinload(Product.offers)).where(Product.id == id)
+		query = select(Product).options(selectinload(Product.offers)).where(Product.id == id)  # type: ignore[arg-type]
 		result = await self.db.execute(query)
 		product = result.scalars().unique().first()
 
