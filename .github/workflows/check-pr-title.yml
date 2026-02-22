@@ -1,4 +1,5 @@
 name: Check PR Title
+run-name: Validate that PR title follows semantic conventions
 
 on:
   pull_request:

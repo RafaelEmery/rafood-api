@@ -7,7 +7,7 @@ db_url = f'postgresql+asyncpg://{settings.DB_USER}:{settings.DB_PASSWORD}@{setti
 engine: AsyncEngine = create_async_engine(db_url)
 
 
-Session: AsyncSession = sessionmaker(
+Session: AsyncSession = sessionmaker(  # type: ignore[call-overload]
 	autocommit=False,
 	autoflush=False,
 	expire_on_commit=False,

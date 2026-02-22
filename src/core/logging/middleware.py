@@ -4,7 +4,7 @@ from typing import TypedDict
 
 import structlog
 from asgi_correlation_id import correlation_id
-from starlette.types import ASGIApp, Receive, Scope, Send
+from starlette.types import ASGIApp, Message, Receive, Scope, Send
 from uvicorn.protocols.utils import get_path_with_query_string
 
 from src.core.config import settings
@@ -19,7 +19,7 @@ class AccessInfo(TypedDict, total=False):
 
 
 class StructLogMiddleware:
-	def __init__(self, app: ASGIApp):
+	def __init__(self, app: ASGIApp) -> None:
 		self.app = app
 
 	async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
@@ -41,7 +41,7 @@ class StructLogMiddleware:
 		info = AccessInfo()
 
 		# Inner send function
-		async def inner_send(message):
+		async def inner_send(message: Message) -> None:
 			if message['type'] == 'http.response.start':
 				info['status_code'] = message['status']
 			await send(message)
@@ -59,7 +59,7 @@ class StructLogMiddleware:
 			client_host, client_port = scope.get('client') or ('unknown', 0)
 			http_method = scope['method']
 			http_version = scope['http_version']
-			url = get_path_with_query_string(scope)
+			url = get_path_with_query_string(scope)  # type: ignore[arg-type]
 			headers = {k.decode().lower(): v.decode() for k, v in scope.get('headers', [])}
 			user_agent = headers.get('user-agent')
 			http_host = headers.get('host')

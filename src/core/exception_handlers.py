@@ -2,7 +2,7 @@ import logging
 import traceback
 from datetime import datetime, timezone
 
-from fastapi import Request
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from src.exceptions import AppError, AppNotFoundError
@@ -10,12 +10,12 @@ from src.exceptions import AppError, AppNotFoundError
 logger = logging.getLogger(__name__)
 
 
-def register_exception_handlers(app):
+def register_exception_handlers(app: FastAPI) -> None:
 	@app.exception_handler(AppError)
 	async def app_exception_handler(
 		request: Request,
 		exc: AppError,
-	):
+	) -> JSONResponse:
 		logger.exception(f'Handled AppError on {request.url.path}')
 
 		return JSONResponse(
@@ -35,7 +35,7 @@ def register_exception_handlers(app):
 	async def app_not_found_exception_handler(
 		request: Request,
 		exc: AppNotFoundError,
-	):
+	) -> JSONResponse:
 		"""
 		Handle not found errors separately to avoid logging them as exceptions
 		and return simplified response since it's a common case.
@@ -51,7 +51,7 @@ def register_exception_handlers(app):
 		)
 
 	@app.exception_handler(Exception)
-	async def catch_all_handler(request: Request, exc: Exception):
+	async def catch_all_handler(request: Request, exc: Exception) -> JSONResponse:
 		"""
 		Catch all unhandled exceptions to log them and return a generic 500 error response.
 		"""

@@ -38,7 +38,7 @@ class CreateProductSchema(BaseModel):
 
 	@field_validator('image_url')
 	@classmethod
-	def convert_url_to_string(cls, v):
+	def convert_url_to_string(cls, v: HttpUrl | None) -> str | None:
 		"""Convert HttpUrl to string for database storage"""
 		if v is not None:
 			return str(v)

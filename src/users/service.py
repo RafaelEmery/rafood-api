@@ -25,7 +25,7 @@ class UserService:
 			users = await self.repository.list()
 			logger.bind(listed_users_count=len(users))
 
-			return users
+			return [UserSchema.model_validate(user) for user in users]
 		except Exception as e:
 			raise UsersInternalError(message=str(e)) from e
 
@@ -34,7 +34,7 @@ class UserService:
 			user = await self.repository.get(id)
 			logger.bind(retrieved_user_id=user.id)
 
-			return user
+			return UserDetailsSchema.model_validate(user)
 		except UserNotFoundError:
 			raise
 		except Exception as e:
@@ -59,7 +59,7 @@ class UserService:
 			await self.repository.update(user)
 			logger.bind(updated_user_id=user.id)
 
-			return user
+			return UserSchema.model_validate(user)
 		except UserNotFoundError:
 			raise
 		except Exception as e:
