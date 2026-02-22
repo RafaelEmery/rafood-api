@@ -1,5 +1,5 @@
 name: Lint & Type Check
-description: Running Ruff linter and Mypy type checker on the codebase.
+run-name: Running Ruff linter and Mypy type checker on the codebase.
 
 on:
   pull_request:
