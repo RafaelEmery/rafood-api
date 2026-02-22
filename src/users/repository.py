@@ -17,7 +17,7 @@ class UserRepository:
 
 	async def list(self) -> list[User]:
 		result = await self.db.execute(select(User))
-		users: list[User] = result.scalars().unique().all()  # type: ignore[assignment]
+		users: list[User] = list(result.scalars().unique().all())
 
 		return users
 

@@ -10,7 +10,7 @@ from structlog.types import EventDict, Processor
 from src.core.config import settings
 
 
-def drop_color_message_key(_, __, event_dict: EventDict) -> EventDict:  # type: ignore[no-untyped-def]
+def drop_color_message_key(logger: Any, method_name: str, event_dict: EventDict) -> EventDict:
 	"""
 	Uvicorn logs the message a second time in the extra `color_message`, but we don't
 	need it. This processor drops the key from the event dict if it exists.

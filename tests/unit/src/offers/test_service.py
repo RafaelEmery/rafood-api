@@ -84,7 +84,6 @@ async def test_create_offer_success(offer_service, mock_offer_repository):
 	create_data = CreateOfferSchema(
 		product_id=uuid4(),
 		price=10.0,
-		active=True,
 	)
 	mock_offer_repository.create = AsyncMock(return_value=offer_id)
 
@@ -100,7 +99,6 @@ async def test_create_offer_internal_error(offer_service, mock_offer_repository)
 	create_data = CreateOfferSchema(
 		product_id=uuid4(),
 		price=10.0,
-		active=True,
 	)
 	mock_offer_repository.create = AsyncMock(side_effect=Exception('Ih! Deu ruim!'))
 
@@ -275,7 +273,7 @@ async def test_update_offer_schedule_success(
 		schedule_update=update_data,
 	)
 
-	assert result.day == 'tuesday'
+	assert result.day.value == 'tuesday'
 	assert result.start_time == time(10, 0, 0)
 	assert result.end_time == time(22, 0, 0)
 	assert result.repeats is True

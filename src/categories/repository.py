@@ -16,7 +16,7 @@ class CategoryRepository:
 
 	async def list(self) -> list[Category]:
 		result = await self.db.execute(select(Category))
-		categories: list[Category] = result.scalars().unique().all()  # type: ignore[assignment]
+		categories: list[Category] = list(result.scalars().unique().all())
 
 		return categories
 

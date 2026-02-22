@@ -25,7 +25,7 @@ class RestaurantRepository:
 
 		result = await self.db.execute(query)
 
-		return result.scalars().unique().all()  # type: ignore[return-value]
+		return list(result.scalars().unique().all())
 
 	async def get(self, id: UUID) -> Restaurant:
 		result = await self.db.execute(select(Restaurant).where(Restaurant.id == id))  # type: ignore[arg-type]
@@ -99,7 +99,7 @@ class RestaurantScheduleRepository:
 			)
 		)
 
-		return result.scalars().unique().all()  # type: ignore[return-value]
+		return list(result.scalars().unique().all())
 
 	async def delete(self, schedule: RestaurantSchedule) -> None:
 		await self.db.delete(schedule)

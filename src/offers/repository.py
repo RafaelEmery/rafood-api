@@ -18,7 +18,7 @@ class OfferRepository:
 	async def list(self) -> list[Offer]:
 		result = await self.db.execute(select(Offer))
 
-		return result.scalars().unique().all()  # type: ignore[return-value]
+		return list(result.scalars().unique().all())
 
 	async def get(self, id: UUID) -> Offer:
 		result = await self.db.execute(select(Offer).where(Offer.id == id))  # type: ignore[arg-type]

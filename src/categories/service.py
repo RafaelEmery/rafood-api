@@ -1,4 +1,3 @@
-# mypy: disable-error-code=return-value
 from uuid import UUID
 
 from src.categories.exceptions import CategoriesInternalError, CategoryNotFoundError
@@ -24,7 +23,7 @@ class CategoryService:
 			categories = await self.repository.list()
 			logger.bind(listed_categories_count=len(categories))
 
-			return categories
+			return [CategorySchema.model_validate(category) for category in categories]
 		except Exception as e:
 			raise CategoriesInternalError(message=str(e)) from e
 

@@ -4,7 +4,7 @@ from typing import TypedDict
 
 import structlog
 from asgi_correlation_id import correlation_id
-from starlette.types import ASGIApp, Receive, Scope, Send
+from starlette.types import ASGIApp, Message, Receive, Scope, Send
 from uvicorn.protocols.utils import get_path_with_query_string
 
 from src.core.config import settings
@@ -41,7 +41,7 @@ class StructLogMiddleware:
 		info = AccessInfo()
 
 		# Inner send function
-		async def inner_send(message: dict) -> None:
+		async def inner_send(message: Message) -> None:
 			if message['type'] == 'http.response.start':
 				info['status_code'] = message['status']
 			await send(message)
@@ -49,7 +49,7 @@ class StructLogMiddleware:
 		try:
 			info['start_time'] = time.perf_counter_ns()
 
-			await self.app(scope, receive, inner_send)  # type: ignore[arg-type]
+			await self.app(scope, receive, inner_send)
 		except Exception:
 			# Raising exception to be handled at exception_handlers.catch_all_handler.
 			# Will be correctly logged and returned to caller

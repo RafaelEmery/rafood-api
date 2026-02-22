@@ -1,4 +1,3 @@
-# mypy: disable-error-code=return-value
 from datetime import datetime
 from uuid import UUID
 
@@ -39,7 +38,10 @@ class RestaurantService:
 			restaurants = await self.repository.list(name, owner_id)
 			logger.bind(listed_restaurants_count=len(restaurants))
 
-			return restaurants
+			return [
+				RestaurantWithSchedulesSchema.model_validate(restaurant)
+				for restaurant in restaurants
+			]
 		except Exception as e:
 			raise RestaurantsInternalError(message=str(e)) from e
 
@@ -48,7 +50,7 @@ class RestaurantService:
 			restaurant = await self.repository.get(id)
 			logger.bind(retrieved_restaurant_id=restaurant.id)
 
-			return restaurant
+			return RestaurantWithProductsSchema.model_validate(restaurant)
 		except RestaurantNotFoundError:
 			raise
 		except Exception as e:
@@ -68,7 +70,11 @@ class RestaurantService:
 			restaurant = await self.repository.get(id)
 
 			restaurant.name = restaurant_update.name
-			restaurant.image_url = restaurant_update.image_url  # type: ignore[assignment]
+			restaurant.image_url = (
+				str(restaurant_update.image_url)
+				if restaurant_update.image_url is not None
+				else None
+			)
 			restaurant.owner_id = restaurant_update.owner_id
 			restaurant.street = restaurant_update.street
 			restaurant.number = restaurant_update.number
@@ -79,7 +85,7 @@ class RestaurantService:
 			await self.repository.update(restaurant)
 			logger.bind(updated_restaurant_id=restaurant.id)
 
-			return restaurant
+			return RestaurantSchema.model_validate(restaurant)
 		except RestaurantNotFoundError:
 			raise
 		except Exception as e:
@@ -155,7 +161,7 @@ class RestaurantScheduleService:
 			await self.repository.update(schedule)
 			logger.bind(updated_restaurant_schedule_id=schedule.id)
 
-			return schedule
+			return RestaurantScheduleSchema.model_validate(schedule)
 		except (RestaurantNotFoundError, RestaurantScheduleNotFoundError):
 			raise
 		except Exception as e:

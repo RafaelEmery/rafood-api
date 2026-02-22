@@ -134,7 +134,7 @@ async def test_update_product_success(product_service, mock_product_repository, 
 
 	assert result.name == 'Pizza Pepperoni'
 	assert result.price == 30.0
-	assert result.image_url == 'https://example.com/pepperoni.jpg'
+	assert str(result.image_url) == 'https://example.com/pepperoni.jpg'
 
 	mock_product_repository.get.assert_awaited_once_with(sample_product.id)
 	mock_product_repository.update.assert_awaited_once_with(sample_product)

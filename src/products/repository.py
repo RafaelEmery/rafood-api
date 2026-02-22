@@ -25,7 +25,7 @@ class ProductRepository:
 
 		result = await self.db.execute(query)
 
-		return result.scalars().unique().all()  # type: ignore[return-value]
+		return list(result.scalars().unique().all())
 
 	async def get(self, id: UUID) -> Product:
 		query = select(Product).options(selectinload(Product.offers)).where(Product.id == id)  # type: ignore[arg-type]
