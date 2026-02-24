@@ -40,7 +40,7 @@ app.add_middleware(CorrelationIdMiddleware, header_name=settings.LOGS_CORRELATIO
 	name='Health Check Endpoint',
 	description='Check if the API is running.',
 )
-async def ok():
+async def ok() -> dict[str, str]:
 	return {'message': 'pong'}
 
 

@@ -9,7 +9,7 @@ Status: `WIP`
 - Testing only on APIs and not much of unit tests.
 
 Current project structure (*as is*):
-![module structure](../docs/images/module-structure.png)
+![module structure](../images/module-structure.png)
 
 Tree view:
 

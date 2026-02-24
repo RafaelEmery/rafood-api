@@ -59,7 +59,7 @@ class CreateOfferScheduleSchema(BaseModel):
 
 	@field_validator('start_time', 'end_time')
 	@classmethod
-	def validate_time_format(cls, v):
+	def validate_time_format(cls, v: str) -> str:
 		"""Validate time format HH:MM:SS (00:00:00 to 23:59:59)"""
 		try:
 			parsed_time = datetime.strptime(v, '%H:%M:%S')

@@ -15,7 +15,7 @@ class CategorySchema(BaseModel):
 
 
 class CreateCategorySchema(BaseModel):
-	name: str = Field(min_length=1, max_length=256, strip_whitespace=True)
+	name: str = Field(min_length=1, max_length=256)
 
 
 class CreateCategoryResponseSchema(BaseModel):

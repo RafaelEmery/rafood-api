@@ -35,7 +35,7 @@ class OfferService:
 			offers = await self.repository.list()
 			logger.bind(listed_offers_count=len(offers))
 
-			return offers
+			return [OfferSchema.model_validate(offer) for offer in offers]
 		except Exception as e:
 			raise OffersInternalError(message=str(e)) from e
 
@@ -44,7 +44,7 @@ class OfferService:
 			offer = await self.repository.get(id)
 			logger.bind(retrieved_offer_id=offer.id)
 
-			return offer
+			return OfferWithSchedulesSchema.model_validate(offer)
 		except OfferNotFoundError:
 			raise
 		except Exception as e:
@@ -68,7 +68,7 @@ class OfferService:
 			await self.repository.update(offer)
 			logger.bind(updated_offer_id=offer.id)
 
-			return offer
+			return OfferSchema.model_validate(offer)
 		except OfferNotFoundError:
 			raise
 		except Exception as e:
@@ -122,7 +122,7 @@ class OfferScheduleService:
 			await self.repository.update(schedule)
 			logger.bind(updated_offer_schedule_id=schedule.id)
 
-			return schedule
+			return OfferScheduleSchema.model_validate(schedule)
 		except (OfferNotFoundError, OfferScheduleNotFoundError):
 			raise
 		except Exception as e:

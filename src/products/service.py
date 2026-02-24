@@ -28,7 +28,7 @@ class ProductService:
 			products = await self.repository.list(name, category_id)
 			logger.bind(listed_products_count=len(products))
 
-			return products
+			return [ProductWithCategoriesSchema.model_validate(product) for product in products]
 		except Exception as e:
 			raise ProductsInternalError(message=str(e)) from e
 
@@ -37,7 +37,7 @@ class ProductService:
 			product = await self.repository.get(id)
 			logger.bind(retrieved_product_id=product.id)
 
-			return product
+			return ProductWithOffersSchema.model_validate(product)
 		except ProductNotFoundError:
 			raise
 		except Exception as e:
@@ -60,12 +60,14 @@ class ProductService:
 			product.name = product_update.name
 			product.price = product_update.price
 			product.category_id = product_update.category_id
-			product.image_url = product_update.image_url
+			product.image_url = (
+				str(product_update.image_url) if product_update.image_url is not None else None
+			)
 
 			await self.repository.update(product)
 			logger.bind(updated_product_id=product.id)
 
-			return product
+			return ProductSchema.model_validate(product)
 		except ProductNotFoundError:
 			raise
 		except Exception as e:
