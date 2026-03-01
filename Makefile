@@ -182,3 +182,13 @@ load-test: ## Run load tests with Locust
 	@echo "Running load tests with Locust... 🔥\n"
 	@echo "Warning: Make sure the API is running before executing load tests! ⚠️\n"
 	@poetry run locust -f locust/locustfile.py
+
+build-container: ## Build the Docker image for Kubernetes deployment using Docker only (not for use with Docker Compose)
+	@echo "Building Docker image for Kubernetes deployment using Docker... 🏗️\n"
+	@docker build -t rafood-api:latest .
+	@echo "\nDocker image built! 🎉\n"
+
+run-container: ## Run the Docker container locally for testing (not for use with Docker Compose)
+	@echo "Running Docker container locally... 🚀\n"
+	@docker run --env-file .env -p 8000:8000 rafood-api:latest
+	@echo "\nDocker container started! 🎉\n"

@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rafood-api
+  labels:
+    app: rafood-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: rafood-api
+  template:
+    metadata:
+      labels:
+        app: rafood-api
+    spec:
+      containers:
+        - name: rafood-api
+          image: rafood-api:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
