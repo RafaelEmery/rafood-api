@@ -79,6 +79,15 @@ After installing, you just need to run `k9s` on your terminal. Tips for using k9
 
 At the top of the screen, k9s shows quick key hints for each context.
 
+# Studies notes
+
+The order and the process of my Kubernetes studies are:
+
+1. Making initial setup with Minikube and kubectl
+1. Basic service and deployment configuration example
+1. Deploying application with Helm
+1. Deploying application with ArgoCD
+
 ## Basic service and deployment configuration example
 
 > Reference: [Docker and Kubernetes for Local Deployment Using FastAPI](https://medium.com/@wrefordmessi/docker-and-kubernetes-for-local-deployment-using-fastapi-1c8df431ed95) - How-to with a FastAPI application, deployment and service configuration to expose the app (uses Minikube).
@@ -158,9 +167,12 @@ spec:
 
 #### Apply the configurations
 
+> [!NOTE]
+> The manifest files were moved to the `kubernetes/raw-manifests` directory for better organization because the deployment and service configurations are the same for both Helm and ArgoCD. The `raw-manifests` directory is used to document the study notes and examples.
+
 ```bash
-kubectl apply -f kubernetes/deployment.yml
-kubectl apply -f kubernetes/service.yml
+kubectl apply -f kubernetes/raw-manifests/deployment.yml
+kubectl apply -f kubernetes/raw-manifests/service.yml
 ```
 
 To monitor the pods, you can use and check logs:
@@ -207,3 +219,13 @@ When you're done, you can stop the Minikube cluster:
 ```bash
 minikube stop
 ```
+
+## Deploying application with Helm
+
+> Reference: [Using Helm with Kubernetes: A Guide to Helm Charts and Their Implementation](https://dev.to/alexmercedcoder/using-helm-with-kubernetes-a-guide-to-helm-charts-and-their-implementation-8dg) - Complete guide for using Helm (and extra ArgoCD tutorial)
+
+#### Context about Helm
+
+#### Install and configure Helm
+
+#### Basic helm charts by deployment and service configurations
