@@ -2,11 +2,11 @@
 
 ## Setup
 
-#### Requirements
+### Requirements
 
 Must have Docker installed and running on your machine.
 
-#### Install Minikube
+### Install Minikube
 
 [Minikube](https://minikube.sigs.k8s.io/docs/start/) is a tool that allows you to run Kubernetes locally. It creates a single-node Kubernetes cluster on your local machine, which is ideal for development and testing purposes. To install Minikube on Linux, you can use the following commands:
 
@@ -15,9 +15,11 @@ curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-
 sudo install minikube-linux-amd64 /usr/local/bin/minikube
 ```
 
+By running `minikube dashboard` you can access the Minikube dashboard to monitor the cluster.
+
 An alternative to Minikube is [Kind](https://kind.sigs.k8s.io/), which runs Kubernetes clusters in Docker containers.
 
-#### Install `kubectl`
+### Install `kubectl`
 
 ```bash
 sudo snap install kubectl --classic
@@ -39,7 +41,7 @@ kubectl delete deployments --all
 kubectl logs -f <pod-name>
 ```
 
-#### Start a new Minikube cluster
+### Start a new Minikube cluster
 
 ```bash
 minikube start
@@ -60,7 +62,7 @@ minikube stop
 minikube delete
 ```
 
-#### Install Helm and Helm Docs
+### Install Helm and Helm Docs
 
 [Helm](https://helm.sh/) is a package manager for Kubernetes that helps you manage Kubernetes applications. It allows you to define, install, and upgrade complex Kubernetes applications using simple configuration files called Helm Charts.
 
@@ -72,7 +74,7 @@ sudo snap install helm --classic
 sudo snap install helm-docs
 ```
 
-#### Extra: use k9s
+### Extra: use k9s
 
 [k9s](https://k9scli.io/) is a terminal-based UI to interact with your Kubernetes clusters. It provides an easy way to navigate and manage your Kubernetes resources.
 
@@ -104,7 +106,7 @@ The order and the process of my Kubernetes studies are:
 
 > Reference: [Docker and Kubernetes for Local Deployment Using FastAPI](https://medium.com/@wrefordmessi/docker-and-kubernetes-for-local-deployment-using-fastapi-1c8df431ed95) - How-to with a FastAPI application, deployment and service configuration to expose the app (uses Minikube).
 
-#### Pre requisites
+### Pre requisites
 
 The Docker image won't be at Docker Hub, so we must declare `imagePullPolicy: Never` in the deployment configuration and build the image inside the Minikube environment:
 
@@ -123,7 +125,7 @@ docker images | grep rafood-api
 eval $(minikube docker-env -u)
 ```
 
-#### Deployment configuration
+### Deployment configuration
 
 ```yaml
 apiVersion: apps/v1            # API group/version for workload resources (Deployment)
@@ -157,7 +159,7 @@ spec:
               cpu: "250m"            # Minimum CPU guaranteed (0.25 core)
 ```
 
-#### Service configuration
+### Service configuration
 
 ```yaml
 apiVersion: v1                 # Core API group (Service belongs to core/v1)
@@ -177,7 +179,7 @@ spec:
       nodePort: 31110          # Fixed port exposed on each Node (default range 30000–32767)
 ```
 
-#### Apply the configurations
+### Apply the configurations
 
 > [!NOTE]
 > The manifest files were moved to the `kubernetes/raw-manifests` directory for better organization because the deployment and service configurations are the same for both Helm and ArgoCD. The `raw-manifests` directory is used to document the study notes and examples.
@@ -206,7 +208,7 @@ Or use k9s to monitor the pods and logs in a more interactive way:
 
 ![k9s pods logs example](./images/k9s-pods-logs-example.png)
 
-#### Access the service
+### Access the service
 
 To access the service, you can use the `minikube service` command, which will open the service in your default web browser:
 
@@ -220,7 +222,7 @@ Calling health check on Postman:
 
 ![minikube cluster health check](./images/minikube-cluster-healthcheck.png)
 
-#### Stopping the cluster
+### Stopping the cluster
 
 When you're done, you can stop the Minikube cluster:
 
@@ -236,7 +238,7 @@ minikube stop
 
 > Reference: [Using Helm with Kubernetes: A Guide to Helm Charts and Their Implementation](https://dev.to/alexmercedcoder/using-helm-with-kubernetes-a-guide-to-helm-charts-and-their-implementation-8dg) - Complete guide for using Helm (and extra ArgoCD tutorial)
 
-#### Context about Helm
+### Context about Helm
 
 > Helm is a package manager for Kubernetes that helps deploy, configure, and manage applications in a Kubernetes cluster. Instead of manually writing and applying multiple Kubernetes YAML manifests, Helm allows you to package them into reusable Helm Charts, simplifying deployment and maintenance.
 
@@ -248,7 +250,7 @@ minikube stop
 | Reusability     | Limited; each deployment needs its own YAML    | Reusable and configurable charts                             |
 | Dependencies    | Managed manually                               | Handled via `requirements.yaml` (deprecated) or `Chart.yaml` |
 
-#### Install and configure Helm
+### Install and configure Helm
 
 To clean minikube cluster:
 
@@ -568,4 +570,70 @@ Go to `kubernetes/charts/rafood-api` directory and run the command above. A `REA
 
 ```bash
 helm-docs
+```
+
+## Deploying application with ArgoCD
+
+### Context about ArgoCD
+
+> Reference: [ArgoCD Documentation](https://argo-cd.readthedocs.io/en/stable/) and [
+> GITOPS? Aprenda a usar na prática com Argo CD e Kubernetes](https://www.youtube.com/watch?v=k1GeGLlqZBU) - YouTube video by @codigofontetv
+
+ArgoCD is a declarative, GitOps continuous delivery tool for Kubernetes. It follows the GitOps pattern of using Git as the source of truth for the desired state of the application. It can be used to deploy and manage applications on Kubernetes clusters.
+
+### Install and configure ArgoCD
+
+To clean minikube cluster:
+
+```bash
+minikube stop
+
+minikube delete
+
+minikube start
+
+# Another way to verify if cluster is running
+kubectl get nodes
+```
+
+Create a new namespace for ArgoCD and install ArgoCD:
+
+```bash
+kubectl create namespace argocd
+
+# Installing ArgoCD and all required resources using the official manifest file
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+```
+
+To check if ArgoCD is installed correctly, you can use the following commands:
+
+```bash
+kubectl get pods -n argocd
+
+minikube service list
+
+# To access the minikube dashboard to check "argocd" namespace services
+minikube dashboard
+```
+
+### Access the ArgoCD UI
+
+To access the ArgoCD UI, you can use the following command:
+
+```bash
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+```
+
+And then you can access the ArgoCD UI at `http://localhost:8080` using the default credentials:
+
+```bash
+echo $(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
+```
+
+> [!NOTE] The default login is `admin` and the password is the one obtained from the command above.
+
+To change the password, you can use the following command:
+
+```bash
+kubectl patch secret argocd-secret -n argocd -p '{"stringData": {"admin.password": "your-new-password-here"}}'
 ```
