@@ -60,6 +60,18 @@ minikube stop
 minikube delete
 ```
 
+#### Install Helm and Helm Docs
+
+[Helm](https://helm.sh/) is a package manager for Kubernetes that helps you manage Kubernetes applications. It allows you to define, install, and upgrade complex Kubernetes applications using simple configuration files called Helm Charts.
+
+You can install Helm on Linux using Snap (recommended for easier updates):
+
+```bash
+sudo snap install helm --classic
+
+sudo snap install helm-docs
+```
+
 #### Extra: use k9s
 
 [k9s](https://k9scli.io/) is a terminal-based UI to interact with your Kubernetes clusters. It provides an easy way to navigate and manage your Kubernetes resources.
@@ -226,6 +238,334 @@ minikube stop
 
 #### Context about Helm
 
+> Helm is a package manager for Kubernetes that helps deploy, configure, and manage applications in a Kubernetes cluster. Instead of manually writing and applying multiple Kubernetes YAML manifests, Helm allows you to package them into reusable Helm Charts, simplifying deployment and maintenance.
+
+| Feature         | Kubernetes YAML Manifests                      | Helm Charts                                                  |
+| --------------- | ---------------------------------------------- | ------------------------------------------------------------ |
+| Management      | Requires manually applying multiple YAML files | Uses a single Helm command                                   |
+| Configuration   | Static YAML definitions                        | Dynamic templating via values.yaml                           |
+| Version Control | Difficult to track changes manually            | Built-in versioning & rollback                               |
+| Reusability     | Limited; each deployment needs its own YAML    | Reusable and configurable charts                             |
+| Dependencies    | Managed manually                               | Handled via `requirements.yaml` (deprecated) or `Chart.yaml` |
+
 #### Install and configure Helm
 
+To clean minikube cluster:
+
+```bash
+minikube stop
+
+minikube delete
+
+minikube start
+
+# Another way to verify if cluster is running
+kubectl get nodes
+```
+
+To create a Helm chart for the Rafood API application, you can use the following command:
+
+```bash
+helm create rafood-api
+```
+
+> [!NOTE]
+> The `helm create` command generates a basic Helm chart structure with default templates for deployment, service, and other Kubernetes resources. You can then customize these templates to fit the specific requirements of your application, such as setting the correct image name, ports, and resource limits.
+
+The generated `values.yaml` file contains default values for the Helm chart, which can be overridden when deploying the chart. Below is an example of what the generated `values.yaml` file might look like, with comments explaining each section.
+
+<details>
+<summary>Generated Values file</summary>
+
+```yaml
+# Default values for rafood-api.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
+replicaCount: 1
+
+# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
+image:
+  repository: nginx
+  # This sets the pull policy for images.
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+# This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+imagePullSecrets: []
+# This is to override the chart name.
+nameOverride: ""
+fullnameOverride: ""
+
+# This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
+serviceAccount:
+  # Specifies whether a service account should be created.
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account.
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template.
+  name: ""
+
+# This is for setting Kubernetes Annotations to a Pod.
+# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+podAnnotations: {}
+# This is for setting Kubernetes Labels to a Pod.
+# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+# This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
+service:
+  # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+  type: ClusterIP
+  # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
+  port: 80
+
+# This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+    # - secretName: chart-example-tls
+    #   hosts:
+    #     - chart-example.local
+
+# -- Expose the service via gateway-api HTTPRoute
+# Requires Gateway API resources and suitable controller installed within the cluster
+# (see: https://gateway-api.sigs.k8s.io/guides/)
+httpRoute:
+  # HTTPRoute enabled.
+  enabled: false
+  # HTTPRoute annotations.
+  annotations: {}
+  # Which Gateways this Route is attached to.
+  parentRefs:
+  - name: gateway
+    sectionName: http
+    # namespace: default
+  # Hostnames matching HTTP header.
+  hostnames:
+  - chart-example.local
+  # List of rules and filters applied.
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /headers
+  #   filters:
+  #   - type: RequestHeaderModifier
+  #     requestHeaderModifier:
+  #       set:
+  #       - name: My-Overwrite-Header
+  #         value: this-is-the-only-value
+  #       remove:
+  #       - User-Agent
+  # - matches:
+  #   - path:
+  #       type: PathPrefix
+  #       value: /echo
+  #     headers:
+  #     - name: version
+  #       value: v2
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+# This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+
+# This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# Additional volumes on the output Deployment definition.
+volumes: []
+  # - name: foo
+  #   secret:
+  #     secretName: mysecret
+  #     optional: false
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts: []
+  # - name: foo
+  #   mountPath: "/etc/foo"
+  #   readOnly: true
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+```
+
+</details>
+
 #### Basic helm charts by deployment and service configurations
+
+`values.yaml`:
+
+```yaml
+replicaCount: 1
+
+image:
+  repository: rafood-api
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  port: 80
+  targetPort: 8000
+
+containerPort: 8000
+```
+
+`deployment.yaml`:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "rafood-api.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+
+  selector:
+    matchLabels:
+      app: {{ include "rafood-api.name" . }}
+
+  template:
+    metadata:
+      labels:
+        app: {{ include "rafood-api.name" . }}
+
+    spec:
+      containers:
+        - name: rafood-api
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+          ports:
+            - containerPort: {{ .Values.containerPort }}
+```
+
+`service.yaml`:
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "rafood-api.fullname" . }}
+
+spec:
+  type: {{ .Values.service.type }}
+
+  selector:
+    app: {{ include "rafood-api.name" . }}
+
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+```
+
+> The `Chart.yaml` file contains only metadata for the chart.
+
+#### Installing the Helm chart
+
+Before install, make sure that the image is built inside the Minikube environment, verify if templates are rendering correctly and if variables are being applied:
+
+> Helm commands must be at `kubernetes/charts` directory.
+
+```bash
+eval $(minikube docker-env)
+make build-container
+
+# Validate the rendered templates with the current values
+# The output will show the Kubernetes manifests that Helm would apply, allowing you to verify that the variables from `values.yaml` are correctly substituted in the templates.
+helm template rafood-api ./rafood-api
+
+helm lint ./rafood-api
+```
+
+To install the chart:
+
+```bash
+helm install rafood-api ./rafood-api
+```
+
+The expected output should be similar to:
+
+```
+NAME: rafood-api
+LAST DEPLOYED: Mon Mar  2 21:00:22 2026
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+DESCRIPTION: Install complete
+TEST SUITE: None
+```
+
+And then... 🪄✨ *magic* 🪄✨
+
+The application is deployed on Minikube cluster! You can check the pods and logs with `kubectl get pods`, `minikube service rafood-api` and `kubectl logs -f <pod-name>` commands or k9s.
+
+#### History and rollback
+
+You can check Helm history and rollback to a previous revision if needed:
+
+```bash
+helm history rafood-api
+
+helm rollback rafood-api <revision-number>
+```
+
+#### Generating documentation with helm-docs
+
+Go to `kubernetes/charts/rafood-api` directory and run the command above. A `README.md` file will be generated with the chart metadata and values description. This is useful for documentation and sharing the chart with others:
+
+```bash
+helm-docs
+```

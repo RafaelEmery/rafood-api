@@ -2,14 +2,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "rafood-api.fullname" . }}
-  labels:
-    {{- include "rafood-api.labels" . | nindent 4 }}
+
 spec:
   type: {{ .Values.service.type }}
+
+  selector:
+    app: {{ include "rafood-api.name" . }}
+
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: http
-      protocol: TCP
-      name: http
-  selector:
-    {{- include "rafood-api.selectorLabels" . | nindent 4 }}
+      targetPort: {{ .Values.service.targetPort }}
