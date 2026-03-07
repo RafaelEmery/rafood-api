@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: rafood-api
+  namespace: rafood
+spec:
+  replicas: 3
+
+  selector:
+    matchLabels:
+      app: rafood-api
+  template:
+    metadata:
+      labels:
+        app: rafood-api
+    spec:
+      containers:
+        - name: rafood-api
+          image: rafood-api:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+  strategy:
+    canary:
+      steps:
+        - setWeight: 30 # Defines 30% of the traffic to the new version
+        - pause: {} # Only applies 100% if resume/promote manually
+        - setWeight: 100 # Defines 100% of the traffic to the new version

@@ -59,6 +59,7 @@ You can stop and delete the cluster with:
 
 ```bash
 minikube stop
+
 minikube delete
 ```
 
@@ -92,6 +93,29 @@ After installing, you just need to run `k9s` on your terminal. Tips for using k9
 - `:q` — quit k9s
 
 At the top of the screen, k9s shows quick key hints for each context.
+
+## Kubernetes directory structure
+
+The `kubernetes` directory contains the following subdirectories:
+
+```bash
+kubernetes/
+├── charts/             # Contains the Helm charts for the Rafood API application (main deployment and service configuration).
+│   └── rafood-api/     # Helm chart for the Rafood API application.
+├── sandbox/            # Contains the Kubernetes sandbox for the Rafood API application.
+│   ├── manifests/      # Contains the raw manifests for the Rafood API application (PoC).
+│   └── argocd/         # Contains the ArgoCD configuration for the Rafood API application (PoC).
+```
+
+> [!NOTE]
+> The main deployment and service configuration is at `kubernetes/charts/rafood-api` directory and the _official_ guide below is based on this configuration.
+> To check the PoC configurations and steps, you'll find them at `Studies notes` section.
+
+## Deployment with Kubernetes + Helm Charts at Minikube cluster
+
+_To be updated_
+
+______________________________________________________________________
 
 # Studies notes
 
