@@ -182,11 +182,11 @@ spec:
 ### Apply the configurations
 
 > [!NOTE]
-> The manifest files were moved to the `kubernetes/raw-manifests` directory for better organization because the deployment and service configurations are the same for both Helm and ArgoCD. The `raw-manifests` directory is used to document the study notes and examples.
+> The manifest files were moved to the `kubernetes/sandbox/manifests` directory for better organization because the deployment and service configurations are the same for both Helm and ArgoCD. The `sandbox/manifests` directory is used to document the study notes and examples.
 
 ```bash
-kubectl apply -f kubernetes/raw-manifests/deployment.yml
-kubectl apply -f kubernetes/raw-manifests/service.yml
+kubectl apply -f kubernetes/sandbox/manifests/deployment.yml
+kubectl apply -f kubernetes/sandbox/manifests/service.yml
 ```
 
 To monitor the pods, you can use and check logs:
@@ -445,7 +445,7 @@ affinity: {}
 
 </details>
 
-#### Basic helm charts by deployment and service configurations
+### Basic helm charts by deployment and service configurations
 
 `values.yaml`:
 
@@ -515,7 +515,7 @@ spec:
 
 > The `Chart.yaml` file contains only metadata for the chart.
 
-#### Installing the Helm chart
+### Installing the Helm chart
 
 Before install, make sure that the image is built inside the Minikube environment, verify if templates are rendering correctly and if variables are being applied:
 
@@ -554,7 +554,7 @@ And then... 🪄✨ *magic* 🪄✨
 
 The application is deployed on Minikube cluster! You can check the pods and logs with `kubectl get pods`, `minikube service rafood-api` and `kubectl logs -f <pod-name>` commands or k9s.
 
-#### History and rollback
+### History and rollback
 
 You can check Helm history and rollback to a previous revision if needed:
 
@@ -564,7 +564,7 @@ helm history rafood-api
 helm rollback rafood-api <revision-number>
 ```
 
-#### Generating documentation with helm-docs
+### Generating documentation with helm-docs
 
 Go to `kubernetes/charts/rafood-api` directory and run the command above. A `README.md` file will be generated with the chart metadata and values description. This is useful for documentation and sharing the chart with others:
 
@@ -635,5 +635,11 @@ echo $(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.d
 To change the password, you can use the following command:
 
 ```bash
+# Must be validated if it's the correct command to change the password
 kubectl patch secret argocd-secret -n argocd -p '{"stringData": {"admin.password": "your-new-password-here"}}'
 ```
+
+### Deploying the application with ArgoCD
+
+> [!NOTE]
+> The application will be deployed to the `default` namespace.
