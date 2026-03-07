@@ -1,0 +1,13 @@
+replicaCount: 1
+
+image:
+  repository: rafood-api
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  port: 80
+  targetPort: 8000
+
+containerPort: 8000

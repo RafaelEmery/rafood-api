@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: rafood-api
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/RafaelEmery/rafood-api # Repository URL of the application
+    targetRevision: HEAD # Target revision of the application
+    path: kubernetes/sandbox/argocd # Path to the application in the repository
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: rafood
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true # Self-heals the application if it's not in the desired state
+    syncOptions:
+      - CreateNamespace=true # Creates the namespace if it doesn't exist
