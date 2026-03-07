@@ -192,3 +192,8 @@ run-container: ## Run the Docker container locally for testing (not for use with
 	@echo "Running Docker container locally... 🚀\n"
 	@docker run --env-file .env -p 8000:8000 rafood-api:latest
 	@echo "\nDocker container started! 🎉\n"
+
+stop-container: ## Stop the Docker container locally for testing (not for use with Docker Compose)
+	@echo "Stopping Docker container locally... 🛑\n"
+	@docker stop rafood-api:latest
+	@echo "\nDocker container stopped! 🎉\n"
