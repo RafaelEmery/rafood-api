@@ -187,6 +187,8 @@ build-container: ## Build the Docker image for Kubernetes deployment using Docke
 	@echo "Building Docker image for Kubernetes deployment using Docker... 🏗️\n"
 	@docker build -t rafood-api:latest .
 	@echo "\nDocker image built! 🎉\n"
+	@echo "Showing Docker image... 📋\n"
+	@docker images | grep rafood-api
 
 run-container: ## Run the Docker container locally for testing (not for use with Docker Compose)
 	@echo "Running Docker container locally... 🚀\n"

@@ -142,9 +142,6 @@ eval $(minikube docker-env)
 
 make build-container
 
-# Verify the image is built inside minikube
-docker images | grep rafood-api
-
 # Warning: you must return to default environment
 eval $(minikube docker-env -u)
 ```
@@ -640,6 +637,18 @@ minikube service list
 minikube dashboard
 ```
 
+This PoC uses Canary deployment strategy with Rollout resource. To install you must run the following commands:
+
+```bash
+kubectl create namespace argo-rollouts
+
+kubectl apply -n argocd \
+-f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+# Verify if the Rollout resource is installed correctly
+kubectl get pods -n argo-rollouts
+```
+
 ### Access the ArgoCD UI
 
 To access the ArgoCD UI, you can use the following command:
@@ -666,4 +675,35 @@ kubectl patch secret argocd-secret -n argocd -p '{"stringData": {"admin.password
 ### Deploying the application with ArgoCD
 
 > [!NOTE]
-> The application will be deployed to the `default` namespace.
+> The Kubernetes manifests are located at `kubernetes/sandbox/argocd` directory.
+> To deploy the application with ArgoCD, you need to create a new application in the ArgoCD UI.
+> The application name is `rafood-api` and the namespace is `rafood`.
+> The source is the repository URL and the target revision is the HEAD of the repository.
+> The destination is the Kubernetes cluster and the namespace is `rafood`.
+> The sync policy is automated and self-heals the application if it's not in the desired state.
+> The sync options are to create the namespace if it doesn't exist.
+
+You will need to create a new application by running the following command:
+
+```bash
+kubectl apply -f kubernetes/sandbox/argocd/application.yaml
+```
+
+And then you can access the ArgoCD UI by port-forwarding command defined above and accessing `http://localhost:8080` in your browser.
+
+> The default login is `admin` and the password is the one obtained from the command on access the ArgoCD UI section.
+
+The app applied will be at `Application`:
+
+![ArgoCD applications](./images/argo-cd-applications.png)
+
+When going inside the application, you can see the details of the deployment and the sync status.
+
+![Argo CD missing](./images/argo-cd-rafood-api-missing.png)
+
+- The application is missing because the manifests are not applied yet.
+- To check the current diff between the desired state (manifests) and the live state (cluster), you can click on the `Diff` button.
+- To apply the manifests, you can click on the `Sync` button and then `Synchronize` to apply the manifests to the cluster.
+- The rafood-migrations will always fail because the database is not configured, but the main application will be deployed and running. You can access the logs by clicking on the `Logs` button and selecting the migrations pod.
+
+![Argo CD sync example](./images/argo-cd-sync-example.png)

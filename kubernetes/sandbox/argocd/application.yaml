@@ -7,7 +7,12 @@ spec:
   project: default
   source:
     repoURL: https://github.com/RafaelEmery/rafood-api # Repository URL of the application
-    targetRevision: HEAD # Target revision of the application
+    # Target revision of the application.
+    # It's highly recommended to use HEAD value to always deploy the latest version of the application
+    # But in this case the manifest files are in a branch (PoC), so we need to specify it for now.
+    # After feat/add-deployment branch is merged to main, we can change this value to HEAD
+    # And feat/add-deployment may cause error on Argo CD UI because the branch is deleted.
+    targetRevision: feat/add-deployment
     path: kubernetes/sandbox/argocd # Path to the application in the repository
   destination:
     server: https://kubernetes.default.svc
