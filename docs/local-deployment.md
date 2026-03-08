@@ -1,8 +1,25 @@
 # Local Deployment with Kubernetes
 
+## Kubernetes directory structure
+
+The `kubernetes` directory contains the following subdirectories:
+
+```bash
+kubernetes/
+├── charts/             # Contains the Helm charts for the Rafood API application (main deployment and service configuration).
+│   └── rafood-api/     # Helm chart for the Rafood API application.
+├── sandbox/            # Contains the Kubernetes sandbox for the Rafood API application.
+│   ├── manifests/      # Contains the raw manifests for the Rafood API application (PoC).
+│   └── argocd/         # Contains the ArgoCD configuration for the Rafood API application (PoC).
+```
+
+> [!NOTE]
+> The main deployment and service configuration is at `kubernetes/charts/rafood-api` directory and the _official_ guide below is based on this configuration.
+> To check the PoC configurations and steps, you'll find them at `Studies notes` section.
+
 ## Setup
 
-### Requirements
+### First requirements
 
 Must have Docker installed and running on your machine.
 
@@ -94,26 +111,77 @@ After installing, you just need to run `k9s` on your terminal. Tips for using k9
 
 At the top of the screen, k9s shows quick key hints for each context.
 
-## Kubernetes directory structure
-
-The `kubernetes` directory contains the following subdirectories:
-
-```bash
-kubernetes/
-├── charts/             # Contains the Helm charts for the Rafood API application (main deployment and service configuration).
-│   └── rafood-api/     # Helm chart for the Rafood API application.
-├── sandbox/            # Contains the Kubernetes sandbox for the Rafood API application.
-│   ├── manifests/      # Contains the raw manifests for the Rafood API application (PoC).
-│   └── argocd/         # Contains the ArgoCD configuration for the Rafood API application (PoC).
-```
-
-> [!NOTE]
-> The main deployment and service configuration is at `kubernetes/charts/rafood-api` directory and the _official_ guide below is based on this configuration.
-> To check the PoC configurations and steps, you'll find them at `Studies notes` section.
-
 ## Deployment with Kubernetes + Helm Charts at Minikube cluster
 
-_To be updated_
+> [!NOTE]
+> Minikube, `kubectl`, and Helm must be installed and configured as described in the setup section above.
+
+### Resources
+
+*Add resources and explanations here*
+
+### First Steps
+
+Start a Minikube cluster and build the Docker image inside the Minikube environment:
+
+```bash
+minikube start
+
+eval $(minikube docker-env)
+
+make build-container
+
+eval $(minikube docker-env -u)
+```
+
+Activate Ingress (add the `ingress` addon to Minikube):
+
+```bash
+minikube addons enable ingress
+```
+
+### Deploy the application with Helm
+
+```bash
+helm install rafood-api kubernetes/charts/rafood-api
+```
+
+You can upgrade (recommended for any changes on the chart):
+
+```bash
+helm upgrade rafood-api kubernetes/charts/rafood-api
+```
+
+To check the deployment history and rollback if needed:
+
+```
+helm history rafood-api
+```
+
+The expected output should be similar to:
+
+```bash
+REVISION	UPDATED                 	STATUS    	CHART           	APP VERSION	DESCRIPTION
+1       	Sun Mar  8 19:37:55 2026	superseded	rafood-api-0.1.0	1.0.0      	Install complete
+2       	Sun Mar  8 19:42:57 2026	deployed  	rafood-api-0.1.0	1.0.0      	Upgrade complete
+```
+
+### Validate deployment
+
+```bash
+helm status rafood-api
+
+# Or check for all resources created using Kubectl
+kubectl get all
+```
+
+The `status` output:
+
+![helm status output](./images/helm-status.png)
+
+### Access, test and monitor the application
+
+*Add access, testing, and monitoring instructions here*
 
 ______________________________________________________________________
 
@@ -121,7 +189,7 @@ ______________________________________________________________________
 
 The order and the process of my Kubernetes studies are:
 
-1. Making initial setup with Minikube and kubectl
+1. Making initial setup with Minikube and kubectl (on `Setup` section above)
 1. Basic service and deployment configuration example
 1. Deploying application with Helm
 1. Deploying application with ArgoCD

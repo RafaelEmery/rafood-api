@@ -12,7 +12,8 @@ spec:
     # But in this case the manifest files are in a branch (PoC), so we need to specify it for now.
     # After feat/add-deployment branch is merged to main, we can change this value to HEAD
     # And feat/add-deployment may cause error on Argo CD UI because the branch is deleted.
-    targetRevision: feat/add-deployment
+    # targetRevision: feat/add-deployment
+    targetRevision: HEAD
     path: kubernetes/sandbox/argocd # Path to the application in the repository
   destination:
     server: https://kubernetes.default.svc
