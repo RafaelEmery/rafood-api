@@ -1,5 +1,7 @@
 # Local Deployment with Kubernetes
 
+[Related ADR: Add Local Deployment With Kubernetes](./adr/007-add-local-deployment.md)
+
 ## Kubernetes directory structure
 
 The `kubernetes` directory contains the following subdirectories:
@@ -118,7 +120,13 @@ At the top of the screen, k9s shows quick key hints for each context.
 
 ### Resources
 
-*Add resources and explanations here*
+The Helm chart contains the following Kubernetes templates:
+
+- **deployment.yaml**: Defines the Deployment resource for the Rafood API, including replica count, rolling update strategy, container image, resource limits, and health probes.
+- **service.yaml**: Creates a Service to expose the Rafood API pods, specifying the service type (ClusterIP, NodePort, etc.) and ports.
+- **ingress.yaml**: Configures an Ingress resource for external access, with host, path, and backend service settings (enabled via values).
+- **hpa.yaml**: Sets up a Horizontal Pod Autoscaler (HPA) to automatically scale pods based on CPU and memory utilization thresholds.
+- **\_helpers.tpl**: Provides reusable template functions for naming, labels, and chart metadata used across other templates.
 
 ### First Steps
 
@@ -181,7 +189,77 @@ The `status` output:
 
 ### Access, test and monitor the application
 
-*Add access, testing, and monitoring instructions here*
+Validate Ingress and get IP:
+
+```bash
+kubectl get ingress
+
+minikube ip
+```
+
+Then add the IP on `/etc/hosts` file with the hostname defined in the Helm chart (`rafood.local` by default):
+
+```bash
+echo "$(minikube ip) rafood.local" | sudo tee -a /etc/hosts
+```
+
+Now you can access the application at `http://rafood.local` 🪄 and test the endpoints with Postman or any HTTP client.
+
+Run cURL to validate:
+
+```bash
+curl http://rafood.local/ping
+```
+
+#### Using k9s to monitor the application
+
+You can use k9s to check the pods, logs, and other resources in a more interactive way by running `:pods`, `:services`, `:deployments` and other commands in the k9s interface.
+
+![k9s pods view](./images/k9s-pods-view.png)
+![k9s ingress view](./images/k9s-ingress-view.png)
+
+#### Testing HPA
+
+Install metrics-server on Minikube and validate HPA on k9s:
+
+```bash
+minikube addons enable metrics-server
+
+kubectl get pods -n kube-system | grep metrics
+
+# Metrics API will show pods metrics, including CPU and memory usage, which are essential for HPA to make scaling decisions.
+kubectl top pods
+```
+
+![k9s HPA view](./images/k9s-hpa-view.png)
+
+You'll need to create a temporary pod and run load testing:
+
+```bash
+# Create load-generator pod and access bash
+kubectl run load-generator --rm -it --image=busybox -- /bin/sh
+
+# Calling existing health check endpoint
+# The service (internal) address is `rafood-api` because of the service configuration in the Helm chart.
+# To more details use k9s (:service) or kubectl get svc
+while true; do wget -q -O- http://rafood-api/ping; done
+```
+
+With only CPU threshold on HPA, you can check on k9s (or `kubectl`) the HPA values and new Pods:
+
+**HPA**:
+![k9s HPA view](./images/k9s-hpa-value.png)
+
+**Pods**:
+![k9s Pods view](./images/k9s-new-scaled-pods.png)
+
+HPA is working 🎇🎇🎇 2 pods are now 5 pods (check the `MINPODS`, `MAXPODS`, `REPLICAS` values on HPA)
+
+### Extra: generating Helm Docs
+
+```bash
+helm-docs kubernetes/charts/rafood-api/
+```
 
 ______________________________________________________________________
 
@@ -659,6 +737,9 @@ Go to `kubernetes/charts/rafood-api` directory and run the command above. A `REA
 
 ```bash
 helm-docs
+
+# Or from the root directory
+helm-docs kubernetes/charts/rafood-api/
 ```
 
 ## Deploying application with ArgoCD

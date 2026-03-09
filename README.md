@@ -29,17 +29,17 @@ My initial studies of FastAPI is at [fastapi-studies repository](https://github.
 
 ### Tools used :hammer:
 
-- Python (`3.10.7`)
-- Poetry
+- Python (`3.10.7`) and Poetry
 - FastAPI
 - SQLModel & Alembic
-- Pytest
+- Pytest for testing
 - PostgreSQL
 - Docker & Docker Compose
 - Prometheus & Grafana
-- Locust
+- Locust for load testing
 - GitHub Actions
-- Kubernetes (Minikube)
+- Kubernetes and Helm Charts on local Minikube cluster
+- GitOps with ArgoCD on local Minikube cluster (PoC/sandbox)
 
 ### ER Model
 
@@ -161,7 +161,7 @@ More about the release process and GitHub Actions workflows can be found at [doc
 
 ## Handling local deployment with Kubernetes (Minikube)
 
-More about local deployment with Kubernetes using Minikube can be found at [docs/local-deployment.md](./docs/local-deployment.md).
+More about local deployment with Kubernetes using Minikube can be found at [docs/local-deployment.md](./docs/local-deployment.md) - On section `Deployment with Kubernetes + Helm Charts at Minikube cluster`.
 
 ______________________________________________________________________
 

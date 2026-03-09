@@ -5,7 +5,6 @@ metadata:
   namespace: rafood
 spec:
   replicas: 3
-
   selector:
     matchLabels:
       app: rafood-api

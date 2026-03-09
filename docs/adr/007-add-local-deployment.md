@@ -10,7 +10,7 @@ Add a local deployment option using Kubernetes. This will involve creating Kuber
 
 > [!NOTE]
 > It's important to note that this local deployment is intended for development and testing purposes only. It will not be used for production deployments.
-> The local deployment must have database connectivity to the existing local PostgreSQL instance used by the API or any other service running locally.
+> \~~The local deployment must have database connectivity to the existing local PostgreSQL instance used by the API or any other service running locally~.
 
 ## Consequences
 

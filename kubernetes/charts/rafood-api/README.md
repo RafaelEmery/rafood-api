@@ -1,21 +1,41 @@
 # rafood-api
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
-A Helm chart for Kubernetes to deploy the Rafood API application.
+Rafood API Helm chart
 
 ## Values
 
-| Key                | Type   | Default          | Description |
-| ------------------ | ------ | ---------------- | ----------- |
-| containerPort      | int    | `8000`           |             |
-| image.pullPolicy   | string | `"IfNotPresent"` |             |
-| image.repository   | string | `"rafood-api"`   |             |
-| image.tag          | string | `"latest"`       |             |
-| replicaCount       | int    | `1`              |             |
-| service.port       | int    | `80`             |             |
-| service.targetPort | int    | `8000`           |             |
-| service.type       | string | `"NodePort"`     |             |
+| Key                                           | Type   | Default          | Description |
+| --------------------------------------------- | ------ | ---------------- | ----------- |
+| autoscaling.enabled                           | bool   | `true`           |             |
+| autoscaling.maxReplicas                       | int    | `5`              |             |
+| autoscaling.minReplicas                       | int    | `2`              |             |
+| autoscaling.targetCPUUtilizationPercentage    | int    | `70`             |             |
+| autoscaling.targetMemoryUtilizationPercentage | int    | `80`             |             |
+| containerPort                                 | int    | `8000`           |             |
+| image.pullPolicy                              | string | `"IfNotPresent"` |             |
+| image.repository                              | string | `"rafood-api"`   |             |
+| image.tag                                     | string | `"latest"`       |             |
+| ingress.className                             | string | `"nginx"`        |             |
+| ingress.enabled                               | bool   | `true`           |             |
+| ingress.host                                  | string | `"rafood.local"` |             |
+| ingress.path                                  | string | `"/"`            |             |
+| ingress.pathType                              | string | `"Prefix"`       |             |
+| livenessProbe.initialDelaySeconds             | int    | `10`             |             |
+| livenessProbe.path                            | string | `"/ping"`        |             |
+| livenessProbe.periodSeconds                   | int    | `10`             |             |
+| readinessProbe.initialDelaySeconds            | int    | `5`              |             |
+| readinessProbe.path                           | string | `"/ping"`        |             |
+| readinessProbe.periodSeconds                  | int    | `5`              |             |
+| replicaCount                                  | int    | `2`              |             |
+| resources.limits.cpu                          | string | `"500m"`         |             |
+| resources.limits.memory                       | string | `"512Mi"`        |             |
+| resources.requests.cpu                        | string | `"200m"`         |             |
+| resources.requests.memory                     | string | `"256Mi"`        |             |
+| service.port                                  | int    | `80`             |             |
+| service.targetPort                            | int    | `8000`           |             |
+| service.type                                  | string | `"ClusterIP"`    |             |
 
 ______________________________________________________________________
 
