@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rafood-api
+  namespace: rafood
+spec:
+  selector:
+    app: rafood-api
+  ports:
+    - port: 80
+      targetPort: 8000
+  type: ClusterIP

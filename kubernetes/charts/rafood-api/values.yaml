@@ -1,0 +1,38 @@
+replicaCount: 2
+
+image:
+  repository: rafood-api
+  tag: "latest"
+  pullPolicy: IfNotPresent
+containerPort: 8000
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+ingress:
+  enabled: true
+  className: nginx
+  host: rafood.local
+  path: /
+  pathType: Prefix
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+livenessProbe:
+  path: /ping
+  initialDelaySeconds: 10
+  periodSeconds: 10
+readinessProbe:
+  path: /ping
+  initialDelaySeconds: 5
+  periodSeconds: 5
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80

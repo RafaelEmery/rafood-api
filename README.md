@@ -19,25 +19,27 @@ FastAPI project to manage restaurants, products and offers :hamburger:
     - [Tests](#tests)
     - [Load Tests](#load-tests)
   - [Creating a new release](#creating-a-new-release)
+  - [Handling local deployment with Kubernetes (Minikube)](#handling-local-deployment-with-kubernetes-minikube)
 
 ## About the project
 
 It was based on [this](https://github.com/goomerdev/job-dev-backend-interview) backend challenge and a opportunity to learn and apply some concepts of FastAPI.
 
-My inicial studies of FastAPI is at [fastapi-studies repository](https://github.com/RafaelEmery/fastapi-studies)
+My initial studies of FastAPI is at [fastapi-studies repository](https://github.com/RafaelEmery/fastapi-studies)
 
 ### Tools used :hammer:
 
-- Python (`3.10.7`)
-- Poetry
+- Python (`3.10.7`) and Poetry
 - FastAPI
 - SQLModel & Alembic
-- Pytest
+- Pytest for testing
 - PostgreSQL
 - Docker & Docker Compose
 - Prometheus & Grafana
-- Locust
+- Locust for load testing
 - GitHub Actions
+- Kubernetes and Helm Charts on local Minikube cluster
+- GitOps with ArgoCD on local Minikube cluster (PoC/sandbox)
 
 ### ER Model
 
@@ -156,6 +158,10 @@ More about load tests can be found at [docs/load-testing.md](./docs/load-testing
 ## Creating a new release
 
 More about the release process and GitHub Actions workflows can be found at [docs/workflows.md](./docs/workflows.md) on `Creating Releases` section.
+
+## Handling local deployment with Kubernetes (Minikube)
+
+More about local deployment with Kubernetes using Minikube can be found at [docs/local-deployment.md](./docs/local-deployment.md) - On section `Deployment with Kubernetes + Helm Charts at Minikube cluster`.
 
 ______________________________________________________________________
 

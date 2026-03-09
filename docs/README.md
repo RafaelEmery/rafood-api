@@ -7,3 +7,4 @@ This folder contains documentation and guides related to the project.
 - [load-testing.md](load-testing.md): Guide for load testing the application.
 - [logging.md](logging.md): Guide for logging practices and configurations.
 - [workflows.md](workflows.md): Documentation on GitHub workflows used in the project.
+- [local-deployment.md](local-deployment.md): Guide for local deployment of the application using Kubernetes.
