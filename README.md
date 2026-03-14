@@ -20,6 +20,7 @@ FastAPI project to manage restaurants, products and offers :hamburger:
     - [Load Tests](#load-tests)
   - [Creating a new release](#creating-a-new-release)
   - [Handling local deployment with Kubernetes (Minikube)](#handling-local-deployment-with-kubernetes-minikube)
+  - [Cursor (AI-assisted development)](#cursor-ai-assisted-development)
 
 ## About the project
 
@@ -40,6 +41,7 @@ My initial studies of FastAPI is at [fastapi-studies repository](https://github.
 - GitHub Actions
 - Kubernetes and Helm Charts on local Minikube cluster
 - GitOps with ArgoCD on local Minikube cluster (PoC/sandbox)
+- Cursor (AI-assisted development with rules and agent prompts)
 
 ### ER Model
 
@@ -162,6 +164,10 @@ More about the release process and GitHub Actions workflows can be found at [doc
 ## Handling local deployment with Kubernetes (Minikube)
 
 More about local deployment with Kubernetes using Minikube can be found at [docs/local-deployment.md](./docs/local-deployment.md) - On section `Deployment with Kubernetes + Helm Charts at Minikube cluster`.
+
+## Cursor (AI-assisted development)
+
+More about using Cursor with rules, agent prompts (new feature, explain, code review), and model prompts can be found at [docs/cursor-as-my-intern-or-master.md](./docs/cursor-as-my-intern-or-master.md).
 
 ______________________________________________________________________
 

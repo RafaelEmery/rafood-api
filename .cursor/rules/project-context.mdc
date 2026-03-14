@@ -1,0 +1,66 @@
+---
+description: General project context for rafood-api
+alwaysApply: true
+---
+
+# RaFood API – Project Context
+
+## Stack
+
+- **Python** 3.10, **Poetry** for dependencies
+- **FastAPI** for the API
+- **SQLModel** + **SQLAlchemy** (async) for ORM
+- **Alembic** for migrations
+- **PostgreSQL** (async via asyncpg)
+- **pytest** + **pytest-asyncio** for tests
+- **structlog** for logging
+- **Prometheus** + **Grafana** for monitoring
+- **Ruff** for linting/formatting, **mypy** for type checking
+- **pre-commit** for hooks; **Locust** for load tests
+
+## Project structure
+
+- `src/` – application code (domains under `src/<domain>/`)
+- `tests/` – `tests/unit/` (service tests with mocks), `tests/feature/` (API tests with real DB)
+- `docs/adr/` – Architecture Decision Records (ADRs)
+- `alembic/` – migrations (`alembic/versions/` for revision files)
+- `locust/` – load test definitions
+- `kubernetes/`, `grafana/`, `prometheus/` – deployment and monitoring
+
+## Domain contexts (from ER / README)
+
+- Restaurants (and restaurant schedules)
+- Products
+- Offers (and offer schedules)
+- Categories
+- Users
+
+## API wiring
+
+- Routers are registered in `src/api.py` with `include_router(..., prefix='/<resource>', tags=[...])`.
+- App uses prefix from settings: `APP_V1_PREFIX` (e.g. `/api/v1`). Full base path for API routes: `/api/v1/<resource>`.
+- Main app: `src/main.py` (middleware, exception handlers, router mount).
+
+## ADRs
+
+- ADRs live in `docs/adr/`; naming: `XXX-short-description.md`.
+- Create new: `make create-adr name='short-descriptive-name'`.
+- Important ADRs: 001 (services/repositories), 002 (error handling), 004 (hexagonal), 006 (logging), etc.
+
+## Commands – Makefile is the source of truth
+
+All project commands are in the **Makefile** (run `make help` for the full list). Use it as the single reference.
+
+**When you generate new code**, run quality checks **automatically** (format, lint, type check, tests) to ensure the code is good. See the quality-checks rule. Fix any failures.
+
+**You must never:**
+
+- Run **migrations** or anything that changes DB or deployment state: no `make migrate`, `make rollback`, `make create-migration`, `make start`, `make stop`, `make build`, etc.
+- Touch **git**: no `git add`, `git commit`, `git push`, `git checkout`, or any git command. Do not make any permanent change to version control.
+- Run any command that alters the environment, deploys, or persists data (e.g. no `poetry install` unless the user explicitly asks).
+
+The only commands you run are quality checks (format, lint, type check, test), and only when you have generated or changed code—automatically, to guarantee the code is good.
+
+## Response language
+
+Prefer **English** for agent responses. **Portuguese (pt-BR)** is also acceptable—reply in pt-BR when the user writes in Portuguese, or in English when they write in English. Code, identifiers, and technical terms stay in English.
