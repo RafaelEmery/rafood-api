@@ -1,0 +1,30 @@
+---
+description: After generating code – automatically run format, lint, type check, tests
+alwaysApply: true
+---
+
+# Quality checks – Automatic when generating code
+
+Whenever you **generate or change code** (new feature, refactor, fix), **automatically** run the project’s quality commands to ensure the code is good. **All commands are in the Makefile** (`make help`).
+
+## Run automatically after writing code
+
+Right after generating or editing code, run (in order):
+
+1. **Format**: `make format` — Ruff format.
+2. **Lint**: `make lint-fix` — Ruff check and auto-fix.
+3. **Type check**: `make lint-type` — mypy on `src`.
+4. **Tests**: `make test` — or `make test t='tests/path/to/test_file.py'` for a subset.
+
+Or in one go: `make lint-complete` then `make test`.
+
+If any step fails, fix the issues and re-run until format, lint, type check, and tests pass. This guarantees the generated code meets the project’s quality gates.
+
+## Never run
+
+- **Migrations or DB/deployment**: no `make migrate`, `make rollback`, `make create-migration`, `make start`, `make stop`, `make build`, etc.
+- **Git**: no `git add`, `git commit`, `git push`, or any git command. Never make permanent changes to version control.
+
+## Goal
+
+When you write code, always run these quality checks automatically and fix failures so the result is in good shape. Never run migrations or git.

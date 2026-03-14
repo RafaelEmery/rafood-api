@@ -1,0 +1,21 @@
+---
+description: Alembic migrations – creating revisions, not editing applied ones
+globs: alembic/**/*.py
+alwaysApply: false
+---
+
+# Migrations (Alembic)
+
+## Creating a revision
+
+- Use: `make create-migration name=<revision-name>` (creates a new file under `alembic/versions/`).
+- Revision file: implement `upgrade()` and `downgrade()` using `op.*` (e.g. `op.create_table`, `op.add_column`). Do not import application models inside upgrade/downgrade; use raw SQLAlchemy types (e.g. `sa.String`, `sa_utils.types.uuid.UUIDType`).
+
+## env.py
+
+- `target_metadata = SQLModel.metadata` so autogenerate can see model definitions. Application models must be imported (or metadata attached) so Alembic can detect tables/columns.
+
+## Rules
+
+- Do **not** edit revision files that have already been applied to any environment. To change the schema, add a **new** revision.
+- Use descriptive revision names (e.g. `add_active_on_offers_table`).
