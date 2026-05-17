@@ -15,14 +15,14 @@ Apply these when writing or reviewing code in this project.
   - No comments or docstrings at the **top of the file** (no module docstrings, no banner comments).
   - No **function or method docstrings** by default. If behavior is unclear, **rename** the function first; add a docstring only when the name cannot reasonably express intent and the logic is still non-obvious.
   - Inline comments only when the logic is genuinely complex or non-obvious.
-- **Parameters**: Do not use `*` in signatures without a clear need—no keyword-only separator (`def f(a, *, b)`), `*args`, or `**kwargs` unless the API truly requires it (e.g. thin wrapper around a variadic library). Prefer explicit named parameters.
-- **Good variable and function names**: Descriptive names that reveal intent. No abbreviations in variable or function names (e.g. use `repository`, `category_id`, `request_body`, not `repo`, `cat_id`, `req`).
+- **Parameters**: Avoid `*` in signatures unless it improves the API or is required by the interface. Prefer explicit named parameters for application/business-layer APIs, but allow keyword-only separators, `*args`, and `**kwargs` for established patterns such as framework hooks, dependency/wrapper functions, logger wrappers, and test factories.
+- **Good variable and function names**: Use descriptive names that reveal intent. Avoid abbreviations when they make application/domain code less clear, but allow widely understood or already-established project conventions when they improve readability or match framework patterns (for example `db`, `id`, `url`, `uuid`).
 - **Extract internal helpers**: If a function grows long or does several things, extract logic into private/helper functions in the same module (e.g. `def _build_response(...)` or small helpers) so each function stays focused and short.
 - **Maximum typing**: Use type hints everywhere possible—function parameters, return types, local variables when it helps. The project uses mypy; keep code type-check clean.
 
 ## Naming
 
-- Variables/functions: full words, no abbreviations (except widely accepted ones like `id`, `url`, `uuid` in context).
+- Variables/functions: prefer full words in application/domain code, but do not expand abbreviations mechanically. Widely accepted or established names in this repo are fine when they are clearer or conventional in context (for example `db`, `id`, `url`, `uuid`, framework/test `kwargs` patterns, or wrapper `args`).
 - Names should make the code self-explanatory so that comments are rarely needed.
 
 ## When delivering new code
