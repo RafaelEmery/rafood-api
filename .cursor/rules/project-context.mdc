@@ -22,6 +22,7 @@ alwaysApply: true
 
 - `src/` – application code (domains under `src/<domain>/`)
 - `tests/` – `tests/unit/` (service tests with mocks), `tests/feature/` (API tests with real DB)
+- `docs/` – guides and project documentation (see **Documentation** below)
 - `docs/adr/` – Architecture Decision Records (ADRs)
 - `alembic/` – migrations (`alembic/versions/` for revision files)
 - `locust/` – load test definitions
@@ -41,11 +42,23 @@ alwaysApply: true
 - App uses prefix from settings: `APP_V1_PREFIX` (e.g. `/api/v1`). Full base path for API routes: `/api/v1/<resource>`.
 - Main app: `src/main.py` (middleware, exception handlers, router mount).
 
-## ADRs
+## Documentation and ADRs
 
-- ADRs live in `docs/adr/`; naming: `XXX-short-description.md`.
-- Create new: `make create-adr name='short-descriptive-name'`.
-- Important ADRs: 001 (services/repositories), 002 (error handling), 004 (hexagonal), 006 (logging), etc.
+Before **implementing**, **refactoring**, or **reviewing** code, **read the relevant project docs**—do not rely only on `src/` patterns.
+
+1. **Index**: Start with `docs/README.md` for what exists under `docs/`.
+2. **ADRs** (`docs/adr/`): Read ADRs that apply to the task. Naming: `XXX-short-description.md`. Index: `docs/adr/README.md`.
+   - **001** – services and repositories
+   - **002** – error handling
+   - **004** – hexagonal architecture
+   - **006** – logging
+   - **003**, **005**, **007** – OpenTelemetry, load tests, local deployment (when relevant)
+3. **Guides** (when the change touches that area): e.g. `docs/logging.md`, `docs/monitoring.md`, `docs/load-testing.md`, `docs/workflows.md`, `docs/local-deployment.md`.
+4. **Cursor usage** (optional): `docs/cursor-as-my-intern.md` for agent modes and prompts.
+
+If an ADR or guide conflicts with existing code, **follow the ADR/guide** and align the change—or call out the mismatch to the user.
+
+**Creating ADRs**: **Only the user** creates ADRs (`make create-adr name='short-descriptive-name'` and writing `docs/adr/`). Agents do not create or edit ADRs; the explain agent may recommend one when appropriate (**agent-boundaries.mdc**, **explain-agent.md**).
 
 ## Commands – Makefile is the source of truth
 
@@ -53,14 +66,10 @@ All project commands are in the **Makefile** (run `make help` for the full list)
 
 **When you generate new code**, run quality checks **automatically** (format, lint, type check, tests) to ensure the code is good. See the quality-checks rule. Fix any failures.
 
-**You must never:**
+Follow **agent-boundaries.mdc** for migrations, git, and deployment:
 
-- Run **migrations** or anything that changes DB or deployment state: no `make migrate`, `make rollback`, `make create-migration`, `make start`, `make stop`, `make build`, etc.
-- Touch **git**: no `git add`, `git commit`, `git push`, `git checkout`, or any git command. Do not make any permanent change to version control.
-- Run any command that alters the environment, deploys, or persists data (e.g. no `poetry install` unless the user explicitly asks).
+- No `make migrate` / `make rollback`; `make create-migration` only with **user approval**.
+- No `git add` / `commit` / `push`; read-only git (`git diff`, `git status`, `git log`, etc.) is fine for context.
+- No deploy or environment commands unless the user explicitly asks.
 
-The only commands you run are quality checks (format, lint, type check, test), and only when you have generated or changed code—automatically, to guarantee the code is good.
-
-## Response language
-
-Prefer **English** for agent responses. **Portuguese (pt-BR)** is also acceptable—reply in pt-BR when the user writes in Portuguese, or in English when they write in English. Code, identifiers, and technical terms stay in English.
+The only commands you run **automatically** are quality checks (format, lint, type check, test) when you have generated or changed code.

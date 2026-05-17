@@ -8,7 +8,7 @@ alwaysApply: false
 
 ## Creating a revision
 
-- Ask the user to run `make create-migration name=<revision-name>` (creates a new file under `alembic/versions/`); do **not** run this command yourself.
+- Run `make create-migration name='<revision message>'` **only after the user explicitly approves** in chat (see **agent-boundaries.mdc**). Never run `make migrate` or `make rollback`.
 - Revision file: implement `upgrade()` and `downgrade()` using `op.*` (e.g. `op.create_table`, `op.add_column`). Do not import application models inside upgrade/downgrade; use raw SQLAlchemy types (e.g. `sa.String`, `sa_utils.types.uuid.UUIDType`).
 
 ## env.py

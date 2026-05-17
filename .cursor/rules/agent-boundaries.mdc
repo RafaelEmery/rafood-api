@@ -1,0 +1,27 @@
+---
+description: Boundaries—migrations (create with approval), git read-only, ADRs user-only, no commit
+alwaysApply: true
+---
+
+# Agent boundaries (migrations, git, deployment)
+
+## Migrations
+
+- **Never** apply or roll back migrations: no `make migrate`, `make rollback`, or anything that changes database state.
+- **Creating a revision**: may run `make create-migration name='<revision message>'` **only after the user explicitly approves** in chat. Then implement `upgrade()` / `downgrade()` in the generated file under `alembic/versions/`. See **migrations.mdc** for revision content rules.
+- Do not run `make create-migration` without that approval.
+
+## Git
+
+- **Never**: `git add`, `git commit`, `git push`, `git checkout`, or any command that stages, commits, or changes version-control state.
+- **Allowed (read-only, for context)**: `git status`, `git diff`, `git log`, `git show`, and similar commands that only read history or working tree.
+
+## ADRs (Architecture Decision Records)
+
+- **Only the user** creates or edits ADRs under `docs/adr/`. Agents must **not** run `make create-adr`, write new ADR files, or edit existing ADRs.
+- Agents **may read** ADRs and must follow them when implementing or proposing changes.
+- The **explain agent** may **recommend** that the user create an ADR (with a suggested title and what to capture)—see **explain-agent.md**.
+
+## Deployment / environment
+
+- **Never**: `make start`, `make stop`, `make build`, `poetry install`, or anything that alters the environment, deploys, or persists data—unless the user explicitly asks.

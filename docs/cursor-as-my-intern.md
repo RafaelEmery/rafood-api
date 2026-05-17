@@ -1,10 +1,8 @@
 # Cursor as my intern (or master)
 
-Proposed at [Add Cursor as my Intern ADR](adr/008-add-cursor-as-my-intern.md).
-
 ## Overview
 
-This project uses Cursor with **rules** and **agent prompts** so the AI follows the codebase structure, writes clean code, runs quality checks after producing or changing code, and never touches git or migrations. Three modes are available: **feature** (new, add, or modify—implement or plan), **explain / teach**, and **code review**.
+This project uses Cursor with **rules** and **agent prompts** so the AI follows the codebase structure, writes clean code, and runs quality checks after producing or changing code. **Boundaries**: no `make migrate`/`rollback`; `make create-migration` only with your approval; no `git add`/commit/push; read-only git (`diff`, `status`, `log`) for context is fine. Three modes: **feature** (implement or plan), **explain / teach**, and **code review**.
 
 Configuration lives under [.cursor/](../.cursor/) and the root [AGENTS.md](../AGENTS.md). Use the prompts below to get the most out of the agent.
 
@@ -14,7 +12,7 @@ Configuration lives under [.cursor/](../.cursor/) and the root [AGENTS.md](../AG
 - **Prompts** (`.cursor/prompts/*.md`): One file per “agent”. Mention them in chat (e.g. `@.cursor/prompts/feature-agent.md`) or paste the model prompt so the agent behaves as that mode.
 - **AGENTS.md**: Describes when to use each mode and how to invoke it.
 
-When the agent **produces or changes code**, it automatically runs format, lint, type check, and tests and fixes failures. It never runs migrations or git commands.
+When the agent **produces or changes code**, it automatically runs format, lint, type check, and tests and fixes failures. It does not apply migrations or change git state; it may create a migration revision only after you approve, and may use read-only git commands for context.
 
 ## Model prompts
 

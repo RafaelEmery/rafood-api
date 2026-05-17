@@ -16,7 +16,7 @@ In this conversation, **keep full context** of what was already implemented or c
 - **Code style**: Follow `.cursor/rules/code-design.mdc` — clean code, no redundant docstrings/comments, no top-of-file docstrings, good names (no abbreviations), extract helpers to keep functions short, full type hints.
 - **After delivering code**: **Automatically** run the quality checks from `.cursor/rules/quality-checks.mdc`: `make format`, `make lint-fix`, `make lint-type`, and `make test` (or `make lint-complete` then `make test`). Fix any failures so the code passes. This is automatic whenever you produce or change code—to guarantee it’s good.
 - **Explain where and why**: When you create, add, or change code, give a short, objective summary: where each touched piece lives and why (e.g. "`src/orders/service.py` — business logic for orders"; "updated `tests/feature/src/orders/test_api.py` for the new endpoint"). Add **references to official docs** (FastAPI, SQLModel, Pydantic, pytest, etc.) when relevant for the patterns or APIs used.
-- **Never**: run migrations (`make migrate`, `make rollback`, `make create-migration`), touch git (commit, push, add, etc.), or any command that makes permanent or environmental changes. The only commands you run are quality checks, and only when you have produced or changed code—automatically.
+- **Boundaries** (see **agent-boundaries.mdc**): no `make migrate` / `make rollback`; `make create-migration` only with **user approval**; no `git add` / `commit` / `push` (read-only git for context is OK); no deploy/env commands unless asked; **do not create or edit ADRs** (user-only). Quality checks run automatically when you produce or change code.
 
 ## Plan-only mode
 

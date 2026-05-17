@@ -11,7 +11,11 @@ Apply these when writing or reviewing code in this project.
 ## Style
 
 - **Clean code**: Readable, small functions, clear control flow. Prefer clarity over cleverness.
-- **No redundant docstrings or comments**: Omit docstrings and comments unless the logic is genuinely complex or non-obvious. No module-level (top-of-file) docstrings.
+- **No redundant comments or docstrings**:
+  - No comments or docstrings at the **top of the file** (no module docstrings, no banner comments).
+  - No **function or method docstrings** by default. If behavior is unclear, **rename** the function first; add a docstring only when the name cannot reasonably express intent and the logic is still non-obvious.
+  - Inline comments only when the logic is genuinely complex or non-obvious.
+- **Parameters**: Do not use `*` in signatures without a clear need—no keyword-only separator (`def f(a, *, b)`), `*args`, or `**kwargs` unless the API truly requires it (e.g. thin wrapper around a variadic library). Prefer explicit named parameters.
 - **Good variable and function names**: Descriptive names that reveal intent. No abbreviations in variable or function names (e.g. use `repository`, `category_id`, `request_body`, not `repo`, `cat_id`, `req`).
 - **Extract internal helpers**: If a function grows long or does several things, extract logic into private/helper functions in the same module (e.g. `def _build_response(...)` or small helpers) so each function stays focused and short.
 - **Maximum typing**: Use type hints everywhere possible—function parameters, return types, local variables when it helps. The project uses mypy; keep code type-check clean.

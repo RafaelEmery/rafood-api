@@ -20,11 +20,11 @@ Or in one go: `make lint-complete` then `make test`.
 
 If any step fails, fix the issues and re-run until format, lint, type check, and tests pass. This guarantees the generated code meets the project’s quality gates.
 
-## Never run
+## Boundaries (see agent-boundaries.mdc)
 
-- **Migrations or DB/deployment**: no `make migrate`, `make rollback`, `make create-migration`, `make start`, `make stop`, `make build`, etc.
-- **Git**: no `git add`, `git commit`, `git push`, or any git command. Never make permanent changes to version control.
+- Do not run `make migrate`, `make rollback`, or deployment commands.
+- `make create-migration` only with **user approval**; never `git add` / `commit` / `push` (read-only git for context is OK).
 
 ## Goal
 
-When you write code, always run these quality checks automatically and fix failures so the result is in good shape. Never run migrations or git.
+When you write code, always run these quality checks automatically and fix failures so the result is in good shape.
