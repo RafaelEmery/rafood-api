@@ -8,3 +8,4 @@ This folder contains documentation and guides related to the project.
 - [logging.md](logging.md): Guide for logging practices and configurations.
 - [workflows.md](workflows.md): Documentation on GitHub workflows used in the project.
 - [local-deployment.md](local-deployment.md): Guide for local deployment of the application using Kubernetes.
+- [cursor-as-my-intern.md](cursor-as-my-intern.md): Guide for using Cursor with rules, agent prompts (new feature, explain, code review), and model prompts.
