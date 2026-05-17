@@ -22,6 +22,12 @@ alwaysApply: true
 - Agents **may read** ADRs and must follow them when implementing or proposing changes.
 - The **explain agent** may **recommend** that the user create an ADR (with a suggested title and what to capture)—see **explain-agent.md**.
 
+## Dependencies (Poetry)
+
+- **Never**: `poetry add`, `poetry remove`, `poetry update`, `poetry install`, `poetry lock`, or editing `pyproject.toml` / `poetry.lock` to add or bump packages.
+- **User runs** Poetry when a new package is needed; the agent suggests the exact command (`poetry add …` or `poetry add --group dev …`) and reminds the user to run `make build` (Docker Compose) or `make build-container` (K8s local) after dependency changes.
+- Full workflow: **dependencies.mdc**.
+
 ## Deployment / environment
 
-- **Never**: `make start`, `make stop`, `make build`, `poetry install`, or anything that alters the environment, deploys, or persists data—unless the user explicitly asks.
+- **Never**: `make start`, `make stop`, `make build`, `make build-container`, or anything that alters the environment, deploys, or persists data—unless the user explicitly asks.

@@ -1,0 +1,39 @@
+---
+description: Adding Python dependencies—Poetry and Docker; user runs poetry add and make build
+alwaysApply: true
+---
+
+# Dependencies (Poetry)
+
+When a task needs a **new or changed Python package**, the agent does **not** alter the dependency manifest or lockfile. The **user** runs Poetry locally.
+
+## Agent must not run
+
+- `poetry add`, `poetry remove`, `poetry update`, `poetry install`, `poetry lock`
+- Editing `pyproject.toml` or `poetry.lock` to add, remove, or bump dependencies (unless the user explicitly asks the agent to edit those files after they ran Poetry themselves)
+
+## What the agent should do
+
+1. **Before** importing a package that is not already in `pyproject.toml`, tell the user which command to run and wait for confirmation (or for the user to say dependencies are installed).
+2. Suggest the exact Poetry command:
+   - Runtime: `poetry add <package>` (optional version constraint, e.g. `poetry add httpx@^0.27.0`)
+   - Dev-only (tests, lint, load tests): `poetry add --group dev <package>`
+3. After the user adds dependencies, remind them to refresh the environment used to run the API:
+   - **Docker Compose** (default local setup): `make build` — rebuilds images from `pyproject.toml` / `poetry.lock` and restarts containers (`make help`: use after changing dependencies).
+   - **Kubernetes / Minikube image** (see `docs/local-deployment.md`): `make build-container` after deps change, inside the Minikube Docker env when applicable.
+4. Then implement or continue code that uses the new package and run quality checks (`make format`, `make lint-fix`, `make lint-type`, `make test`) as usual.
+
+## User workflow (reference)
+
+| Step | Command | Who |
+| ---- | ------- | --- |
+| Add or update package | `poetry add …` / `poetry add --group dev …` / `poetry remove …` | User |
+| Rebuild API Docker image (Compose) | `make build` | User (unless they explicitly ask the agent to run it) |
+| Rebuild image for K8s local test | `make build-container` | User |
+| Apply code + checks | Agent implements; `make test`, etc. | Agent (automatic per quality-checks) |
+
+Poetry updates `pyproject.toml` and `poetry.lock`. The **Dockerfile** runs `poetry install` at image build time, so Compose/K8s images stay in sync only after `make build` or `make build-container`.
+
+## Related boundaries
+
+See **agent-boundaries.mdc** (no `poetry install`, no `make build` / `make start` / deploy unless the user explicitly asks).

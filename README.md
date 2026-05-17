@@ -167,7 +167,7 @@ More about local deployment with Kubernetes using Minikube can be found at [docs
 
 ## Cursor (AI-assisted development)
 
-More about using Cursor with rules, agent prompts (new feature, explain, code review), and model prompts can be found at [docs/cursor-as-my-intern-or-master.md](./docs/cursor-as-my-intern-or-master.md).
+More about using Cursor with rules, agent prompts (new feature, explain, code review), and model prompts can be found at [docs/cursor-as-my-intern.md](./docs/cursor-as-my-intern.md).
 
 ______________________________________________________________________
 

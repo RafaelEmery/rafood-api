@@ -2,7 +2,11 @@
 
 ## Overview
 
-This project uses Cursor with **rules** and **agent prompts** so the AI follows the codebase structure, writes clean code, and runs quality checks after producing or changing code. **Boundaries**: no `make migrate`/`rollback`; `make create-migration` only with your approval; no `git add`/commit/push; read-only git (`diff`, `status`, `log`) for context is fine. Three modes: **feature** (implement or plan), **explain / teach**, and **code review**.
+This project uses Cursor with **rules** and **agent prompts** so the AI follows the codebase structure, writes clean code, and runs quality checks after producing or changing code.
+
+**Boundaries**: no `make migrate`/`rollback`; `make create-migration` only with your approval; no `git add`/commit/push; read-only git (`diff`, `status`, `log`) for context is fine; new dependencies via **`poetry add`** (you run it) and **`make build`** to refresh Docker after lockfile changes.
+
+Three modes: **feature** (implement), **explain / teach**, and **code review**.
 
 Configuration lives under [.cursor/](../.cursor/) and the root [AGENTS.md](../AGENTS.md). Use the prompts below to get the most out of the agent.
 
@@ -13,6 +17,30 @@ Configuration lives under [.cursor/](../.cursor/) and the root [AGENTS.md](../AG
 - **AGENTS.md**: Describes when to use each mode and how to invoke it.
 
 When the agent **produces or changes code**, it automatically runs format, lint, type check, and tests and fixes failures. It does not apply migrations or change git state; it may create a migration revision only after you approve, and may use read-only git commands for context.
+
+## Response language
+
+The always-on rule [.cursor/rules/response-language.mdc](../.cursor/rules/response-language.mdc) tells the agent which language to use in chat:
+
+- The **final reply** matches the language of your **latest message** (Portuguese → pt-BR; English → English).
+- If you mix languages, the agent follows whichever language carries the main question or request.
+- **Code** stays in English: identifiers, file paths, CLI commands, and commit messages are not translated.
+
+Write in Portuguese or English as you prefer; you do not need a special prompt for the agent to follow your language.
+
+## Adding dependencies
+
+Rule: [.cursor/rules/dependencies.mdc](../.cursor/rules/dependencies.mdc). The agent **does not** run Poetry or rebuild Docker for you.
+
+When a feature needs a new library, the agent will ask you to install it, then continue with the code:
+
+1. **Add the package** (you run locally):
+   - Runtime: `poetry add <package>`
+   - Dev-only (tests, lint, Locust, etc.): `poetry add --group dev <package>`
+1. **Refresh Docker** if you run the API with Compose (after `pyproject.toml` / `poetry.lock` change): `make build`
+1. **Kubernetes / Minikube** local image, if applicable: `make build-container` (see `docs/local-deployment.md`)
+
+The agent implements imports and runs `make test` / lint after dependencies are in place. To run `make build` or Poetry yourself via the agent, ask explicitly.
 
 ## Model prompts
 
@@ -44,15 +72,7 @@ Example (modify):
 Modify existing offers: add an optional "valid_until" field to the offer model and API. Update the service, repository, schemas, and the corresponding unit and feature tests. Explain where you changed things and why.
 ```
 
-### Feature (plan only)
-
-Use when you want a structured plan with no code (for something new, or to add/modify existing).
-
-```text
-@.cursor/prompts/feature-agent.md
-
-Plan mode: I want to <add | modify> <short description>. Give me a structured plan only (files to create or change, models, migration steps if needed, API, services, tests to add or modify, wiring). Do not implement.
-```
+For a structured plan without implementation, use Cursor’s **Plan** mode (not the feature agent prompt).
 
 ### Code review
 
@@ -106,4 +126,5 @@ I want to use feature toggles with Unleash. What is it, how would it fit in this
 ## References
 
 - [.cursor/README.md](../.cursor/README.md) – Rules and prompts overview.
+- [.cursor/rules/dependencies.mdc](../.cursor/rules/dependencies.mdc) – Poetry and Docker when adding packages.
 - [AGENTS.md](../AGENTS.md) – When to use each agent and how to invoke it.

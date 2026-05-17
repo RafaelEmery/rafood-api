@@ -66,10 +66,11 @@ All project commands are in the **Makefile** (run `make help` for the full list)
 
 **When you generate new code**, run quality checks **automatically** (format, lint, type check, tests) to ensure the code is good. See the quality-checks rule. Fix any failures.
 
-Follow **agent-boundaries.mdc** for migrations, git, and deployment:
+Follow **agent-boundaries.mdc** for migrations, git, dependencies, and deployment:
 
 - No `make migrate` / `make rollback`; `make create-migration` only with **user approval**.
 - No `git add` / `commit` / `push`; read-only git (`git diff`, `git status`, `git log`, etc.) is fine for context.
+- New packages: user runs `poetry add` (see **dependencies.mdc**); user runs `make build` after dependency changes when using Docker.
 - No deploy or environment commands unless the user explicitly asks.
 
 The only commands you run **automatically** are quality checks (format, lint, type check, test) when you have generated or changed code.
