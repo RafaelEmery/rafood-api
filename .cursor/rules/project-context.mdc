@@ -1,0 +1,76 @@
+---
+description: General project context for rafood-api
+alwaysApply: true
+---
+
+# RaFood API – Project Context
+
+## Stack
+
+- **Python** 3.10, **Poetry** for dependencies
+- **FastAPI** for the API
+- **SQLModel** + **SQLAlchemy** (async) for ORM
+- **Alembic** for migrations
+- **PostgreSQL** (async via asyncpg)
+- **pytest** + **pytest-asyncio** for tests
+- **structlog** for logging
+- **Prometheus** + **Grafana** for monitoring
+- **Ruff** for linting/formatting, **mypy** for type checking
+- **pre-commit** for hooks; **Locust** for load tests
+
+## Project structure
+
+- `src/` – application code (domains under `src/<domain>/`)
+- `tests/` – `tests/unit/` (service tests with mocks), `tests/feature/` (API tests with real DB)
+- `docs/` – guides and project documentation (see **Documentation** below)
+- `docs/adr/` – Architecture Decision Records (ADRs)
+- `alembic/` – migrations (`alembic/versions/` for revision files)
+- `locust/` – load test definitions
+- `kubernetes/`, `grafana/`, `prometheus/` – deployment and monitoring
+
+## Domain contexts (from ER / README)
+
+- Restaurants (and restaurant schedules)
+- Products
+- Offers (and offer schedules)
+- Categories
+- Users
+
+## API wiring
+
+- Routers are registered in `src/api.py` with `include_router(..., prefix='/<resource>', tags=[...])`.
+- App uses prefix from settings: `APP_V1_PREFIX` (e.g. `/api/v1`). Full base path for API routes: `/api/v1/<resource>`.
+- Main app: `src/main.py` (middleware, exception handlers, router mount).
+
+## Documentation and ADRs
+
+Before **implementing**, **refactoring**, or **reviewing** code, **read the relevant project docs**—do not rely only on `src/` patterns.
+
+1. **Index**: Start with `docs/README.md` for what exists under `docs/`.
+2. **ADRs** (`docs/adr/`): Read ADRs that apply to the task. Naming: `XXX-short-description.md`. Index: `docs/adr/README.md`.
+   - **001** – services and repositories
+   - **002** – error handling
+   - **004** – hexagonal architecture
+   - **006** – logging
+   - **003**, **005**, **007** – OpenTelemetry, load tests, local deployment (when relevant)
+3. **Guides** (when the change touches that area): e.g. `docs/logging.md`, `docs/monitoring.md`, `docs/load-testing.md`, `docs/workflows.md`, `docs/local-deployment.md`.
+4. **Cursor usage** (optional): `docs/cursor-as-my-intern.md` for agent modes and prompts.
+
+If an ADR or guide conflicts with existing code, **follow the ADR/guide** and align the change—or call out the mismatch to the user.
+
+**Creating ADRs**: **Only the user** creates ADRs (`make create-adr name='short-descriptive-name'` and writing `docs/adr/`). Agents do not create or edit ADRs; the explain agent may recommend one when appropriate (**agent-boundaries.mdc**, **explain-agent.md**).
+
+## Commands – Makefile is the source of truth
+
+All project commands are in the **Makefile** (run `make help` for the full list). Use it as the single reference.
+
+**When you generate new code**, run quality checks **automatically** (format, lint, type check, tests) to ensure the code is good. See the quality-checks rule. Fix any failures.
+
+Follow **agent-boundaries.mdc** for migrations, git, dependencies, and deployment:
+
+- No `make migrate` / `make rollback`; `make create-migration` only with **user approval**.
+- No `git add` / `commit` / `push`; read-only git (`git diff`, `git status`, `git log`, etc.) is fine for context.
+- New packages: user runs `poetry add` (see **dependencies.mdc**); user runs `make build` after dependency changes when using Docker.
+- No deploy or environment commands unless the user explicitly asks.
+
+The only commands you run **automatically** are quality checks (format, lint, type check, test) when you have generated or changed code.

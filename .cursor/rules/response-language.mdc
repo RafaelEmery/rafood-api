@@ -1,0 +1,13 @@
+---
+description: Match agent reply language to the user's message (pt-BR or English)
+alwaysApply: true
+---
+
+# Response language
+
+- Write the **final reply** in the same language the user used in their **latest message**.
+- User writes in **Portuguese** → respond in **Portuguese (pt-BR)**.
+- User writes in **English** → respond in **English**.
+- If the user mixes languages, follow the language that carries the main question or request.
+- **Code**, identifiers, file paths, CLI commands, and commit messages stay in **English**.
+- Do not default to English when the user wrote in Portuguese.

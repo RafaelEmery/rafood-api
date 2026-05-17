@@ -1,0 +1,36 @@
+---
+description: Clean code style – naming, typing, no redundant docs, extract functions
+globs: src/**/*.py, tests/**/*.py
+alwaysApply: false
+---
+
+# Code design – Clean code style
+
+Apply these when writing or reviewing code in this project.
+
+## Style
+
+- **Clean code**: Readable, small functions, clear control flow. Prefer clarity over cleverness.
+- **No redundant comments or docstrings**:
+  - No comments or docstrings at the **top of the file** (no module docstrings, no banner comments).
+  - No **function or method docstrings** by default. If behavior is unclear, **rename** the function first; add a docstring only when the name cannot reasonably express intent and the logic is still non-obvious.
+  - Inline comments only when the logic is genuinely complex or non-obvious.
+- **Parameters**: Avoid `*` in signatures unless it improves the API or is required by the interface. Prefer explicit named parameters for application/business-layer APIs, but allow keyword-only separators, `*args`, and `**kwargs` for established patterns such as framework hooks, dependency/wrapper functions, logger wrappers, and test factories.
+- **Good variable and function names**: Use descriptive names that reveal intent. Avoid abbreviations when they make application/domain code less clear, but allow widely understood or already-established project conventions when they improve readability or match framework patterns (for example `db`, `id`, `url`, `uuid`).
+- **Extract internal helpers**: If a function grows long or does several things, extract logic into private/helper functions in the same module (e.g. `def _build_response(...)` or small helpers) so each function stays focused and short.
+- **Maximum typing**: Use type hints everywhere possible—function parameters, return types, local variables when it helps. The project uses mypy; keep code type-check clean.
+
+## Naming
+
+- Variables/functions: prefer full words in application/domain code, but do not expand abbreviations mechanically. Widely accepted or established names in this repo are fine when they are clearer or conventional in context (for example `db`, `id`, `url`, `uuid`, framework/test `kwargs` patterns, or wrapper `args`).
+- Names should make the code self-explanatory so that comments are rarely needed.
+
+## When delivering new code
+
+When you create or change code, briefly explain:
+
+- **Where** each new or modified file lives and **why** it belongs there (e.g. "`src/orders/service.py` – business logic for orders").
+- Be **objective and concise**; one or two sentences per area is enough.
+- When useful, add **references to official docs** (FastAPI, SQLModel, Pydantic, pytest, etc.) for patterns or APIs used.
+
+The feature agent and any code-generating flow should follow this rule and the quality-checks rule.

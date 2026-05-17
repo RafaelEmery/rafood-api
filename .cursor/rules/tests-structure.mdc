@@ -1,0 +1,30 @@
+---
+description: Test layout – unit vs feature, conftest, factories, client/session
+globs: tests/**/*.py
+alwaysApply: false
+---
+
+# Test structure
+
+## Layout
+
+- **Unit**: `tests/unit/src/<domain>/` – `test_service.py` (service with mocked repository), `conftest.py` (mock repository, service instance, sample model/schema fixtures).
+- **Feature**: `tests/feature/src/<domain>/` – `test_api.py` (HTTP against client), `conftest.py` (payload builders like `build_*_create_payload`; domain-specific fixtures).
+- **Shared feature fixtures**: `tests/feature/src/conftest.py` – factories for User, Restaurant, Category, Product, Offer (and schedules when present). Factories take `session` and `**kwargs`, call `session.add(obj)`, return the object. Dependencies between entities (e.g. product needs restaurant and category) are created inside the factory when not passed.
+
+## Root conftest (`tests/conftest.py`)
+
+- `session`: async DB session; creates/drops tables per test; uses `TEST_DB_URL` (e.g. `*_test` DB).
+- `client`: `AsyncClient` with ASGI app; overrides `get_session` to use the test session; base URL `http://testserver`. API routes are under `/api/v1/...`.
+
+## Naming and style
+
+- Test names: `test_<action>_<scenario>` (e.g. `test_create_category_success`, `test_list_categories_internal_error`).
+- Use `@pytest.mark.asyncio` for async tests.
+- Feature tests: use `client.get/post/put/delete('/api/v1/...')`, assert `response.status_code` and `response.json()`.
+- Unit tests: inject mocked repository; assert service return values and that repository methods were called (e.g. `mock_repository.create.assert_awaited_once_with(...)`).
+
+## Fixtures
+
+- Unit: `mock_<domain>_repository` (MagicMock spec=Repository), `<domain>_service`, `sample_<entity>`, `sample_<entity>_schema`.
+- Feature: `*_factory` for creating DB entities; `build_*_create_payload` / `build_*_update_payload` for request bodies. Factories do not commit; test or root session handling does.

@@ -1,0 +1,32 @@
+---
+description: Domain module structure (api, service, repository, models, schemas, deps, exceptions)
+globs: src/**/*.py
+alwaysApply: false
+---
+
+# Domain structure (per context)
+
+Each domain under `src/<domain>/` (e.g. `categories`, `offers`, `users`) follows this layout:
+
+## Files per domain
+
+| File | Purpose |
+|------|--------|
+| `api.py` | FastAPI router: route handlers, `status_code`, `response_model`, inject service via Depends. |
+| `service.py` | Business logic; calls repository; raises domain exceptions; uses `StructLogger`. |
+| `repository.py` | Data access: `AsyncSession`, SQLModel queries; raises `*NotFoundError` when entity missing. |
+| `models.py` | SQLModel models with `table=True`; `__tablename__`; UUID pk, `created_at`/`updated_at` where used. |
+| `schemas.py` | Pydantic models for request/response; use `from_attributes = True` for ORM response schemas. |
+| `deps.py` | `get_<domain>_repository(session)`, `get_<domain>_service(repository)`; `ServiceDeps = Annotated[Service, Depends(get_...)]`. |
+| `exceptions.py` | Domain errors inheriting from `src.exceptions`: `AppNotFoundError`, `AppInternalServerError`; set `error_code` and message. |
+
+## Conventions
+
+- **api.py**: Thin layer; delegate to service; use `ServiceDeps`; do not catch domain exceptions (handled globally).
+- **service.py**: Constructor receives repository; methods are async; map domain exceptions for not-found and generic errors.
+- **repository.py**: Constructor receives `AsyncSession`; use `select(Model)`, `session.commit()` after writes.
+- **exceptions**: Base classes in `src/exceptions.py`; domain handlers registered in `src/core/exception_handlers.py`.
+
+## Reference implementation
+
+Use `src/categories/` as the reference: `api.py`, `service.py`, `repository.py`, `models.py`, `schemas.py`, `deps.py`, `exceptions.py`.
