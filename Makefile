@@ -40,6 +40,12 @@ DOCKER_PS_AWK = 'BEGIN{OFS="\t"} { \
     print \
 }'
 
+# ADR helpers (create-adr): spaces → hyphens; hyphenated names unchanged
+empty :=
+space := $(empty) $(empty)
+ADR_NEXT_NUM := $(shell ls docs/adr/ 2>/dev/null | grep -E '^[0-9]{3}-' | grep -v '^000-' | wc -l | awk '{printf "%03d", $$1 + 1}')
+ADR_SLUG = $(if $(findstring $(space),$(name)),$(shell echo "$(name)" | tr ' ' '-' | sed -e 's/--*/-/g' -e 's/^-//' -e 's/-$$//'),$(name))
+
 help: ## Show this help message
 	@echo "$$BANNER"
 	@echo "\nShowing all available make targets... 🤔\n"
@@ -169,14 +175,12 @@ tree: ## Show project file tree
 
 create-adr: ## Create a new Architecture Decision Record. Usage: make create-adr name='<descriptive-name>'
 	@echo "Creating new Architecture Decision Record... 🆕"
-	@echo "Usage: make create-adr name='<descriptive-name>'"
 	@if [ -z "$(name)" ]; then \
 		echo "Error: Please provide a descriptive name using name='<descriptive-name>'"; \
 		exit 1; \
 	fi
-	@NUM=$$(ls docs/adr/ | grep -E '^[0-9]{3}-' | grep -v '^000-' | wc -l | awk '{printf "%03d", $$1 + 1}'); \
-	cp docs/adr/000-base-adr-template.md docs/adr/$$NUM-$(name).md; \
-	echo "Created docs/adr/$$NUM-$(name).md"
+	@cp docs/adr/000-base-adr-template.md docs/adr/$(ADR_NEXT_NUM)-$(ADR_SLUG).md
+	@echo "Created docs/adr/$(ADR_NEXT_NUM)-$(ADR_SLUG).md"
 
 load-test: ## Run load tests with Locust
 	@echo "Running load tests with Locust... 🔥\n"

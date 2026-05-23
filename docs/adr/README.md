@@ -24,4 +24,5 @@ To create a new Architecture Decision Record, use the following command:
 
 ```bash
 make create-adr name='some-adr-descriptive-name'
+# or with spaces (converted to hyphens): make create-adr name='add gist index'
 ```
