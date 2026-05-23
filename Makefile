@@ -203,3 +203,19 @@ stop-container: ## Stop the Docker container locally for testing (not for use wi
 	@echo "Stopping Docker container locally... 🛑\n"
 	@docker stop rafood-api:latest
 	@echo "\nDocker container stopped! 🎉\n"
+
+agent-ensure-env: ## Ensure api and database containers are running (AI agent workflow)
+	@if [ -z "$$(docker compose ps --status running -q api 2>/dev/null)" ] || \
+	   [ -z "$$(docker compose ps --status running -q database 2>/dev/null)" ]; then \
+		docker compose up -d api database; \
+	fi
+
+agent-lint: agent-ensure-env ## Run lint-complete inside the api container (AI agent workflow)
+	@docker compose exec -T api bash -c 'cd /app && poetry run ruff check --fix . && poetry run mypy src && poetry run ruff format .'
+
+agent-test: agent-ensure-env ## Run tests inside the api container (AI agent workflow). Usage: make agent-test t='<test_path_or_marker>'
+	@docker compose exec -T api bash -c 'cd /app && PYTHONPATH=src poetry run pytest -vv --cov=src --cov-report=term-missing $(t)'
+
+agent-checks: agent-ensure-env ## Run lint + tests in api container (AI agent workflow). Usage: make agent-checks t='<test_path_or_marker>'
+	@make agent-lint
+	@make agent-test t='$(t)'

@@ -1,32 +1,38 @@
 ---
-description: After generating code – automatically run format, lint, type check, tests
+description: After generating code – automatically run make agent-checks (lint + tests in api container)
 alwaysApply: true
 ---
 
 # Quality checks – Automatic when generating code
 
-Whenever you **generate or change code** (new feature, refactor, fix), **automatically** run the project’s quality commands to ensure the code is good. **All commands are in the Makefile** (`make help`).
+**NEVER** on the host after code changes: `make format`, `make lint-fix`, `make lint-type`, `make lint-complete`, `make test`, or bare `poetry run pytest`. **ONLY** `make agent-checks`, `make agent-lint`, or `make agent-test` (with `t=` when scoped).
 
-## Run automatically after writing code
+Whenever you **generate or change code** (new feature, refactor, fix), **automatically** run:
 
-Right after generating or editing code, run (in order):
+```bash
+make agent-checks t='tests/...'
+```
 
-1. **Format**: `make format` — Ruff format.
-2. **Lint**: `make lint-fix` — Ruff check and auto-fix.
-3. **Type check**: `make lint-type` — mypy on `src`.
-4. **Tests**: `make test` — or `make test t='tests/path/to/test_file.py'` for a subset.
+Use a **narrow `t=` path** for tests related to what you changed (same idea as `make test t='...'`). Omit `t` only when a full suite run is intentional.
 
-Or in one go: `make lint-complete` then `make test`.
+## What `make agent-checks` does
 
-**Before `make test`**: ensure the **`database`** container is running (`make list-containers`). Tests hit Postgres on `localhost`; without Compose up they fail with connection errors. See **docker-compose.mdc**.
+Single entry point for agents:
 
-If any step fails, fix the issues and re-run until format, lint, type check, and tests pass. This guarantees the generated code meets the project’s quality gates.
+1. **`agent-ensure-env`** — if `api` or `database` is not running, runs `docker compose up -d api database` (silent).
+2. **`agent-lint`** — inside **`api`**: `ruff check --fix`, `mypy src`, `ruff format` (same core as `lint-complete`, **without** pre-commit; pre-commit needs git on the host).
+3. **`agent-test`** — pytest + coverage (see **docker-compose.mdc** for where it runs and DB connectivity).
+
+Do **not** run `make format`, `make lint-fix`, `make lint-type`, `make lint-complete`, or ad-hoc `poetry run pytest` on the host after changing code. Use **`make agent-checks`** only.
+
+If any step fails, fix the code and re-run until it passes.
 
 ## Boundaries (see agent-boundaries.mdc)
 
-- Do not run `make migrate`, `make rollback`, or deployment commands.
-- `make create-migration` only with **user approval**; never `git add` / `commit` / `push` (read-only git for context is OK).
+- Do not run `make migrate`, `make rollback`, or deployment commands (`make build`, `make stop`, etc.) unless the user asks.
+- `make create-migration` only with **user approval**; never `git add` / `commit` / `push`.
+- **`make agent-checks`** (and **`agent-ensure-env`**) may start containers when they are down; agents must not call `make start` / `make build` directly for checks—only `make agent-checks`.
 
 ## Goal
 
-When you write code, always run these quality checks automatically and fix failures so the result is in good shape.
+After every code change, agents run **`make agent-checks`** with a focused `t=` when possible, and fix failures until green.

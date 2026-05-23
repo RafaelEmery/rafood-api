@@ -9,6 +9,9 @@ services:
       - "${APP_PORT}:8000"
     env_file:
       - .env
+    environment:
+      TEST_DB_HOST: database
+      TEST_DB_PORT: 5432
     stdin_open: true
     tty: true
     depends_on:

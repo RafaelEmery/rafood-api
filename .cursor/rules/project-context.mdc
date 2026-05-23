@@ -65,7 +65,7 @@ If an ADR or guide conflicts with existing code, **follow the ADR/guide** and al
 
 All project commands are in the **Makefile** (run `make help` for the full list). Use it as the single reference. **Local runtime is Docker Compose** — check container status before commands that need Postgres or the API (**docker-compose.mdc**).
 
-**When you generate new code**, run quality checks **automatically** (format, lint, type check, tests) to ensure the code is good. See the quality-checks rule. Fix any failures.
+**When you generate new code**, run **`make agent-checks`** automatically (see **quality-checks.mdc**). Fix any failures.
 
 Follow **agent-boundaries.mdc** for migrations, git, dependencies, and deployment:
 
@@ -74,4 +74,4 @@ Follow **agent-boundaries.mdc** for migrations, git, dependencies, and deploymen
 - New packages: user runs `poetry add` (see **dependencies.mdc**); user runs `make build` after dependency changes when using Docker.
 - No deploy or environment commands unless the user explicitly asks.
 
-The only commands you run **automatically** are quality checks (format, lint, type check, test) when you have generated or changed code.
+The only commands you run **automatically** after code changes are **`make agent-checks`** (optionally with `t='tests/...'`).

@@ -33,7 +33,7 @@ When describing how to implement something, the proposal must **follow the same 
 | Tests      | `tests/unit/`, `tests/feature/`; factories/fixtures as in **tests-structure**                                                                |
 | Style      | **code-design** — naming, typing, no redundant docstrings/comments                                                                           |
 | Migrations | New revision only (never edit applied ones); `make create-migration` only with user approval; no `migrate`/`rollback` (**agent-boundaries**) |
-| After code | **quality-checks** — `make format`, `make lint-fix`, `make lint-type`, `make test`                                                           |
+| After code | **quality-checks** — **`make agent-checks`** (lint + tests in `api` container; optional `t='tests/...'`)                                     |
 
 Outline **concrete steps**: which files to add or touch, which layer owns what, and how it fits existing code. Optional short **illustrative** snippets (not full implementations). Mention relevant ADRs and doc links.
 
