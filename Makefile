@@ -107,7 +107,7 @@ list-containers: ## List running Docker containers
 
 logs: ## Show logs for a container. Usage: make logs container=<container_name> (default: api)
 	@echo "Showing logs... 📜\n"
-	@docker compose logs -f $(or $(container),api)
+	@docker compose logs $(or $(container),api)
 
 bash: ## Access bash in a container. Usage: make bash container=<container_name> (default: api)
 	@echo "Accessing bash in container... 💻\n"
