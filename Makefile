@@ -40,7 +40,7 @@ DOCKER_PS_AWK = 'BEGIN{OFS="\t"} { \
     print \
 }'
 
-# ADR helpers (create-adr): spaces → hyphens; hyphenated names unchanged
+# ADR helpers (create-adr)
 empty :=
 space := $(empty) $(empty)
 ADR_NEXT_NUM := $(shell ls docs/adr/ 2>/dev/null | grep -E '^[0-9]{3}-' | grep -v '^000-' | wc -l | awk '{printf "%03d", $$1 + 1}')

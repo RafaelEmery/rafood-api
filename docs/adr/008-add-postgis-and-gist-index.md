@@ -2,29 +2,38 @@
 
 ## Context
 
-Currently, there's no index on search at restaurant or offer for values like schedule start and end time.
-
-In case of a large number of restaurants or offers, the search will be slow.
-
-We'll create two new endpoints to search for open restaurants and active offers considering now date and time, current day of the week and current city or product:
+We\`ll build a new endpoint to search for open restaurants and active offers considering now date and time, current day of the week the location of the user and the restaurant:
 
 ```
-GET /api/v1/restaurants/open?city="some_city"
-GET /api/v1/offers/active?product_id="some_product_id"
+GET /api/v1/restaurants/open?latitude=12.345678&longitude=98.765432&radius=1000
+GET /api/v1/offers/active?latitude=12.345678&longitude=98.765432&radius=1000
 ```
 
-This endpoints would be the first search for any app of RaFood.
+This endpoint would be the first search for any app of RaFood. The `radius` is the radius in meters to search for open restaurants and active offers around the user's location.
 
 ## Decision
 
-We'll add a GiST index on the schedule start and end time columns to speed up the search.
+We'll add PostGIS to the project and create a GiST index on the latitude and longitude columns of the restaurants table, the "near by" offers search would use the offer's restaurant's latitude and longitude to find the offers around the user's location.
 
-The GiST index would be created on the schedule start and end time columns. GiST index is commonly used for range queries and spatial data including date and time ranges.
+For that, we'll need to add:
+
+- The `latitude` and `longitude` columns to the restaurants table and models.\`
+- Use PostgreSQL's PostGIS extension to create the GiST index on the latitude and longitude columns.
+- Add a new endpoint to search for open restaurants nearby the user's location.
+- Add a new endpoint to search for active offers nearby the user's location.
+
+The PostgreSQL's PostGIS extension is a geospatial extension for PostgreSQL that allows you to store and query spatial data and GiST index is a B-tree based index for range queries and spatial data including date and time ranges.
+
+The ideia here is to functions like `geography(Point)`, `ST_Distance` and `ST_DWithin` and the GiST index on location data.
 
 ## Consequences
 
-It becomes easier to search for open restaurants and active offers considering now date and time, current day of the week and current city or product.
+It becomes easier to search for open restaurants and active offers considering now date and time, current day of the week and the location of the user.
+
+On the other hand, it becomes more complex to search for open restaurants and active offers considering now date and time, current day of the week and the location of the user.
 
 ## References
 
-> Docs, links or any other references to this change.
+This ADR and feature is being implemented as a PoC of `explain-agent.md` and `feature-agent.md` defined at [AGENTS.md](../../AGENTS.md), [.cursor/prompts](../../.cursor/prompts) and [cursor-as-my-intern.md](../cursor-as-my-intern.md).
+
+So, there references are based on AI generated content by Cursor.
