@@ -31,3 +31,4 @@ alwaysApply: true
 ## Deployment / environment
 
 - **Never**: `make start`, `make stop`, `make build`, `make build-container`, or anything that alters the environment, deploys, or persists data—unless the user explicitly asks.
+- **Allowed (read-only)**: `make list-containers`, `docker compose ps`, `make logs` — to verify Compose state before other Makefile commands. See **docker-compose.mdc**.

@@ -18,6 +18,8 @@ Right after generating or editing code, run (in order):
 
 Or in one go: `make lint-complete` then `make test`.
 
+**Before `make test`**: ensure the **`database`** container is running (`make list-containers`). Tests hit Postgres on `localhost`; without Compose up they fail with connection errors. See **docker-compose.mdc**.
+
 If any step fails, fix the issues and re-run until format, lint, type check, and tests pass. This guarantees the generated code meets the project’s quality gates.
 
 ## Boundaries (see agent-boundaries.mdc)

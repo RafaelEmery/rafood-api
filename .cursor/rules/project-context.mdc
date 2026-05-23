@@ -17,6 +17,7 @@ alwaysApply: true
 - **Prometheus** + **Grafana** for monitoring
 - **Ruff** for linting/formatting, **mypy** for type checking
 - **pre-commit** for hooks; **Locust** for load tests
+- **Docker Compose** for local runtime (api + database); see **docker-compose.mdc**
 
 ## Project structure
 
@@ -62,7 +63,7 @@ If an ADR or guide conflicts with existing code, **follow the ADR/guide** and al
 
 ## Commands – Makefile is the source of truth
 
-All project commands are in the **Makefile** (run `make help` for the full list). Use it as the single reference.
+All project commands are in the **Makefile** (run `make help` for the full list). Use it as the single reference. **Local runtime is Docker Compose** — check container status before commands that need Postgres or the API (**docker-compose.mdc**).
 
 **When you generate new code**, run quality checks **automatically** (format, lint, type check, tests) to ensure the code is good. See the quality-checks rule. Fix any failures.
 

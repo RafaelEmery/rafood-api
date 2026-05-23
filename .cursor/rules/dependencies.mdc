@@ -34,6 +34,7 @@ When a task needs a **new or changed Python package**, the agent does **not** al
 
 Poetry updates `pyproject.toml` and `poetry.lock`. The **Dockerfile** runs `poetry install` at image build time, so Compose/K8s images stay in sync only after `make build` or `make build-container`.
 
-## Related boundaries
+## Related rules
 
-See **agent-boundaries.mdc** (no `poetry install`, no `make build` / `make start` / deploy unless the user explicitly asks).
+- **docker-compose.mdc** — default local runtime; when to check/start containers before Makefile commands.
+- **agent-boundaries.mdc** — no `poetry install`, no `make build` / `make start` / deploy unless the user explicitly asks.

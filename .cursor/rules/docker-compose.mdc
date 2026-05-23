@@ -1,0 +1,47 @@
+---
+description: Local runtime is Docker Compose—check containers before Makefile commands that need infra
+alwaysApply: true
+---
+
+# Docker Compose – default local runtime
+
+The **default way to run this project locally** is **Docker Compose**, not bare `poetry run` on the host. The **Makefile** wraps Compose and Poetry; treat it as the single entry point (`make help`).
+
+## Services (`docker-compose.yml`)
+
+| Service | Role | Default profile |
+| ------- | ---- | --------------- |
+| `api` | FastAPI app (port from `.env` → `APP_PORT`) | always |
+| `database` | PostgreSQL + PostGIS (port from `.env` → `DB_PORT`) | always |
+| `prometheus`, `grafana`, `database-exporter`, `container-metrics-exporter` | Monitoring | `monitoring` (`make start-monitoring`) |
+
+The `api` service bind-mounts the repo (`.:/app`), so **code changes apply without rebuild**. After **`pyproject.toml` / `poetry.lock` changes**, the image must be rebuilt: **`make build`** (user runs it unless they explicitly ask the agent).
+
+## Host vs container
+
+| Runs on **host** (Poetry) | Needs **containers** up |
+| ------------------------- | ----------------------- |
+| `make format`, `make lint-fix`, `make lint-type`, `make lint-complete`, `make pre-commit` | no |
+| `make test` | **`database`** must be running |
+| `make create-migration`, `make migrate`, `make rollback` | **`database`** must be running |
+| `make load-test` | **`api`** (and usually `database`) must be running |
+
+- **Do not use** `make run` — it is deprecated when the API runs in Docker.
+- **Inside a container**: `make bash` (default `api`), `make logs container=<name>`.
+- **Tests** connect to Postgres at **`localhost:${DB_PORT}`**, not the Compose service name `database` (see `tests/conftest.py`).
+
+## Before running Makefile commands
+
+1. **Read `make help`** — do not invent raw `poetry`, `pytest`, `alembic`, or `docker` commands when a Make target exists.
+2. **Check container status** (read-only, agent may run): `make list-containers` or `docker compose ps`.
+3. If a command needs infra and containers are **stopped or missing**:
+   - Tell the user to run **`make start`** (or **`make build`** after dependency changes).
+   - Or ask explicitly before running **`make start`** / **`make build`** (see **agent-boundaries.mdc** — agent does not start/stop/rebuild unless the user asks).
+4. If **`make test`** (or another DB command) fails with connection errors, **check Docker first** before debugging application code.
+
+## Common Make targets (Compose)
+
+- **`make start`** — `docker compose up -d` (api + database)
+- **`make build`** — rebuild images, then start
+- **`make stop`** / **`make down`** / **`make restart`** — lifecycle
+- **`make list-containers`** — status check (use before tests or when diagnosing env issues)
