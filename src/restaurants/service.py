@@ -31,17 +31,39 @@ class RestaurantService:
 	def __init__(self, repository: RestaurantRepository):
 		self.repository = repository
 
+	async def list_open_near_by(
+		self,
+		latitude: float,
+		longitude: float,
+		radius_meters: int,
+	) -> list[RestaurantWithSchedulesSchema]:
+		try:
+			restaurants = await self.repository.list_open_near_by(
+				latitude, longitude, radius_meters
+			)
+			logger.bind(listed_open_restaurants_near_by_count=len(restaurants))
+
+			result: list[RestaurantWithSchedulesSchema] = [
+				RestaurantWithSchedulesSchema.model_validate(restaurant)
+				for restaurant in restaurants
+			]
+
+			return result
+		except Exception as e:
+			raise RestaurantsInternalError(message=str(e)) from e
+
 	async def list(
 		self, name: str | None, owner_id: UUID | None
 	) -> list[RestaurantWithSchedulesSchema]:
 		try:
 			restaurants = await self.repository.list(name, owner_id)
 			logger.bind(listed_restaurants_count=len(restaurants))
-
-			return [
+			result: list[RestaurantWithSchedulesSchema] = [
 				RestaurantWithSchedulesSchema.model_validate(restaurant)
 				for restaurant in restaurants
 			]
+
+			return result
 		except Exception as e:
 			raise RestaurantsInternalError(message=str(e)) from e
 
@@ -81,6 +103,8 @@ class RestaurantService:
 			restaurant.neighborhood = restaurant_update.neighborhood
 			restaurant.city = restaurant_update.city
 			restaurant.state_abbr = restaurant_update.state_abbr
+			restaurant.latitude = restaurant_update.latitude
+			restaurant.longitude = restaurant_update.longitude
 
 			await self.repository.update(restaurant)
 			logger.bind(updated_restaurant_id=restaurant.id)

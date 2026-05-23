@@ -96,6 +96,8 @@ async def test_create_restaurant_success(restaurant_service, mock_restaurant_rep
 		neighborhood='Centro',
 		city='São Paulo',
 		state_abbr='SP',
+		latitude=-23.5505,
+		longitude=-46.6333,
 	)
 	mock_restaurant_repository.create = AsyncMock(return_value=restaurant_id)
 
@@ -117,6 +119,8 @@ async def test_create_restaurant_internal_error(restaurant_service, mock_restaur
 		neighborhood='Centro',
 		city='São Paulo',
 		state_abbr='SP',
+		latitude=-23.5505,
+		longitude=-46.6333,
 	)
 	mock_restaurant_repository.create = AsyncMock(side_effect=Exception('Ih! Deu ruim!'))
 
@@ -141,6 +145,8 @@ async def test_update_restaurant_success(
 		neighborhood='New Neighborhood',
 		city='Rio de Janeiro',
 		state_abbr='RJ',
+		latitude=-22.9068,
+		longitude=-43.1729,
 	)
 	mock_restaurant_repository.get = AsyncMock(return_value=sample_restaurant)
 	mock_restaurant_repository.update = AsyncMock()
@@ -167,6 +173,8 @@ async def test_update_restaurant_not_found(restaurant_service, mock_restaurant_r
 		neighborhood='Neighborhood',
 		city='City',
 		state_abbr='SP',
+		latitude=-23.5505,
+		longitude=-46.6333,
 	)
 	mock_restaurant_repository.get = AsyncMock(
 		side_effect=RestaurantNotFoundError(restaurant_id=str(restaurant_id))
@@ -191,6 +199,8 @@ async def test_update_restaurant_internal_error(
 		neighborhood='Neighborhood',
 		city='City',
 		state_abbr='SP',
+		latitude=-23.5505,
+		longitude=-46.6333,
 	)
 	mock_restaurant_repository.get = AsyncMock(return_value=sample_restaurant)
 	mock_restaurant_repository.update = AsyncMock(side_effect=Exception('Ih! Deu ruim!'))
@@ -514,6 +524,38 @@ async def test_delete_schedule_internal_error(
 	with pytest.raises(RestaurantSchedulesInternalError) as exc_info:
 		await schedule_service.delete(
 			restaurant_id=sample_restaurant.id, schedule_id=sample_schedule.id
+		)
+
+	assert 'Ih! Deu ruim!' in str(exc_info.value)
+
+
+@pytest.mark.asyncio
+async def test_list_open_near_by_success(
+	restaurant_service, mock_restaurant_repository, sample_restaurant, sample_schedule
+):
+	sample_restaurant.schedules = [sample_schedule]
+	mock_restaurant_repository.list_open_near_by = AsyncMock(return_value=[sample_restaurant])
+
+	result = await restaurant_service.list_open_near_by(
+		latitude=-23.5505,
+		longitude=-46.6333,
+		radius_meters=1000,
+	)
+
+	assert len(result) == 1
+	assert result[0].id == sample_restaurant.id
+	mock_restaurant_repository.list_open_near_by.assert_awaited_once_with(-23.5505, -46.6333, 1000)
+
+
+@pytest.mark.asyncio
+async def test_list_open_near_by_internal_error(restaurant_service, mock_restaurant_repository):
+	mock_restaurant_repository.list_open_near_by = AsyncMock(side_effect=Exception('Ih! Deu ruim!'))
+
+	with pytest.raises(RestaurantsInternalError) as exc_info:
+		await restaurant_service.list_open_near_by(
+			latitude=-23.5505,
+			longitude=-46.6333,
+			radius_meters=1000,
 		)
 
 	assert 'Ih! Deu ruim!' in str(exc_info.value)

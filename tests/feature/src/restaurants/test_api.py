@@ -1,3 +1,5 @@
+from datetime import datetime, time
+from unittest.mock import patch
 from uuid import uuid4
 
 import pytest
@@ -114,6 +116,10 @@ async def test_create_restaurant(client, session, user_factory, build_create_pay
 		{'state_abbr': 'XYZ'},
 		{'state_abbr': 123},
 		{'state_abbr': None},
+		{'latitude': None},
+		{'latitude': 91},
+		{'longitude': None},
+		{'longitude': 181},
 	],
 )
 async def test_create_restaurant_bad_request_error(
@@ -182,6 +188,10 @@ async def test_update_restaurant_not_found_error(
 		{'state_abbr': 'XYZ'},
 		{'state_abbr': 123},
 		{'state_abbr': None},
+		{'latitude': None},
+		{'latitude': 91},
+		{'longitude': None},
+		{'longitude': 181},
 	],
 )
 async def test_update_restaurant_bad_request_error(
@@ -419,3 +429,125 @@ async def test_delete_restaurant_schedule_restaurant_not_found_error(
 	response = await client.delete(f'/api/v1/restaurants/{str(uuid4())}/schedules/{schedule.id}')
 
 	assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.asyncio
+async def test_list_open_restaurants_near_by_success(
+	client, session, restaurant_factory, restaurant_schedule_factory, open_near_by_reference_time
+):
+	restaurant = restaurant_factory(session, latitude=-23.5505, longitude=-46.6333)
+	restaurant_schedule_factory(
+		session,
+		restaurant_id=restaurant.id,
+		day_type='weekday',
+		start_day='monday',
+		end_day='friday',
+		start_time=time(9, 0),
+		end_time=time(18, 0),
+	)
+	await session.commit()
+
+	response = await client.get(
+		'/api/v1/restaurants/open',
+		params={'latitude': -23.5505, 'longitude': -46.6333, 'radius': 1000},
+	)
+
+	data = response.json()
+	assert response.status_code == status.HTTP_200_OK
+	assert len(data) == 1
+	assert data[0]['id'] == str(restaurant.id)
+	assert data[0]['latitude'] == -23.5505
+	assert data[0]['longitude'] == -46.6333
+
+
+@pytest.mark.asyncio
+async def test_list_open_restaurants_near_by_outside_radius(
+	client, session, restaurant_factory, restaurant_schedule_factory, open_near_by_reference_time
+):
+	restaurant = restaurant_factory(session, latitude=-22.9068, longitude=-43.1729)
+	restaurant_schedule_factory(
+		session,
+		restaurant_id=restaurant.id,
+		day_type='weekday',
+		start_day='monday',
+		end_day='friday',
+		start_time=time(9, 0),
+		end_time=time(18, 0),
+	)
+	await session.commit()
+
+	response = await client.get(
+		'/api/v1/restaurants/open',
+		params={'latitude': -23.5505, 'longitude': -46.6333, 'radius': 1000},
+	)
+
+	assert response.status_code == status.HTTP_200_OK
+	assert response.json() == []
+
+
+@pytest.mark.asyncio
+async def test_list_open_restaurants_near_by_closed_schedule(
+	client, session, restaurant_factory, restaurant_schedule_factory
+):
+	restaurant = restaurant_factory(session, latitude=-23.5505, longitude=-46.6333)
+	restaurant_schedule_factory(
+		session,
+		restaurant_id=restaurant.id,
+		day_type='weekday',
+		start_day='monday',
+		end_day='friday',
+		start_time=time(9, 0),
+		end_time=time(18, 0),
+	)
+	await session.commit()
+
+	with patch('src.restaurants.repository.datetime') as mock_datetime:
+		mock_datetime.now.return_value = datetime(2026, 5, 19, 20, 0)
+		response = await client.get(
+			'/api/v1/restaurants/open',
+			params={'latitude': -23.5505, 'longitude': -46.6333, 'radius': 1000},
+		)
+
+	assert response.status_code == status.HTTP_200_OK
+	assert response.json() == []
+
+
+@pytest.mark.asyncio
+async def test_list_open_restaurants_near_by_default_radius(
+	client, session, restaurant_factory, restaurant_schedule_factory, open_near_by_reference_time
+):
+	restaurant = restaurant_factory(session, latitude=-23.5615, longitude=-46.6559)
+	restaurant_schedule_factory(
+		session,
+		restaurant_id=restaurant.id,
+		day_type='weekday',
+		start_day='monday',
+		end_day='friday',
+		start_time=time(9, 0),
+		end_time=time(18, 0),
+	)
+	await session.commit()
+
+	response = await client.get(
+		'/api/v1/restaurants/open',
+		params={'latitude': -23.5505, 'longitude': -46.6333},
+	)
+
+	data = response.json()
+	assert response.status_code == status.HTTP_200_OK
+	assert len(data) == 1
+	assert data[0]['id'] == str(restaurant.id)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+	'missing_param',
+	['latitude', 'longitude'],
+)
+async def test_list_open_restaurants_near_by_missing_coordinates(client, missing_param):
+	params = {'latitude': -23.5505, 'longitude': -46.6333, 'radius': 1000}
+	params.pop(missing_param)
+
+	response = await client.get('/api/v1/restaurants/open', params=params)
+
+	assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY

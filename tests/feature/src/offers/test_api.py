@@ -1,3 +1,5 @@
+from datetime import datetime, time
+from unittest.mock import patch
 from uuid import uuid4
 
 import pytest
@@ -317,3 +319,209 @@ async def test_delete_offer_schedule_offer_not_found_error(client, session, offe
 	response = await client.delete(f'/api/v1/offers/{str(uuid4())}/schedules/{schedule.id}')
 
 	assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.asyncio
+async def test_list_active_offers_near_by_success(
+	client,
+	session,
+	restaurant_factory,
+	product_factory,
+	offer_factory,
+	offer_schedule_factory,
+	active_near_by_reference_time,
+):
+	restaurant = restaurant_factory(session, latitude=-23.5505, longitude=-46.6333)
+	product = product_factory(session, restaurant_id=restaurant.id)
+	offer = offer_factory(session, product_id=product.id, active=True)
+	offer_schedule_factory(
+		session,
+		offer_id=offer.id,
+		day='tuesday',
+		start_time=time(9, 0),
+		end_time=time(18, 0),
+	)
+	await session.commit()
+
+	response = await client.get(
+		'/api/v1/offers/active',
+		params={'latitude': -23.5505, 'longitude': -46.6333, 'radius': 1000},
+	)
+
+	data = response.json()
+	assert response.status_code == status.HTTP_200_OK
+	assert len(data) == 1
+	assert data[0]['id'] == str(offer.id)
+	assert data[0]['active'] is True
+
+
+@pytest.mark.asyncio
+async def test_list_active_offers_near_by_inactive_offer_excluded(
+	client,
+	session,
+	restaurant_factory,
+	product_factory,
+	offer_factory,
+	offer_schedule_factory,
+	active_near_by_reference_time,
+):
+	restaurant = restaurant_factory(session, latitude=-23.5505, longitude=-46.6333)
+	product = product_factory(session, restaurant_id=restaurant.id)
+	offer = offer_factory(session, product_id=product.id, active=False)
+	offer_schedule_factory(
+		session,
+		offer_id=offer.id,
+		day='tuesday',
+		start_time=time(9, 0),
+		end_time=time(18, 0),
+	)
+	await session.commit()
+
+	response = await client.get(
+		'/api/v1/offers/active',
+		params={'latitude': -23.5505, 'longitude': -46.6333, 'radius': 1000},
+	)
+
+	assert response.status_code == status.HTTP_200_OK
+	assert response.json() == []
+
+
+@pytest.mark.asyncio
+async def test_list_active_offers_near_by_outside_radius(
+	client,
+	session,
+	restaurant_factory,
+	product_factory,
+	offer_factory,
+	offer_schedule_factory,
+	active_near_by_reference_time,
+):
+	restaurant = restaurant_factory(session, latitude=-22.9068, longitude=-43.1729)
+	product = product_factory(session, restaurant_id=restaurant.id)
+	offer = offer_factory(session, product_id=product.id, active=True)
+	offer_schedule_factory(
+		session,
+		offer_id=offer.id,
+		day='tuesday',
+		start_time=time(9, 0),
+		end_time=time(18, 0),
+	)
+	await session.commit()
+
+	response = await client.get(
+		'/api/v1/offers/active',
+		params={'latitude': -23.5505, 'longitude': -46.6333, 'radius': 1000},
+	)
+
+	assert response.status_code == status.HTTP_200_OK
+	assert response.json() == []
+
+
+@pytest.mark.asyncio
+async def test_list_active_offers_near_by_closed_schedule(
+	client,
+	session,
+	restaurant_factory,
+	product_factory,
+	offer_factory,
+	offer_schedule_factory,
+):
+	restaurant = restaurant_factory(session, latitude=-23.5505, longitude=-46.6333)
+	product = product_factory(session, restaurant_id=restaurant.id)
+	offer = offer_factory(session, product_id=product.id, active=True)
+	offer_schedule_factory(
+		session,
+		offer_id=offer.id,
+		day='tuesday',
+		start_time=time(9, 0),
+		end_time=time(18, 0),
+	)
+	await session.commit()
+
+	with patch('src.offers.repository.datetime') as mock_datetime:
+		mock_datetime.now.return_value = datetime(2026, 5, 19, 20, 0)
+		response = await client.get(
+			'/api/v1/offers/active',
+			params={'latitude': -23.5505, 'longitude': -46.6333, 'radius': 1000},
+		)
+
+	assert response.status_code == status.HTTP_200_OK
+	assert response.json() == []
+
+
+@pytest.mark.asyncio
+async def test_list_active_offers_near_by_wrong_day_excluded(
+	client,
+	session,
+	restaurant_factory,
+	product_factory,
+	offer_factory,
+	offer_schedule_factory,
+	active_near_by_reference_time,
+):
+	restaurant = restaurant_factory(session, latitude=-23.5505, longitude=-46.6333)
+	product = product_factory(session, restaurant_id=restaurant.id)
+	offer = offer_factory(session, product_id=product.id, active=True)
+	offer_schedule_factory(
+		session,
+		offer_id=offer.id,
+		day='monday',
+		start_time=time(9, 0),
+		end_time=time(18, 0),
+	)
+	await session.commit()
+
+	response = await client.get(
+		'/api/v1/offers/active',
+		params={'latitude': -23.5505, 'longitude': -46.6333, 'radius': 1000},
+	)
+
+	assert response.status_code == status.HTTP_200_OK
+	assert response.json() == []
+
+
+@pytest.mark.asyncio
+async def test_list_active_offers_near_by_default_radius(
+	client,
+	session,
+	restaurant_factory,
+	product_factory,
+	offer_factory,
+	offer_schedule_factory,
+	active_near_by_reference_time,
+):
+	restaurant = restaurant_factory(session, latitude=-23.5615, longitude=-46.6559)
+	product = product_factory(session, restaurant_id=restaurant.id)
+	offer = offer_factory(session, product_id=product.id, active=True)
+	offer_schedule_factory(
+		session,
+		offer_id=offer.id,
+		day='tuesday',
+		start_time=time(9, 0),
+		end_time=time(18, 0),
+	)
+	await session.commit()
+
+	response = await client.get(
+		'/api/v1/offers/active',
+		params={'latitude': -23.5505, 'longitude': -46.6333},
+	)
+
+	data = response.json()
+	assert response.status_code == status.HTTP_200_OK
+	assert len(data) == 1
+	assert data[0]['id'] == str(offer.id)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+	'missing_param',
+	['latitude', 'longitude'],
+)
+async def test_list_active_offers_near_by_missing_coordinates(client, missing_param):
+	params = {'latitude': -23.5505, 'longitude': -46.6333, 'radius': 1000}
+	params.pop(missing_param)
+
+	response = await client.get('/api/v1/offers/active', params=params)
+
+	assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY

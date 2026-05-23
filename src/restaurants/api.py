@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Query, status
 
 from src.restaurants.deps import (
 	RestaurantScheduleServiceDeps,
@@ -34,6 +34,25 @@ async def list_restaurants(
 	owner_id: UUID | None = None,
 ) -> list[RestaurantWithSchedulesSchema]:
 	return await service.list(name=name, owner_id=owner_id)
+
+
+@router.get(
+	'/open',
+	name='List open restaurants near by',
+	status_code=status.HTTP_200_OK,
+	response_model=list[RestaurantWithSchedulesSchema],
+)
+async def list_open_restaurants(
+	service: RestaurantServiceDeps,
+	latitude: float = Query(..., ge=-90, le=90, description='User latitude in decimal degrees'),
+	longitude: float = Query(..., ge=-180, le=180, description='User longitude in decimal degrees'),
+	radius: int = Query(
+		default=10_000,
+		gt=0,
+		description='Search radius in meters (defaults to 10 km)',
+	),
+) -> list[RestaurantWithSchedulesSchema]:
+	return await service.list_open_near_by(latitude, longitude, radius)
 
 
 @router.get(

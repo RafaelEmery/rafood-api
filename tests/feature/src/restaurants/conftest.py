@@ -1,4 +1,5 @@
-from datetime import time
+from datetime import datetime, time
+from unittest.mock import patch
 from uuid import uuid4
 
 import pytest
@@ -7,18 +8,21 @@ from src.restaurants.models import RestaurantSchedule
 
 
 @pytest.fixture
+def open_near_by_reference_time():
+	with patch('src.restaurants.repository.datetime') as mock_datetime:
+		mock_datetime.now.return_value = datetime(2026, 5, 19, 10, 0)
+		yield
+
+
+@pytest.fixture
 def restaurant_schedule_factory(user_factory, restaurant_factory):
 	def create(session, **kwargs):
-		# Create restaurant if not provided
 		if 'restaurant_id' not in kwargs:
 			owner = user_factory(session)
 			restaurant = restaurant_factory(session, owner_id=owner.id)
 			kwargs['restaurant_id'] = restaurant.id
 			session.add(owner)
-
-			restaurant = restaurant_factory(session, owner_id=owner.id)
 			session.add(restaurant)
-			kwargs['restaurant_id'] = restaurant.id
 
 		obj = RestaurantSchedule(
 			id=uuid4(),
@@ -48,6 +52,8 @@ def build_create_payload():
 			'neighborhood': 'Test Neighborhood',
 			'city': 'Test City',
 			'state_abbr': 'TS',
+			'latitude': -23.5505,
+			'longitude': -46.6333,
 		}
 
 	return _build
@@ -65,6 +71,8 @@ def build_update_payload():
 			'neighborhood': 'Test Neighborhood',
 			'city': 'Test City',
 			'state_abbr': 'TS',
+			'latitude': -23.5505,
+			'longitude': -46.6333,
 		}
 
 	return _build

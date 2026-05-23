@@ -17,6 +17,8 @@ class RestaurantSchema(BaseModel):
 	neighborhood: str
 	city: str
 	state_abbr: str
+	latitude: float
+	longitude: float
 	created_at: datetime
 	updated_at: datetime
 
@@ -56,6 +58,8 @@ class CreateRestaurantSchema(BaseModel):
 	neighborhood: str = Field(min_length=1, max_length=256)
 	city: str = Field(min_length=1, max_length=256)
 	state_abbr: str = Field(min_length=2, max_length=2)
+	latitude: float = Field(ge=-90, le=90)
+	longitude: float = Field(ge=-180, le=180)
 
 	@field_validator('image_url')
 	@classmethod

@@ -45,6 +45,8 @@ def sample_restaurant():
 		neighborhood='Downtown',
 		city='São Paulo',
 		state_abbr='SP',
+		latitude=-23.5505,
+		longitude=-46.6333,
 		created_at=datetime.now(),
 		updated_at=datetime.now(),
 	)

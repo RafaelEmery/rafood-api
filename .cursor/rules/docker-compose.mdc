@@ -13,6 +13,7 @@ The **default way to run this project locally** is **Docker Compose**, not bare 
 | ------- | ---- | --------------- |
 | `api` | FastAPI app (port from `.env` → `APP_PORT`) | always |
 | `database` | PostgreSQL + PostGIS (port from `.env` → `DB_PORT`) | always |
+| `database-admin` | pgAdmin 4 UI (port from `.env` → `PGADMIN_PORT`) | always |
 | `prometheus`, `grafana`, `database-exporter`, `container-metrics-exporter` | Monitoring | `monitoring` (`make start-monitoring`) |
 
 The `api` service bind-mounts the repo (`.:/app`), so **code changes apply without rebuild**. After **`pyproject.toml` / `poetry.lock` changes**, the image must be rebuilt: **`make build`** (user runs it unless they explicitly ask the agent).

@@ -1,6 +1,7 @@
 import psycopg2
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlmodel import SQLModel
@@ -17,6 +18,13 @@ TEST_DB_URL = (
 	f'postgresql+asyncpg://{settings.DB_USER}:{settings.DB_PASSWORD}'
 	f'@{TEST_DB_HOST}:{settings.DB_PORT}/{TEST_DB_NAME}'
 )
+
+RESTAURANTS_LOCATION_GIST_INDEX = """
+CREATE INDEX IF NOT EXISTS ix_restaurants_location_gist ON restaurants
+USING GIST (
+	geography(ST_SetSRID(ST_MakePoint(longitude, latitude), 4326))
+)
+"""
 
 
 @pytest_asyncio.fixture(scope='session', autouse=True)
@@ -55,7 +63,9 @@ async def session():
 	engine = create_async_engine(TEST_DB_URL, echo=False)
 
 	async with engine.begin() as conn:
+		await conn.execute(text('CREATE EXTENSION IF NOT EXISTS postgis'))
 		await conn.run_sync(SQLModel.metadata.create_all)
+		await conn.execute(text(RESTAURANTS_LOCATION_GIST_INDEX))
 
 	async_session = sessionmaker(
 		bind=engine,

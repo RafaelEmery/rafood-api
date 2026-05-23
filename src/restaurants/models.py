@@ -18,6 +18,8 @@ class Restaurant(SQLModel, table=True):
 	neighborhood: str = Field(max_length=256)
 	city: str = Field(max_length=256)
 	state_abbr: str = Field(max_length=2)
+	latitude: float
+	longitude: float
 	created_at: datetime = Field(default_factory=datetime.now)
 	updated_at: datetime = Field(
 		default_factory=datetime.now, sa_column_kwargs={'onupdate': datetime.now}

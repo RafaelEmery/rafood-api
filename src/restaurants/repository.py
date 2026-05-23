@@ -1,9 +1,15 @@
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import exists, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.core.schedule_matching import (
+	current_day_type,
+	day_in_range,
+	schedule_time_in_range,
+)
+from src.enums import DayType
 from src.restaurants.exceptions import RestaurantNotFoundError, RestaurantScheduleNotFoundError
 from src.restaurants.models import Restaurant, RestaurantSchedule
 from src.restaurants.schemas import CreateRestaurantScheduleSchema, CreateRestaurantSchema
@@ -15,6 +21,74 @@ class RestaurantRepository:
 	def __init__(self, db: AsyncSession):
 		self.db = db
 
+	def _open_schedule_exists(self, reference_time: datetime) -> exists:  # type: ignore[valid-type]
+		"""
+		Check if the restaurant is open with the current day and time.
+
+		Consider the restaurant schedule to check if the restaurant is open
+		with the current day and time.
+		"""
+		return exists(
+			select(1).where(
+				RestaurantSchedule.restaurant_id == Restaurant.id,  # type: ignore[arg-type]
+				RestaurantSchedule.day_type != DayType.HOLIDAY.value,  # type: ignore[arg-type]
+				RestaurantSchedule.day_type == current_day_type(reference_time),  # type: ignore[arg-type]
+				day_in_range(
+					RestaurantSchedule.start_day,
+					RestaurantSchedule.end_day,
+					reference_time,
+				),  # type: ignore[arg-type]
+				schedule_time_in_range(
+					RestaurantSchedule.start_time,
+					RestaurantSchedule.end_time,
+					reference_time,
+				),  # type: ignore[arg-type]
+			)
+		)
+
+	async def list_open_near_by(
+		self,
+		latitude: float,
+		longitude: float,
+		radius_meters: int,
+	) -> list[Restaurant]:
+		"""
+		List open restaurants nearby the location using PostGIS ST_DWithin function
+		and the GiST index on restaurants geography expression.
+
+		Consider the restaurant schedule to check if the restaurant is open
+		with the current day and time.
+
+		ST_DWithin is a function that checks if a point is within a given distance of another point.
+		geography is a function that converts a point to a geography type.
+		ST_SetSRID is a function that sets the SRID of a point (SRID is Spatial Reference Identifier).
+		ST_MakePoint is a function that makes a point from a longitude and latitude.
+		restaurants.longitude and restaurants.latitude are the longitude and latitude of the restaurant.
+		longitude and latitude are the longitude and latitude of the location to check.
+		radius is the radius in meters to check.
+
+		Extra: 4326 is the SRID for the Earth's surface in the World Geodetic System 1984 coordinate system.
+		"""
+		spatial_filter = text(
+			"""
+			ST_DWithin(
+				geography(ST_SetSRID(ST_MakePoint(restaurants.longitude, restaurants.latitude), 4326)),
+				geography(ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326)),
+				:radius
+			)
+			"""
+		).bindparams(longitude=longitude, latitude=latitude, radius=radius_meters)
+
+		query = (
+			select(Restaurant)
+			.where(spatial_filter)
+			.where(self._open_schedule_exists(datetime.now()))
+		)
+		result = await self.db.execute(query)
+		restaurants: list[Restaurant] = list(result.scalars().unique().all())
+
+		return restaurants
+
 	async def list(self, name: str | None, owner_id: UUID | None) -> list[Restaurant]:
 		query = select(Restaurant)
 
@@ -24,8 +98,9 @@ class RestaurantRepository:
 			query = query.filter(Restaurant.owner_id == owner_id)  # type: ignore[arg-type]
 
 		result = await self.db.execute(query)
+		restaurants: list[Restaurant] = list(result.scalars().unique().all())
 
-		return list(result.scalars().unique().all())
+		return restaurants
 
 	async def get(self, id: UUID) -> Restaurant:
 		result = await self.db.execute(select(Restaurant).where(Restaurant.id == id))  # type: ignore[arg-type]
