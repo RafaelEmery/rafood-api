@@ -43,12 +43,10 @@ class RestaurantService:
 			)
 			logger.bind(listed_open_restaurants_near_by_count=len(restaurants))
 
-			result: list[RestaurantWithSchedulesSchema] = [
+			return [
 				RestaurantWithSchedulesSchema.model_validate(restaurant)
 				for restaurant in restaurants
 			]
-
-			return result
 		except Exception as e:
 			raise RestaurantsInternalError(message=str(e)) from e
 
@@ -58,12 +56,11 @@ class RestaurantService:
 		try:
 			restaurants = await self.repository.list(name, owner_id)
 			logger.bind(listed_restaurants_count=len(restaurants))
-			result: list[RestaurantWithSchedulesSchema] = [
+
+			return [
 				RestaurantWithSchedulesSchema.model_validate(restaurant)
 				for restaurant in restaurants
 			]
-
-			return result
 		except Exception as e:
 			raise RestaurantsInternalError(message=str(e)) from e
 

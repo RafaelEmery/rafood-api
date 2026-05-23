@@ -79,15 +79,13 @@ class OfferRepository:
 			.where(self._active_schedule_exists(datetime.now()))
 		)
 		result = await self.db.execute(query)
-		offers: list[Offer] = list(result.scalars().unique().all())
 
-		return offers
+		return list(result.scalars().unique().all())
 
 	async def list(self) -> list[Offer]:
 		result = await self.db.execute(select(Offer))
-		offers: list[Offer] = list(result.scalars().unique().all())
 
-		return offers
+		return list(result.scalars().unique().all())
 
 	async def get(self, id: UUID) -> Offer:
 		result = await self.db.execute(select(Offer).where(Offer.id == id))  # type: ignore[arg-type]

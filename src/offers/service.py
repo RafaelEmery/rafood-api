@@ -39,9 +39,8 @@ class OfferService:
 		try:
 			offers = await self.repository.list_active_near_by(latitude, longitude, radius_meters)
 			logger.bind(listed_active_offers_near_by_count=len(offers))
-			result: list[OfferSchema] = [OfferSchema.model_validate(offer) for offer in offers]
 
-			return result
+			return [OfferSchema.model_validate(offer) for offer in offers]
 		except Exception as e:
 			raise OffersInternalError(message=str(e)) from e
 
@@ -49,9 +48,8 @@ class OfferService:
 		try:
 			offers = await self.repository.list()
 			logger.bind(listed_offers_count=len(offers))
-			result: list[OfferSchema] = [OfferSchema.model_validate(offer) for offer in offers]
 
-			return result
+			return [OfferSchema.model_validate(offer) for offer in offers]
 		except Exception as e:
 			raise OffersInternalError(message=str(e)) from e
 

@@ -85,9 +85,8 @@ class RestaurantRepository:
 			.where(self._open_schedule_exists(datetime.now()))
 		)
 		result = await self.db.execute(query)
-		restaurants: list[Restaurant] = list(result.scalars().unique().all())
 
-		return restaurants
+		return list(result.scalars().unique().all())
 
 	async def list(self, name: str | None, owner_id: UUID | None) -> list[Restaurant]:
 		query = select(Restaurant)
@@ -98,9 +97,8 @@ class RestaurantRepository:
 			query = query.filter(Restaurant.owner_id == owner_id)  # type: ignore[arg-type]
 
 		result = await self.db.execute(query)
-		restaurants: list[Restaurant] = list(result.scalars().unique().all())
 
-		return restaurants
+		return list(result.scalars().unique().all())
 
 	async def get(self, id: UUID) -> Restaurant:
 		result = await self.db.execute(select(Restaurant).where(Restaurant.id == id))  # type: ignore[arg-type]
