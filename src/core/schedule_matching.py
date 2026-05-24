@@ -84,12 +84,12 @@ def schedule_time_in_range(
 
 	return or_(
 		and_(
-			start_time_col <= end_time_col,
+			start_time_col <= end_time_col,  # type: ignore[operator]
 			start_time_col <= current_time,
 			current_time <= end_time_col,
-		),  # type: ignore[operator]
+		),
 		and_(
-			start_time_col > end_time_col,
+			start_time_col > end_time_col,  # type: ignore[operator]
 			or_(current_time >= start_time_col, current_time <= end_time_col),
-		),  # type: ignore[operator]
+		),
 	)
