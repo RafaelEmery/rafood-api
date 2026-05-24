@@ -159,8 +159,10 @@ run: ## Run the application (not recommended for use with Docker)
 	@poetry run python -m src.main
 
 test: ## Run the test suite. Usage: make test t='<test_path_or_marker>'
+	@echo "Checking if the database is running... 🔍\n" && if [ -z "$$(docker compose ps --status running -q database 2>/dev/null)" ]; then \
+		make start; \
+	fi
 	@echo "Running tests... 🧪\n"
-	@echo "Usage: make test or make test t='<test_path_or_marker>'"
 	@PYTHONPATH=src poetry run pytest -vv --cov=src --cov-report=term-missing $(t)
 
 clean-test: ## Clean test cache files
