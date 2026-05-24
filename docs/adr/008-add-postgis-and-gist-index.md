@@ -17,14 +17,14 @@ We'll add PostGIS to the project and create a GiST index on the latitude and lon
 
 For that, we'll need to add:
 
-- The `latitude` and `longitude` columns to the restaurants table and models.\`
+- The `latitude` and `longitude` columns to the restaurants table and models.
 - Use PostgreSQL's PostGIS extension to create the GiST index on the latitude and longitude columns.
 - Add a new endpoint to search for open restaurants nearby the user's location.
 - Add a new endpoint to search for active offers nearby the user's location.
 
-The PostgreSQL's PostGIS extension is a geospatial extension for PostgreSQL that allows you to store and query spatial data and GiST index is a B-tree based index for range queries and spatial data including date and time ranges.
+PostgreSQL's PostGIS extension is a geospatial extension for PostgreSQL that allows you to store and query spatial data, and GiST is a Generalized Search Tree index access method commonly used to accelerate spatial queries and predicates.
 
-The ideia here is to functions like `geography(Point)`, `ST_Distance` and `ST_DWithin` and the GiST index on location data.
+The ideia here is to use functions like `geography(Point)`, `ST_Distance` and `ST_DWithin` together with a GiST index on location data.
 
 ## Consequences
 

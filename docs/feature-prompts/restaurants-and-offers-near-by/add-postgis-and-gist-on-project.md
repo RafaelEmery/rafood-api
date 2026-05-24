@@ -14,9 +14,9 @@ I'll run (or approve) manually commands for installing the dependencies and buil
 
 ## Acceptance criteria
 
-- PostGIS must be enabled at RaFood API project and environmnent
-- GiST must be enabled at RaFood API project and environmnent
-- Existing environmnent and tests must be running ok (as is actually)
+- PostGIS must be enabled at RaFood API project and environment
+- GiST must be enabled at RaFood API project and environment
+- Existing environment and tests must be running ok (as is actually)
 
 ## Extra
 

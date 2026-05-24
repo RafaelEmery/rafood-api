@@ -78,7 +78,11 @@ def schedule_time_in_range(
 	True when reference_time's clock time is between start_time and end_time (inclusive).
 
 	Consider the reference time to check if the time is in the range.
+	Handles wrap-around (e.g. 22:00:00 → 02:00:00): if start > end, the range crosses midnight.
 	"""
 	current_time = cast(reference_time, Time)
 
-	return and_(start_time_col <= current_time, current_time <= end_time_col)
+	return or_(
+		and_(start_time_col <= end_time_col, start_time_col <= current_time, current_time <= end_time_col),
+		and_(start_time_col > end_time_col, or_(current_time >= start_time_col, current_time <= end_time_col)),
+	)
