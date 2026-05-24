@@ -24,7 +24,7 @@ For that, we'll need to add:
 
 PostgreSQL's PostGIS extension is a geospatial extension for PostgreSQL that allows you to store and query spatial data, and GiST is a Generalized Search Tree index access method commonly used to accelerate spatial queries and predicates.
 
-The ideia here is to use functions like `geography(Point)`, `ST_Distance` and `ST_DWithin` together with a GiST index on location data.
+The idea here is to use functions like `geography(Point)`, `ST_Distance` and `ST_DWithin` together with a GiST index on location data.
 
 ## Consequences
 
