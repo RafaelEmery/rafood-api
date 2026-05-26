@@ -34,6 +34,8 @@ class RestaurantTasks(TaskSet):
 			'neighborhood': faker.city_suffix(),
 			'city': faker.city(),
 			'state_abbr': faker.state_abbr(),
+			'latitude': faker.pyfloat(min_value=-23.57, max_value=-23.53, right_digits=6),
+			'longitude': faker.pyfloat(min_value=-46.66, max_value=-46.60, right_digits=6),
 		}
 
 		response = self.client.post(
@@ -76,6 +78,8 @@ class RestaurantTasks(TaskSet):
 			'neighborhood': faker.city_suffix(),
 			'city': faker.city(),
 			'state_abbr': faker.state_abbr(),
+			'latitude': faker.pyfloat(min_value=-23.57, max_value=-23.53, right_digits=6),
+			'longitude': faker.pyfloat(min_value=-46.66, max_value=-46.60, right_digits=6),
 		}
 
 		response = self.client.patch(
@@ -164,6 +168,31 @@ class RestaurantTasks(TaskSet):
 
 		if response.status_code != 204:
 			log_failure('Delete Restaurant', response, {'restaurant_id': restaurant_id})
+
+	def get_open_restaurants_nearby(self):
+		params = {
+			'latitude': faker.pyfloat(min_value=-23.57, max_value=-23.53, right_digits=6),
+			'longitude': faker.pyfloat(min_value=-46.66, max_value=-46.60, right_digits=6),
+			'radius': 5000,
+		}
+
+		response = self.client.get(
+			'/api/v1/restaurants/open',
+			params=params,
+			name='/api/v1/restaurants/open [LIST NEAR BY]',
+		)
+
+		if response.status_code != 200:
+			log_failure('Get Open Restaurants Near By', response, params)
+			return []
+
+		restaurants = response.json()
+		return [restaurant.get('id') for restaurant in restaurants if restaurant.get('id')]
+
+	@task
+	def search_open_restaurants_nearby(self):
+		"""Search open restaurants near by a common urban location"""
+		self.get_open_restaurants_nearby()
 
 	@task
 	def restaurant_full_lifecycle(self):

@@ -1,9 +1,17 @@
-from datetime import time
+from datetime import datetime, time
+from unittest.mock import patch
 from uuid import uuid4
 
 import pytest
 
 from src.offers.models import OfferSchedule
+
+
+@pytest.fixture
+def active_near_by_reference_time():
+	with patch('src.offers.repository.datetime') as mock_datetime:
+		mock_datetime.now.return_value = datetime(2026, 5, 19, 10, 0)
+		yield
 
 
 @pytest.fixture

@@ -8,6 +8,7 @@ from src.offers.models import Offer, OfferSchedule
 from src.offers.repository import OfferRepository, OfferScheduleRepository
 from src.offers.schemas import OfferWithSchedulesSchema
 from src.offers.service import OfferScheduleService, OfferService
+from src.products.models import Product
 
 
 @pytest.fixture
@@ -33,17 +34,31 @@ def schedule_service(mock_schedule_repository, mock_offer_repository):
 
 
 @pytest.fixture
-def sample_offer():
-	offer_id = uuid4()
-	product_id = uuid4()
-	return Offer(
-		id=offer_id,
-		product_id=product_id,
+def sample_product():
+	return Product(
+		id=uuid4(),
+		restaurant_id=uuid4(),
+		name='Pizza Margherita',
+		price=25.0,
+		category_id=uuid4(),
+		image_url='https://example.com/pizza.jpg',
+		created_at=datetime.now(),
+		updated_at=datetime.now(),
+	)
+
+
+@pytest.fixture
+def sample_offer(sample_product):
+	offer = Offer(
+		id=uuid4(),
+		product_id=sample_product.id,
 		price=10.0,
 		active=True,
 		created_at=datetime.now(),
 		updated_at=datetime.now(),
 	)
+	offer.product = sample_product
+	return offer
 
 
 @pytest.fixture

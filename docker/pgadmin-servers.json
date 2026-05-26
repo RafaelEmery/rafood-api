@@ -1,0 +1,13 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "Rafood",
+      "Group": "Servers",
+      "Host": "database",
+      "Port": 5432,
+      "MaintenanceDB": "rafood_db",
+      "Username": "local",
+      "SSLMode": "prefer"
+    }
+  }
+}

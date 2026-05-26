@@ -40,6 +40,12 @@ DOCKER_PS_AWK = 'BEGIN{OFS="\t"} { \
     print \
 }'
 
+# ADR helpers (create-adr)
+empty :=
+space := $(empty) $(empty)
+ADR_NEXT_NUM := $(shell ls docs/adr/ 2>/dev/null | grep -E '^[0-9]{3}-' | grep -v '^000-' | wc -l | awk '{printf "%03d", $$1 + 1}')
+ADR_SLUG = $(if $(findstring $(space),$(name)),$(shell echo "$(name)" | tr ' ' '-' | sed -e 's/--*/-/g' -e 's/^-//' -e 's/-$$//'),$(name))
+
 help: ## Show this help message
 	@echo "$$BANNER"
 	@echo "\nShowing all available make targets... 🤔\n"
@@ -101,7 +107,7 @@ list-containers: ## List running Docker containers
 
 logs: ## Show logs for a container. Usage: make logs container=<container_name> (default: api)
 	@echo "Showing logs... 📜\n"
-	@docker compose logs -f $(or $(container),api)
+	@docker compose logs $(or $(container),api)
 
 bash: ## Access bash in a container. Usage: make bash container=<container_name> (default: api)
 	@echo "Accessing bash in container... 💻\n"
@@ -153,8 +159,10 @@ run: ## Run the application (not recommended for use with Docker)
 	@poetry run python -m src.main
 
 test: ## Run the test suite. Usage: make test t='<test_path_or_marker>'
+	@echo "Checking if the database is running... 🔍\n" && if [ -z "$$(docker compose ps --status running -q database 2>/dev/null)" ]; then \
+		make start; \
+	fi
 	@echo "Running tests... 🧪\n"
-	@echo "Usage: make test or make test t='<test_path_or_marker>'"
 	@PYTHONPATH=src poetry run pytest -vv --cov=src --cov-report=term-missing $(t)
 
 clean-test: ## Clean test cache files
@@ -169,14 +177,12 @@ tree: ## Show project file tree
 
 create-adr: ## Create a new Architecture Decision Record. Usage: make create-adr name='<descriptive-name>'
 	@echo "Creating new Architecture Decision Record... 🆕"
-	@echo "Usage: make create-adr name='<descriptive-name>'"
 	@if [ -z "$(name)" ]; then \
 		echo "Error: Please provide a descriptive name using name='<descriptive-name>'"; \
 		exit 1; \
 	fi
-	@NUM=$$(ls docs/adr/ | grep -E '^[0-9]{3}-' | grep -v '^000-' | wc -l | awk '{printf "%03d", $$1 + 1}'); \
-	cp docs/adr/000-base-adr-template.md docs/adr/$$NUM-$(name).md; \
-	echo "Created docs/adr/$$NUM-$(name).md"
+	@cp docs/adr/000-base-adr-template.md docs/adr/$(ADR_NEXT_NUM)-$(ADR_SLUG).md
+	@echo "Created docs/adr/$(ADR_NEXT_NUM)-$(ADR_SLUG).md"
 
 load-test: ## Run load tests with Locust
 	@echo "Running load tests with Locust... 🔥\n"
@@ -185,7 +191,7 @@ load-test: ## Run load tests with Locust
 
 build-container: ## Build the Docker image for Kubernetes deployment using Docker only (not for use with Docker Compose)
 	@echo "Building Docker image for Kubernetes deployment using Docker... 🏗️\n"
-	@docker build -t rafood-api:latest .
+	@docker build -f docker/Dockerfile -t rafood-api:latest .
 	@echo "\nDocker image built! 🎉\n"
 	@echo "Showing Docker image... 📋\n"
 	@docker images | grep rafood-api
@@ -199,3 +205,19 @@ stop-container: ## Stop the Docker container locally for testing (not for use wi
 	@echo "Stopping Docker container locally... 🛑\n"
 	@docker stop rafood-api:latest
 	@echo "\nDocker container stopped! 🎉\n"
+
+agent-ensure-env: ## Ensure api and database containers are running (AI agent workflow)
+	@if [ -z "$$(docker compose ps --status running -q api 2>/dev/null)" ] || \
+	   [ -z "$$(docker compose ps --status running -q database 2>/dev/null)" ]; then \
+		docker compose up -d api database; \
+	fi
+
+agent-lint: agent-ensure-env ## Run lint-complete inside the api container (AI agent workflow)
+	@docker compose exec -T api bash -c 'cd /app && poetry run ruff check --fix . && poetry run mypy src && poetry run ruff format .'
+
+agent-test: agent-ensure-env ## Run tests inside the api container (AI agent workflow). Usage: make agent-test t='<test_path_or_marker>'
+	@docker compose exec -T api bash -c 'cd /app && PYTHONPATH=src poetry run pytest -vv --cov=src --cov-report=term-missing $(t)'
+
+agent-checks: agent-ensure-env ## Run lint + tests in api container (AI agent workflow). Usage: make agent-checks t='<test_path_or_marker>'
+	@make agent-lint
+	@make agent-test t='$(t)'

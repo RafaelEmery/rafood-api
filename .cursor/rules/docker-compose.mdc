@@ -1,0 +1,64 @@
+---
+description: Local runtime is Docker Compose—check containers before Makefile commands that need infra
+alwaysApply: true
+---
+
+# Docker Compose – default local runtime
+
+The **default way to run this project locally** is **Docker Compose**, not bare `poetry run` on the host. The **Makefile** wraps Compose and Poetry; treat it as the single entry point (`make help`).
+
+## Services (`docker-compose.yml`)
+
+| Service | Role | Default profile |
+| ------- | ---- | --------------- |
+| `api` | FastAPI app (port from `.env` → `APP_PORT`) | always |
+| `database` | PostgreSQL + PostGIS (port from `.env` → `DB_PORT`) | always |
+| `database-admin` | pgAdmin 4 UI (port from `.env` → `PGADMIN_PORT`) | always |
+| `prometheus`, `grafana`, `database-exporter`, `container-metrics-exporter` | Monitoring | `monitoring` (`make start-monitoring`) |
+
+The `api` service bind-mounts the repo (`.:/app`), so **code changes apply without rebuild**. After **`pyproject.toml` / `poetry.lock` changes**, the image must be rebuilt: **`make build`** (user runs it unless they explicitly ask the agent).
+
+The `api` service sets **`TEST_DB_HOST=database`** and **`TEST_DB_PORT=5432`** for pytest in the container (overrides `.env`). Recreate `api` after changing those in `docker-compose.yml` (`docker compose up -d api`).
+
+## Agent quality checks (preferred for agents)
+
+| Target | Role |
+| ------ | ---- |
+| **`make agent-checks`** | Lint in `api` + tests in `api`. Optional `t='tests/...'`. **Run after every code change.** |
+| **`make agent-ensure-env`** | Starts `api` + `database` with `docker compose up -d` only if either is down (silent). |
+| **`make agent-lint`** | Ruff fix, mypy, ruff format inside `api` (`docker compose exec -T api`). |
+| **`make agent-test`** | Pytest + coverage inside `api`; uses **`TEST_DB_HOST`** / **`TEST_DB_PORT`** (see below). |
+
+## Tests and DB host
+
+`tests/conftest.py` reads **`TEST_DB_HOST`** and **`TEST_DB_PORT`** from the environment (defaults: `localhost`, `settings.DB_PORT`).
+
+| Where pytest runs | Typical env |
+| ----------------- | ----------- |
+| **Host** (`make test`) | `.env`: `TEST_DB_HOST=localhost`, `TEST_DB_PORT` = published port (e.g. `5434`, same as `DB_PORT`) |
+| **`api` container** (`agent-test`) | `docker-compose.yml` on `api`: `database`, `5432` |
+
+## Host vs container
+
+| Target | Where it runs |
+| ------ | ------------- |
+| `make format`, `lint-fix`, `lint-type`, `lint-complete`, `pre-commit` | Host (Poetry) — **not for agents** |
+| **`make agent-lint`** | `api` container |
+| **`make test`** | Host; needs `database` up — **not for agents** |
+| **`make agent-test`** | `api` container |
+
+- **Do not use** `make run` — deprecated when the API runs in Docker.
+- **`make bash`**, **`make logs`**: interact with containers.
+
+## Before running Makefile commands
+
+1. **Read `make help`** — do not invent raw `poetry`, `pytest`, `alembic`, or `docker` commands when a Make target exists.
+2. **Agents**: after code changes, run **`make agent-checks`** with focused `t=` when possible (never host lint/test targets).
+3. If DB tests fail in the container, confirm `api` has `TEST_DB_HOST=database` (`docker compose exec api env | grep TEST_DB`).
+
+## Common Make targets (Compose)
+
+- **`make start`** — `docker compose up -d`
+- **`make build`** — rebuild images, then start
+- **`make stop`** / **`make down`** / **`make restart`**
+- **`make list-containers`** — status check

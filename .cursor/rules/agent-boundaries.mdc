@@ -31,3 +31,5 @@ alwaysApply: true
 ## Deployment / environment
 
 - **Never**: `make start`, `make stop`, `make build`, `make build-container`, or anything that alters the environment, deploys, or persists data—unless the user explicitly asks.
+- **Exception (quality checks)**: agents **must** run **`make agent-checks`** after producing or changing code. That target uses **`agent-ensure-env`**, which may run `docker compose up -d api database` when those services are stopped. Do **not** call `make start` or `make build` yourself for checks—only `make agent-checks` (optionally `make agent-lint` or `make agent-test` with `t=` if you need a single step).
+- **Allowed (read-only)**: `make list-containers`, `docker compose ps`, `make logs` — to verify Compose state. See **docker-compose.mdc**.

@@ -1,6 +1,9 @@
+import os
+
 import psycopg2
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlmodel import SQLModel
@@ -9,14 +12,20 @@ from src.core.config import settings
 from src.core.deps import get_session
 from src.main import app
 
-# Since tests are not on Docker, we use localhost as DB host
-# instead of 'database' (Docker service name)
-TEST_DB_HOST = 'localhost'
+TEST_DB_HOST = os.environ.get('TEST_DB_HOST', 'localhost')
+TEST_DB_PORT = int(os.environ.get('TEST_DB_PORT', settings.DB_PORT))
 TEST_DB_NAME = f'{settings.DB_NAME}_test'
 TEST_DB_URL = (
 	f'postgresql+asyncpg://{settings.DB_USER}:{settings.DB_PASSWORD}'
-	f'@{TEST_DB_HOST}:{settings.DB_PORT}/{TEST_DB_NAME}'
+	f'@{TEST_DB_HOST}:{TEST_DB_PORT}/{TEST_DB_NAME}'
 )
+
+RESTAURANTS_LOCATION_GIST_INDEX = """
+CREATE INDEX IF NOT EXISTS ix_restaurants_location_gist ON restaurants
+USING GIST (
+	geography(ST_SetSRID(ST_MakePoint(longitude, latitude), 4326))
+)
+"""
 
 
 @pytest_asyncio.fixture(scope='session', autouse=True)
@@ -30,7 +39,7 @@ def create_test_db():
 		user=settings.DB_USER,
 		password=settings.DB_PASSWORD,
 		host=TEST_DB_HOST,
-		port=settings.DB_PORT,
+		port=TEST_DB_PORT,
 	)
 	conn.autocommit = True
 
@@ -55,7 +64,9 @@ async def session():
 	engine = create_async_engine(TEST_DB_URL, echo=False)
 
 	async with engine.begin() as conn:
+		await conn.execute(text('CREATE EXTENSION IF NOT EXISTS postgis'))
 		await conn.run_sync(SQLModel.metadata.create_all)
+		await conn.execute(text(RESTAURANTS_LOCATION_GIST_INDEX))
 
 	async_session = sessionmaker(
 		bind=engine,

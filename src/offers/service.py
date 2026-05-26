@@ -8,6 +8,7 @@ from src.offers.exceptions import (
 	OfferSchedulesInternalError,
 	OffersInternalError,
 )
+from src.offers.extended_schemas import OfferWithProductSchema
 from src.offers.repository import OfferRepository, OfferScheduleRepository
 from src.offers.schemas import (
 	CreateOfferResponseSchema,
@@ -30,12 +31,26 @@ class OfferService:
 	def __init__(self, repository: OfferRepository):
 		self.repository = repository
 
-	async def list(self) -> list[OfferSchema]:
+	async def list_active_near_by(
+		self,
+		latitude: float,
+		longitude: float,
+		radius_meters: int,
+	) -> list[OfferWithProductSchema]:
+		try:
+			offers = await self.repository.list_active_near_by(latitude, longitude, radius_meters)
+			logger.bind(listed_active_offers_near_by_count=len(offers))
+
+			return [OfferWithProductSchema.model_validate(offer) for offer in offers]
+		except Exception as e:
+			raise OffersInternalError(message=str(e)) from e
+
+	async def list(self) -> list[OfferWithProductSchema]:
 		try:
 			offers = await self.repository.list()
 			logger.bind(listed_offers_count=len(offers))
 
-			return [OfferSchema.model_validate(offer) for offer in offers]
+			return [OfferWithProductSchema.model_validate(offer) for offer in offers]
 		except Exception as e:
 			raise OffersInternalError(message=str(e)) from e
 

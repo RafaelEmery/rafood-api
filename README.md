@@ -34,7 +34,7 @@ My initial studies of FastAPI is at [fastapi-studies repository](https://github.
 - FastAPI
 - SQLModel & Alembic
 - Pytest for testing
-- PostgreSQL
+- PostgreSQL, PostGIS and GiST index for location data
 - Docker & Docker Compose
 - Prometheus & Grafana
 - Locust for load testing
@@ -156,6 +156,17 @@ make load-test
 ```
 
 More about load tests can be found at [docs/load-testing.md](./docs/load-testing.md).
+
+### PG Admin UI (locally)
+
+To access the PG Admin UI, you can use the following URL: `http://localhost:5050`. The service is defined at `docker-compose.yml` file must be running.
+
+The credentials are defined at `.env` file:
+
+- Username: `PGADMIN_DEFAULT_EMAIL`
+- Password: `PGADMIN_DEFAULT_PASSWORD`
+
+You can change the credentials by changing the `.env` file and running `make restart` to restart the services. The RaFood database connection is already configured at the PG Admin UI, you can access it by clicking on the `Servers` tab and then clicking on the `Rafood` server.
 
 ## Creating a new release
 

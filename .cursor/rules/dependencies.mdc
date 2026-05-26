@@ -21,7 +21,7 @@ When a task needs a **new or changed Python package**, the agent does **not** al
 3. After the user adds dependencies, remind them to refresh the environment used to run the API:
    - **Docker Compose** (default local setup): `make build` — rebuilds images from `pyproject.toml` / `poetry.lock` and restarts containers (`make help`: use after changing dependencies).
    - **Kubernetes / Minikube image** (see `docs/local-deployment.md`): `make build-container` after deps change, inside the Minikube Docker env when applicable.
-4. Then implement or continue code that uses the new package and run quality checks (`make format`, `make lint-fix`, `make lint-type`, `make test`) as usual.
+4. Then implement or continue code that uses the new package and run **`make agent-checks`** as usual.
 
 ## User workflow (reference)
 
@@ -30,10 +30,11 @@ When a task needs a **new or changed Python package**, the agent does **not** al
 | Add or update package | `poetry add …` / `poetry add --group dev …` / `poetry remove …` | User |
 | Rebuild API Docker image (Compose) | `make build` | User (unless they explicitly ask the agent to run it) |
 | Rebuild image for K8s local test | `make build-container` | User |
-| Apply code + checks | Agent implements; `make test`, etc. | Agent (automatic per quality-checks) |
+| Apply code + checks | Agent implements; `make agent-checks` | Agent (automatic per quality-checks) |
 
 Poetry updates `pyproject.toml` and `poetry.lock`. The **Dockerfile** runs `poetry install` at image build time, so Compose/K8s images stay in sync only after `make build` or `make build-container`.
 
-## Related boundaries
+## Related rules
 
-See **agent-boundaries.mdc** (no `poetry install`, no `make build` / `make start` / deploy unless the user explicitly asks).
+- **docker-compose.mdc** — default local runtime; when to check/start containers before Makefile commands.
+- **agent-boundaries.mdc** — no `poetry install`, no `make build` / `make start` / deploy unless the user explicitly asks.

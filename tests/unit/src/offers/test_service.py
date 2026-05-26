@@ -420,3 +420,36 @@ async def test_delete_offer_schedule_internal_error(
 		await schedule_service.delete(offer_id=sample_offer.id, schedule_id=sample_schedule.id)
 
 	assert 'Ih! Deu ruim!' in str(exc_info.value)
+
+
+@pytest.mark.asyncio
+async def test_list_active_near_by_success(
+	offer_service, mock_offer_repository, sample_offer, sample_schedule
+):
+	sample_schedule.day = 'tuesday'
+	sample_offer.schedules = [sample_schedule]
+	mock_offer_repository.list_active_near_by = AsyncMock(return_value=[sample_offer])
+
+	result = await offer_service.list_active_near_by(
+		latitude=-23.5505,
+		longitude=-46.6333,
+		radius_meters=1000,
+	)
+
+	assert len(result) == 1
+	assert result[0].id == sample_offer.id
+	mock_offer_repository.list_active_near_by.assert_awaited_once_with(-23.5505, -46.6333, 1000)
+
+
+@pytest.mark.asyncio
+async def test_list_active_near_by_internal_error(offer_service, mock_offer_repository):
+	mock_offer_repository.list_active_near_by = AsyncMock(side_effect=Exception('Ih! Deu ruim!'))
+
+	with pytest.raises(OffersInternalError) as exc_info:
+		await offer_service.list_active_near_by(
+			latitude=-23.5505,
+			longitude=-46.6333,
+			radius_meters=1000,
+		)
+
+	assert 'Ih! Deu ruim!' in str(exc_info.value)

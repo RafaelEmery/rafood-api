@@ -52,6 +52,8 @@ class ProductTasks(TaskSet):
 			'neighborhood': faker.city_suffix(),
 			'city': faker.city(),
 			'state_abbr': faker.state_abbr(),
+			'latitude': faker.pyfloat(min_value=-23.57, max_value=-23.53, right_digits=6),
+			'longitude': faker.pyfloat(min_value=-46.66, max_value=-46.60, right_digits=6),
 		}
 
 		response = self.client.post(
@@ -134,7 +136,9 @@ class ProductTasks(TaskSet):
 			log_failure('Delete Product', response, {'product_id': product_id})
 
 	def delete_restaurant(self, restaurant_id: str):
-		response = self.client.delete(f'/api/v1/restaurants/{restaurant_id}')
+		response = self.client.delete(
+			f'/api/v1/restaurants/{restaurant_id}', name='/api/v1/restaurants/{id} [DELETE]'
+		)
 
 		if response.status_code != 204:
 			log_failure('Delete Restaurant', response, {'restaurant_id': restaurant_id})

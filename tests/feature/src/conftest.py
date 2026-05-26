@@ -44,6 +44,8 @@ def restaurant_factory(user_factory):
 			neighborhood=kwargs.get('neighborhood', 'Downtown'),
 			city=kwargs.get('city', 'São Paulo'),
 			state_abbr=kwargs.get('state_abbr', 'SP'),
+			latitude=kwargs.get('latitude', -23.5505),
+			longitude=kwargs.get('longitude', -46.6333),
 		)
 		session.add(obj)
 
