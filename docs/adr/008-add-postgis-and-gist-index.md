@@ -24,7 +24,7 @@ For that, we'll need to add:
 
 PostgreSQL's PostGIS extension is a geospatial extension for PostgreSQL that allows you to store and query spatial data, and GiST is a Generalized Search Tree index access method commonly used to accelerate spatial queries and predicates.
 
-The idea here is to use functions like `geography(Point)`, `ST_Distance` and `ST_DWithin` together with a GiST index on location data.
+The idea here is to use geography casts together with functions such as `ST_Distance` and `ST_DWithin`, along with a GiST index on location data.
 
 ## Consequences
 
@@ -36,4 +36,4 @@ On the other hand, it becomes more complex to search for open restaurants and ac
 
 This ADR and feature is being implemented as a PoC of `explain-agent.md` and `feature-agent.md` defined at [AGENTS.md](../../AGENTS.md), [.cursor/prompts](../../.cursor/prompts) and [cursor-as-my-intern.md](../cursor-as-my-intern.md).
 
-So, there references are based on AI generated content by Cursor.
+So, these references are based on AI-generated content by Cursor.
