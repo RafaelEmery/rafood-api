@@ -34,7 +34,7 @@ My initial studies of FastAPI is at [fastapi-studies repository](https://github.
 - FastAPI
 - SQLModel & Alembic
 - Pytest for testing
-- PostgreSQL
+- PostgreSQL, PostGIS and GiST index for location data
 - Docker & Docker Compose
 - Prometheus & Grafana
 - Locust for load testing
