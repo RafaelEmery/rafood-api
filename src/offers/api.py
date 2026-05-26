@@ -3,6 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Query, status
 
 from src.offers.deps import OfferScheduleServiceDeps, OfferServiceDeps
+from src.offers.extended_schemas import OfferWithProductSchema
 from src.offers.schemas import (
 	CreateOfferResponseSchema,
 	CreateOfferScheduleResponseSchema,
@@ -22,9 +23,9 @@ router = APIRouter()
 	'',
 	name='List offers',
 	status_code=status.HTTP_200_OK,
-	response_model=list[OfferSchema],
+	response_model=list[OfferWithProductSchema],
 )
-async def list_offers(service: OfferServiceDeps) -> list[OfferSchema]:
+async def list_offers(service: OfferServiceDeps) -> list[OfferWithProductSchema]:
 	return await service.list()
 
 
@@ -32,7 +33,7 @@ async def list_offers(service: OfferServiceDeps) -> list[OfferSchema]:
 	'/active',
 	name='List active offers near by',
 	status_code=status.HTTP_200_OK,
-	response_model=list[OfferSchema],
+	response_model=list[OfferWithProductSchema],
 )
 async def list_active_offers(
 	service: OfferServiceDeps,
@@ -43,7 +44,7 @@ async def list_active_offers(
 		gt=0,
 		description='Search radius in meters (defaults to 10 km)',
 	),
-) -> list[OfferSchema]:
+) -> list[OfferWithProductSchema]:
 	return await service.list_active_near_by(latitude, longitude, radius)
 
 

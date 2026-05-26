@@ -7,10 +7,11 @@ from fastapi import status
 
 
 @pytest.mark.asyncio
-async def test_list_offers(session, client, offer_factory):
-	offer_factory(session, price=10.99)
-	offer_factory(session, price=15.99)
-	offer_factory(session, price=20.99)
+async def test_list_offers(session, client, product_factory, offer_factory):
+	product = product_factory(session, name='Pizza Especial')
+	offer_factory(session, product_id=product.id, price=10.99)
+	offer_factory(session, product_id=product.id, price=15.99)
+	offer_factory(session, product_id=product.id, price=20.99)
 
 	await session.commit()
 
@@ -19,6 +20,10 @@ async def test_list_offers(session, client, offer_factory):
 
 	assert response.status_code == status.HTTP_200_OK
 	assert len(data) == 3
+	for item in data:
+		assert 'product_id' not in item
+		assert item['product']['id'] == str(product.id)
+		assert item['product']['name'] == 'Pizza Especial'
 
 
 @pytest.mark.asyncio
@@ -353,6 +358,9 @@ async def test_list_active_offers_near_by_success(
 	assert len(data) == 1
 	assert data[0]['id'] == str(offer.id)
 	assert data[0]['active'] is True
+	assert 'product_id' not in data[0]
+	assert data[0]['product']['id'] == str(product.id)
+	assert data[0]['product']['name'] == product.name
 
 
 @pytest.mark.asyncio

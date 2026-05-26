@@ -3,6 +3,7 @@ from uuid import UUID
 
 from sqlalchemy import exists, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from src.core.schedule_matching import current_day_name, schedule_time_in_range
 from src.offers.exceptions import OfferNotFoundError, OfferScheduleNotFoundError
@@ -72,6 +73,7 @@ class OfferRepository:
 
 		query = (
 			select(Offer)
+			.options(selectinload(Offer.product))  # type: ignore[arg-type]
 			.join(Product, Offer.product_id == Product.id)  # type: ignore[arg-type]
 			.join(Restaurant, Product.restaurant_id == Restaurant.id)  # type: ignore[arg-type]
 			.where(Offer.active.is_(True))  # type: ignore[attr-defined]
@@ -83,7 +85,8 @@ class OfferRepository:
 		return list(result.scalars().unique().all())
 
 	async def list(self) -> list[Offer]:
-		result = await self.db.execute(select(Offer))
+		query = select(Offer).options(selectinload(Offer.product))  # type: ignore[arg-type]
+		result = await self.db.execute(query)
 
 		return list(result.scalars().unique().all())
 
