@@ -1,6 +1,8 @@
 services:
   api:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
     image: rafood-api:latest
     container_name: rafood_api
     volumes:

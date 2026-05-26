@@ -191,7 +191,7 @@ load-test: ## Run load tests with Locust
 
 build-container: ## Build the Docker image for Kubernetes deployment using Docker only (not for use with Docker Compose)
 	@echo "Building Docker image for Kubernetes deployment using Docker... 🏗️\n"
-	@docker build -t rafood-api:latest .
+	@docker build -f docker/Dockerfile -t rafood-api:latest .
 	@echo "\nDocker image built! 🎉\n"
 	@echo "Showing Docker image... 📋\n"
 	@docker images | grep rafood-api
