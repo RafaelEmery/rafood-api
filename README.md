@@ -39,6 +39,7 @@ My initial studies of FastAPI is at [fastapi-studies repository](https://github.
 - Prometheus & Grafana
 - Locust for load testing
 - GitHub Actions
+- Postman Newman for smoke tests on CI
 - Kubernetes and Helm Charts on local Minikube cluster
 - GitOps with ArgoCD on local Minikube cluster (PoC/sandbox)
 - Cursor (AI-assisted development with rules and agent prompts)

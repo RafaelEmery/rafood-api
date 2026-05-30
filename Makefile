@@ -206,6 +206,12 @@ stop-container: ## Stop the Docker container locally for testing (not for use wi
 	@docker stop rafood-api:latest
 	@echo "\nDocker container stopped! 🎉\n"
 
+newman-smoke-tests: ## Run Newman smoke tests (Requires API and database containers running)
+	@echo "Running Newman smoke tests inside Docker... 🔥"
+	@docker run --rm --network host -v "$(CURDIR)/postman:/etc/newman" \
+		postman/newman:6-alpine run /etc/newman/smoke.postman_collection.json \
+		-e /etc/newman/ci.environment.json --folder "Smoke" --timeout-request 15000
+
 agent-ensure-env: ## Ensure api and database containers are running (AI agent workflow)
 	@if [ -z "$$(docker compose ps --status running -q api 2>/dev/null)" ] || \
 	   [ -z "$$(docker compose ps --status running -q database 2>/dev/null)" ]; then \

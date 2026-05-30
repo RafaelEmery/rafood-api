@@ -14,6 +14,7 @@ Perform a structured code review of the changes or files the user points to. Foc
 
 - **Tests**
   Unit tests for new or changed services (mocked repository). Feature tests for new or changed endpoints. Use of existing fixtures and factories; new fixtures/factories where new entities or payloads are needed. Naming and coverage of main paths and error cases.
+  **Smoke (CI collection only)**: For API contract changes, check **smoke-tests.mdc** — should `postman/smoke.postman_collection.json` have been updated for CI? Flag missing coverage, unnecessary duplication, or steps that break the self-contained / FK-safe flow. Do **not** expect or run local Newman smoke.
 
 - **Migrations and DB**
   New or changed tables/columns via new Alembic revisions only. No editing of already-applied revisions. Correct use of types and constraints.
@@ -29,7 +30,7 @@ Perform a structured code review of the changes or files the user points to. Foc
 
 ## Output format
 
-- Organize feedback under headings such as: **Structure and conventions**, **Errors and security**, **Tests**, **Migrations and DB**, **Clarity and maintainability (code-design)**, **Performance and complexity**, **Quality checks**.
+- Organize feedback under headings such as: **Structure and conventions**, **Errors and security**, **Tests** (include **Smoke** when relevant), **Migrations and DB**, **Clarity and maintainability (code-design)**, **Performance and complexity**, **Quality checks**.
 - For each point: state what is good and what should be changed, with file/area references when useful.
 - Under **Quality checks**, report the outcome of **`make agent-checks`** (pass/fail and relevant output). Do not run migrate, deploy, or git commands.
 

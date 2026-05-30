@@ -1,0 +1,25 @@
+{
+	"id": "rafood-api-ci-env",
+	"name": "CI",
+	"values": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8000",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "latitude",
+			"value": "-23.5613",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "longitude",
+			"value": "-46.6565",
+			"type": "default",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment"
+}

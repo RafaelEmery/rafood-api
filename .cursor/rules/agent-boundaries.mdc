@@ -28,6 +28,11 @@ alwaysApply: true
 - **User runs** Poetry when a new package is needed; the agent suggests the exact command (`poetry add …` or `poetry add --group dev …`) and reminds the user to run `make build` (Docker Compose) or `make build-container` (K8s local) after dependency changes.
 - Full workflow: **dependencies.mdc**.
 
+## Smoke tests (CI / Newman)
+
+- **Agent responsibility**: when API changes warrant it, update `postman/smoke.postman_collection.json` (and `postman/README.md` if the flow changes) per **smoke-tests.mdc** — happy path for CI only.
+- **Never run smoke locally**: no `make newman-smoke-tests`, no `npx newman`, no Newman Docker runs — unless the **user explicitly asks**. CI runs smoke via `.github/workflows/smoke-tests.yml`.
+
 ## Deployment / environment
 
 - **Never**: `make start`, `make stop`, `make build`, `make build-container`, or anything that alters the environment, deploys, or persists data—unless the user explicitly asks.

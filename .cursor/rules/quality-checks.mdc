@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Quality checks – Automatic when generating code
 
-**NEVER** on the host after code changes: `make format`, `make lint-fix`, `make lint-type`, `make lint-complete`, `make test`, or bare `poetry run pytest`. **ONLY** `make agent-checks`, `make agent-lint`, or `make agent-test` (with `t=` when scoped).
+**NEVER** on the host after code changes: `make format`, `make lint-fix`, `make lint-type`, `make lint-complete`, `make test`, bare `poetry run pytest`, or **CI smoke** (`make newman-smoke-tests`, `npx newman`, etc.). **ONLY** `make agent-checks`, `make agent-lint`, or `make agent-test` (with `t=` when scoped). Smoke is maintained in `postman/smoke.postman_collection.json` for GitHub Actions — see **smoke-tests.mdc**.
 
 Whenever you **generate or change code** (new feature, refactor, fix), **automatically** run:
 

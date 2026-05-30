@@ -1,0 +1,1030 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-smoke-rafood-api",
+		"name": "rafood-api-smoke",
+		"description": "Smoke tests for CI (Newman). Self-contained 33-step flow against an empty database: creates entities, exercises all API verbs (GET/POST/PUT/PATCH/DELETE), asserts HTTP status codes, and cleans up in FK-safe order.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8000"
+		},
+		{
+			"key": "latitude",
+			"value": "-23.5613"
+		},
+		{
+			"key": "longitude",
+			"value": "-46.6565"
+		},
+		{
+			"key": "userId",
+			"value": ""
+		},
+		{
+			"key": "categoryId",
+			"value": ""
+		},
+		{
+			"key": "restaurantId",
+			"value": ""
+		},
+		{
+			"key": "weekdayScheduleId",
+			"value": ""
+		},
+		{
+			"key": "weekendScheduleId",
+			"value": ""
+		},
+		{
+			"key": "productId",
+			"value": ""
+		},
+		{
+			"key": "offerId",
+			"value": ""
+		},
+		{
+			"key": "offerScheduleId",
+			"value": ""
+		},
+		{
+			"key": "currentDay",
+			"value": "monday"
+		}
+	],
+	"item": [
+		{
+			"name": "Smoke",
+			"item": [
+				{
+					"name": "01 - health check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response is pong', function () {",
+									"    pm.expect(pm.response.json().message).to.eql('pong');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/ping"
+					}
+				},
+				{
+					"name": "02 - create user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 201', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('User id is returned', function () {",
+									"    const body = pm.response.json();",
+									"    pm.expect(body.id).to.be.a('string');",
+									"    pm.collectionVariables.set('userId', body.id);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"first_name\": \"{{$randomFirstName}}\",\n  \"last_name\": \"{{$randomLastName}}\",\n  \"email\": \"{{$randomEmail}}\",\n  \"password\": \"{{$randomPassword}}\"\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/users"
+					}
+				},
+				{
+					"name": "03 - create category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 201', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Category id is returned', function () {",
+									"    const body = pm.response.json();",
+									"    pm.expect(body.id).to.be.a('string');",
+									"    pm.collectionVariables.set('categoryId', body.id);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"smoke-{{$randomWord}}-{{$timestamp}}\"\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/categories"
+					}
+				},
+				{
+					"name": "04 - create restaurant",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 201', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Restaurant id is returned', function () {",
+									"    const body = pm.response.json();",
+									"    pm.expect(body.id).to.be.a('string');",
+									"    pm.collectionVariables.set('restaurantId', body.id);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"{{$randomCompanyName}}\",\n  \"owner_id\": \"{{userId}}\",\n  \"street\": \"{{$randomStreetName}}\",\n  \"number\": 100,\n  \"neighborhood\": \"{{$randomDomainName}}\",\n  \"city\": \"{{$randomCity}}\",\n  \"state_abbr\": \"ES\",\n  \"latitude\": {{latitude}},\n  \"longitude\": {{longitude}}\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/restaurants"
+					}
+				},
+				{
+					"name": "05 - create restaurant weekday schedule",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 201', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Weekday schedule id is returned', function () {",
+									"    const body = pm.response.json();",
+									"    pm.expect(body.id).to.be.a('string');",
+									"    pm.collectionVariables.set('weekdayScheduleId', body.id);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"day_type\": \"weekday\",\n  \"start_day\": \"monday\",\n  \"end_day\": \"friday\",\n  \"start_time\": \"00:00:00\",\n  \"end_time\": \"23:59:59\"\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/restaurants/{{restaurantId}}/schedules"
+					}
+				},
+				{
+					"name": "06 - create restaurant weekend schedule",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 201', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Weekend schedule id is returned', function () {",
+									"    const body = pm.response.json();",
+									"    pm.expect(body.id).to.be.a('string');",
+									"    pm.collectionVariables.set('weekendScheduleId', body.id);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"day_type\": \"weekend\",\n  \"start_day\": \"saturday\",\n  \"end_day\": \"sunday\",\n  \"start_time\": \"00:00:00\",\n  \"end_time\": \"23:59:59\"\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/restaurants/{{restaurantId}}/schedules"
+					}
+				},
+				{
+					"name": "07 - create product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 201', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Product id is returned', function () {",
+									"    const body = pm.response.json();",
+									"    pm.expect(body.id).to.be.a('string');",
+									"    pm.collectionVariables.set('productId', body.id);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"restaurant_id\": \"{{restaurantId}}\",\n  \"name\": \"{{$randomProductName}}\",\n  \"price\": 12.3,\n  \"category_id\": \"{{categoryId}}\",\n  \"image_url\": \"https://example.com/product.jpg\"\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/products"
+					}
+				},
+				{
+					"name": "08 - create offer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 201', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Offer id is returned', function () {",
+									"    const body = pm.response.json();",
+									"    pm.expect(body.id).to.be.a('string');",
+									"    pm.collectionVariables.set('offerId', body.id);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"product_id\": \"{{productId}}\",\n  \"price\": 2.99\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/offers"
+					}
+				},
+				{
+					"name": "09 - create offer schedule",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];",
+									"pm.collectionVariables.set('currentDay', days[new Date().getDay()]);"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 201', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Offer schedule id is returned', function () {",
+									"    const body = pm.response.json();",
+									"    pm.expect(body.id).to.be.a('string');",
+									"    pm.collectionVariables.set('offerScheduleId', body.id);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"day\": \"{{currentDay}}\",\n  \"start_time\": \"00:00:00\",\n  \"end_time\": \"23:59:59\",\n  \"repeats\": false\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/offers/{{offerId}}/schedules"
+					}
+				},
+				{
+					"name": "10 - get restaurant by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Restaurant id matches', function () {",
+									"    pm.expect(pm.response.json().id).to.eql(pm.collectionVariables.get('restaurantId'));",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/api/v1/restaurants/{{restaurantId}}"
+					}
+				},
+				{
+					"name": "11 - list open restaurants near by",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Open restaurant is returned near location', function () {",
+									"    const restaurants = pm.response.json();",
+									"    pm.expect(restaurants).to.be.an('array').that.is.not.empty;",
+									"    const ids = restaurants.map(function (r) { return r.id; });",
+									"    pm.expect(ids).to.include(pm.collectionVariables.get('restaurantId'));",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/api/v1/restaurants/open?latitude={{latitude}}&longitude={{longitude}}&radius=2000"
+					}
+				},
+				{
+					"name": "12 - list active offers near by",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Active offer is returned near location', function () {",
+									"    const offers = pm.response.json();",
+									"    pm.expect(offers).to.be.an('array').that.is.not.empty;",
+									"    const ids = offers.map(function (o) { return o.id; });",
+									"    pm.expect(ids).to.include(pm.collectionVariables.get('offerId'));",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/api/v1/offers/active?latitude={{latitude}}&longitude={{longitude}}&radius=2000"
+					}
+				},
+				{
+					"name": "13 - list users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Created user is in the list', function () {",
+									"    const users = pm.response.json();",
+									"    pm.expect(users).to.be.an('array').that.is.not.empty;",
+									"    const ids = users.map(function (u) { return u.id; });",
+									"    pm.expect(ids).to.include(pm.collectionVariables.get('userId'));",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/api/v1/users"
+					}
+				},
+				{
+					"name": "14 - get user by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('User id matches', function () {",
+									"    pm.expect(pm.response.json().id).to.eql(pm.collectionVariables.get('userId'));",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/api/v1/users/{{userId}}"
+					}
+				},
+				{
+					"name": "15 - update user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('User name was updated', function () {",
+									"    const body = pm.response.json();",
+									"    pm.expect(body.first_name).to.eql('Smoke');",
+									"    pm.expect(body.last_name).to.eql('Updated');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"first_name\": \"Smoke\",\n  \"last_name\": \"Updated\"\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/users/{{userId}}"
+					}
+				},
+				{
+					"name": "16 - list categories",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Created category is in the list', function () {",
+									"    const categories = pm.response.json();",
+									"    pm.expect(categories).to.be.an('array').that.is.not.empty;",
+									"    const ids = categories.map(function (c) { return c.id; });",
+									"    pm.expect(ids).to.include(pm.collectionVariables.get('categoryId'));",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/api/v1/categories"
+					}
+				},
+				{
+					"name": "17 - list products by category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Created product is in the filtered list', function () {",
+									"    const products = pm.response.json();",
+									"    pm.expect(products).to.be.an('array').that.is.not.empty;",
+									"    const ids = products.map(function (p) { return p.id; });",
+									"    pm.expect(ids).to.include(pm.collectionVariables.get('productId'));",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/api/v1/products?category_id={{categoryId}}"
+					}
+				},
+				{
+					"name": "18 - get product by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Product id matches', function () {",
+									"    pm.expect(pm.response.json().id).to.eql(pm.collectionVariables.get('productId'));",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/api/v1/products/{{productId}}"
+					}
+				},
+				{
+					"name": "19 - update product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Product price was updated', function () {",
+									"    pm.expect(pm.response.json().price).to.eql(15.5);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"restaurant_id\": \"{{restaurantId}}\",\n  \"name\": \"Smoke Product Updated\",\n  \"price\": 15.5,\n  \"category_id\": \"{{categoryId}}\",\n  \"image_url\": \"https://example.com/product-updated.jpg\"\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/products/{{productId}}"
+					}
+				},
+				{
+					"name": "20 - list offers",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Created offer is in the list', function () {",
+									"    const offers = pm.response.json();",
+									"    pm.expect(offers).to.be.an('array').that.is.not.empty;",
+									"    const ids = offers.map(function (o) { return o.id; });",
+									"    pm.expect(ids).to.include(pm.collectionVariables.get('offerId'));",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/api/v1/offers"
+					}
+				},
+				{
+					"name": "21 - get offer by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Offer id matches', function () {",
+									"    pm.expect(pm.response.json().id).to.eql(pm.collectionVariables.get('offerId'));",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{baseUrl}}/api/v1/offers/{{offerId}}"
+					}
+				},
+				{
+					"name": "22 - update offer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Offer price was updated', function () {",
+									"    pm.expect(pm.response.json().price).to.eql(3.49);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"price\": 3.49,\n  \"active\": true\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/offers/{{offerId}}"
+					}
+				},
+				{
+					"name": "23 - update restaurant weekday schedule",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Schedule start time was updated', function () {",
+									"    pm.expect(pm.response.json().start_time).to.eql('06:00:00');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"day_type\": \"weekday\",\n  \"start_day\": \"monday\",\n  \"end_day\": \"friday\",\n  \"start_time\": \"06:00:00\",\n  \"end_time\": \"23:59:59\"\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/restaurants/{{restaurantId}}/schedules/{{weekdayScheduleId}}"
+					}
+				},
+				{
+					"name": "24 - update offer schedule",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Offer schedule start time was updated', function () {",
+									"    pm.expect(pm.response.json().start_time).to.eql('06:00:00');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"day\": \"{{currentDay}}\",\n  \"start_time\": \"06:00:00\",\n  \"end_time\": \"23:59:59\",\n  \"repeats\": false\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/offers/{{offerId}}/schedules/{{offerScheduleId}}"
+					}
+				},
+				{
+					"name": "25 - update restaurant",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Restaurant name was updated', function () {",
+									"    pm.expect(pm.response.json().name).to.include('smoke-updated');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"smoke-updated-{{$randomWord}}\",\n  \"owner_id\": \"{{userId}}\",\n  \"street\": \"{{$randomStreetName}}\",\n  \"number\": 200,\n  \"neighborhood\": \"{{$randomDomainName}}\",\n  \"city\": \"{{$randomCity}}\",\n  \"state_abbr\": \"ES\",\n  \"latitude\": {{latitude}},\n  \"longitude\": {{longitude}}\n}"
+						},
+						"url": "{{baseUrl}}/api/v1/restaurants/{{restaurantId}}"
+					}
+				},
+				{
+					"name": "26 - delete offer schedule",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 204', function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{baseUrl}}/api/v1/offers/{{offerId}}/schedules/{{offerScheduleId}}"
+					}
+				},
+				{
+					"name": "27 - delete offer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 204', function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{baseUrl}}/api/v1/offers/{{offerId}}"
+					}
+				},
+				{
+					"name": "28 - delete product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 204', function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{baseUrl}}/api/v1/products/{{productId}}"
+					}
+				},
+				{
+					"name": "29 - delete restaurant weekend schedule",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 204', function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{baseUrl}}/api/v1/restaurants/{{restaurantId}}/schedules/{{weekendScheduleId}}"
+					}
+				},
+				{
+					"name": "30 - delete restaurant weekday schedule",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 204', function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{baseUrl}}/api/v1/restaurants/{{restaurantId}}/schedules/{{weekdayScheduleId}}"
+					}
+				},
+				{
+					"name": "31 - delete restaurant",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 204', function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{baseUrl}}/api/v1/restaurants/{{restaurantId}}"
+					}
+				},
+				{
+					"name": "32 - delete category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 204', function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{baseUrl}}/api/v1/categories/{{categoryId}}"
+					}
+				},
+				{
+					"name": "33 - delete user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status is 204', function () {",
+									"    pm.response.to.have.status(204);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": "{{baseUrl}}/api/v1/users/{{userId}}"
+					}
+				}
+			]
+		}
+	]
+}

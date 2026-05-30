@@ -1,0 +1,100 @@
+name: Smoke Tests
+run-name: Running Postman Newman smoke tests against a live API instance.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgis/postgis:15-3.4
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      PYTHONPATH: src
+
+      APP_HOST: 0.0.0.0
+      APP_PORT: 8000
+
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_NAME: test_db
+
+      LOG_JSON_FORMAT: "false"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Poetry and Install Dev/Test Dependencies
+        uses: ./.github/actions/setup-poetry
+        with:
+          python-version: "3.10"
+          poetry-extras: "--with dev,test"
+
+      - name: Run database migrations
+        run: |
+          poetry run python - <<'EOF'
+          from alembic import command
+          from alembic.config import Config
+
+          cfg = Config('alembic.ini')
+          cfg.set_main_option(
+              'sqlalchemy.url',
+              'postgresql+asyncpg://postgres:postgres@localhost:5432/test_db',
+          )
+          command.upgrade(cfg, 'head')
+          EOF
+
+      - name: Start API and wait for health check
+        run: |
+          poetry run uvicorn src.main:app --host 0.0.0.0 --port 8000 &
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:8000/ping; then
+              echo "API is ready ✅"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "API failed to start within 60 seconds ❌"
+          exit 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run Newman smoke tests
+        run: |
+          npx --yes newman@6.2.1 run postman/smoke.postman_collection.json \
+            -e postman/ci.environment.json \
+            --folder "Smoke" \
+            --timeout-request 15000 \
+            --reporters cli,junit \
+            --reporter-junit-export newman-results.xml
+
+      - name: Upload Newman report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-smoke-results
+          path: newman-results.xml
+          if-no-files-found: ignore
