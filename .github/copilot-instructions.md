@@ -13,7 +13,7 @@
 
 ## Project standards (read from the repo)
 
-Before reviewing, **consult these files in the repository** and align feedback with them:
+Before reviewing, **consult these files in the repository** and align feedback with them where applicable. Cursor-specific instructions about running commands or grouped output formats do not apply to Copilot Code Review:
 
 - **Primary guide**: `.cursor/prompts/review-agent.md`
 - **Cursor rules** (`.cursor/rules/`):
