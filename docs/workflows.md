@@ -17,6 +17,18 @@ Uses `pytest` to run the test suite, ensuring that all tests pass before code is
 
 ![test workflow](./images/test-workflow.png)
 
+### `Smoke Tests` Workflow
+
+Uses `Newman` to run the smoke tests, ensuring that the API is working as expected. It runs on pushes, pull requests to the `main` branch and can be called from another workflow.
+
+![smoke workflow](./images/smoke-workflow.png)
+
+It shows the results of the smoke tests in the workflow run details:
+
+![smoke workflow results](./images/smoke-workflow-results.png)
+
+It also uploads the Newman report as an artifact at the end of the workflow run. More details in [postman/README.md](../postman/README.md).
+
 ### `Check PR Title` Workflow
 
 Validates that pull request titles follow the conventional commit format. It runs on pull requests to the `main` branch and every time a PR is opened or updated.
@@ -44,7 +56,7 @@ Uses a dedicated GitHub token stored in the repository secrets as `RELEASE_PLEAS
 
 ## Pull Request Workflows
 
-The `Run Lint`, `Run Tests`, and `Check PR Title` workflows are configured to run automatically on pull requests to the `main` branch. This ensures that code quality checks and tests are performed before any changes are merged.
+The `Lint & Type Check`, `Tests & Coverage Check`, `Smoke Tests` and `Check PR Title` workflows are configured to run automatically on pull requests to the `main` branch. This ensures that code quality checks and tests are performed before any changes are merged.
 
 ![PR workflows](./images/pr-workflows.png)
 

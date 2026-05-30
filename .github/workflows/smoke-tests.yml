@@ -69,12 +69,12 @@ jobs:
           poetry run uvicorn src.main:app --host 0.0.0.0 --port 8000 &
           for i in $(seq 1 30); do
             if curl -sf http://localhost:8000/ping; then
-              echo "API is ready"
+              echo "API is ready ✅"
               exit 0
             fi
             sleep 2
           done
-          echo "API failed to start within 60 seconds"
+          echo "API failed to start within 60 seconds ❌"
           exit 1
 
       - name: Setup Node.js
@@ -87,6 +87,7 @@ jobs:
           npx --yes newman@6.2.1 run postman/smoke.postman_collection.json \
             -e postman/ci.environment.json \
             --folder "Smoke" \
+            --timeout-request 15000 \
             --reporters cli,junit \
             --reporter-junit-export newman-results.xml
 
