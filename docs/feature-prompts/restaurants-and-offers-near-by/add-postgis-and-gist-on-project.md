@@ -6,9 +6,9 @@ Add PostGIS and GiST index: Install PostGIS on PostgreSQL and install GiST.
 
 ## Logic flow
 
-1. Add PostGIS on PostgreSQL
-1. Install GiST
-1. Updates the Docker Compose, CI files, test dependencies, and others
+- Add PostGIS on PostgreSQL
+- Install GiST
+- Updates the Docker Compose, CI files, test dependencies, and others
 
 I'll run (or approve) manually commands for installing the dependencies and build containers, as defined at project boundaries, just tell me what to run. Remember to use Alembic Migrations to uses GiST index or any other PostgreSQL dependency.
 

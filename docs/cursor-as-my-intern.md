@@ -34,11 +34,11 @@ Rule: [.cursor/rules/dependencies.mdc](../.cursor/rules/dependencies.mdc). The a
 
 When a feature needs a new library, the agent will ask you to install it, then continue with the code:
 
-1. **Add the package** (you run locally):
-   - Runtime: `poetry add <package>`
-   - Dev-only (tests, lint, Locust, etc.): `poetry add --group dev <package>`
-1. **Refresh Docker** if you run the API with Compose (after `pyproject.toml` / `poetry.lock` change): `make build`
-1. **Kubernetes / Minikube** local image, if applicable: `make build-container` (see `docs/local-deployment.md`)
+- **Add the package** (you run locally):
+  - Runtime: `poetry add <package>`
+  - Dev-only (tests, lint, Locust, etc.): `poetry add --group dev <package>`
+- **Refresh Docker** if you run the API with Compose (after `pyproject.toml` / `poetry.lock` change): `make build`
+- **Kubernetes / Minikube** local image, if applicable: `make build-container` (see `docs/local-deployment.md`)
 
 The agent implements imports and runs `make test` / lint after dependencies are in place. To run `make build` or Poetry yourself via the agent, ask explicitly.
 
