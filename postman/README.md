@@ -10,11 +10,11 @@
 
 The smoke collection runs a **33-step** flow under the `Smoke` folder:
 
-1. Health check (`GET /ping`)
-1. Create user → category → restaurant (+ weekday/weekend schedules) → product → offer (+ schedule for today)
-1. Read/update endpoints across all domains (GET list/find, PUT/PATCH)
-1. Near-by endpoints (`/restaurants/open`, `/offers/active`)
-1. Cleanup in FK-safe order: offer schedule → offer → product → restaurant schedules → restaurant → category → user
+- Health check (`GET /ping`)
+- Create user → category → restaurant (+ weekday/weekend schedules) → product → offer (+ schedule for today)
+- Read/update endpoints across all domains (GET list/find, PUT/PATCH)
+- Near-by endpoints (`/restaurants/open`, `/offers/active`)
+- Cleanup in FK-safe order: offer schedule → offer → product → restaurant schedules → restaurant → category → user
 
 Variables are chained via collection variables (`userId`, `weekdayScheduleId`, `offerScheduleId`, etc.) and Postman test scripts assert status codes.
 
