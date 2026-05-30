@@ -267,10 +267,10 @@ ______________________________________________________________________
 
 The order and the process of my Kubernetes studies are:
 
-1. Making initial setup with Minikube and kubectl (on `Setup` section above)
-1. Basic service and deployment configuration example
-1. Deploying application with Helm
-1. Deploying application with ArgoCD
+- Making initial setup with Minikube and kubectl (on `Setup` section above)
+- Basic service and deployment configuration example
+- Deploying application with Helm
+- Deploying application with ArgoCD
 
 ## Basic service and deployment configuration example
 

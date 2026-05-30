@@ -15,26 +15,26 @@
 
 Before reviewing, **consult these files in the repository** and align feedback with them:
 
-1. **Primary guide**: `.cursor/prompts/review-agent.md`
-1. **Cursor rules** (`.cursor/rules/`):
-   - `project-context.mdc` — stack, layout, ADRs
-   - `domain-structure.mdc` — `api` / `service` / `repository` / `models` / `schemas` / `deps` / `exceptions`
-   - `code-design.mdc` — typing, naming, no redundant docstrings
-   - `tests-structure.mdc` — unit vs feature, fixtures, naming
-   - `smoke-tests.mdc` — when CI smoke (`postman/smoke.postman_collection.json`) should change
-   - `migrations.mdc` — Alembic rules
-1. **ADRs** in `docs/adr/` when the change is architectural.
-1. **Reference domain**: `src/categories/`.
+- **Primary guide**: `.cursor/prompts/review-agent.md`
+- **Cursor rules** (`.cursor/rules/`):
+  - `project-context.mdc` — stack, layout, ADRs
+  - `domain-structure.mdc` — `api` / `service` / `repository` / `models` / `schemas` / `deps` / `exceptions`
+  - `code-design.mdc` — typing, naming, no redundant docstrings
+  - `tests-structure.mdc` — unit vs feature, fixtures, naming
+  - `smoke-tests.mdc` — when CI smoke (`postman/smoke.postman_collection.json`) should change
+  - `migrations.mdc` — Alembic rules
+- **ADRs** in `docs/adr/` when the change is architectural.
+- **Reference domain**: `src/categories/`.
 
 Do not invent standards beyond what those files and existing code patterns say.
 
 ## Review priorities
 
-1. Bugs, security, broken contracts
-1. Missing or weak tests
-1. Performance and complexity
-1. Structure and project conventions
-1. Clarity and maintainability
+- Bugs, security, broken contracts
+- Missing or weak tests
+- Performance and complexity
+- Structure and project conventions
+- Clarity and maintainability
 
 ## What to check
 

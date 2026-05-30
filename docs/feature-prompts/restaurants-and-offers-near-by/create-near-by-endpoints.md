@@ -17,11 +17,11 @@ GET /api/v1/offers/active?latitude=12.345678&longitude=98.765432&radius=1000
 
 The logic flow must be:
 
-1. Get the latitude and longitude from the request
-1. Get the radius from the request (meters)
-1. Get the open restaurants nearby the location
-1. Get the active offers nearby the location
-1. Return the open restaurants and active offers nearby the location (separate, on their own APIs)
+- Get the latitude and longitude from the request
+- Get the radius from the request (meters)
+- Get the open restaurants nearby the location
+- Get the active offers nearby the location
+- Return the open restaurants and active offers nearby the location (separate, on their own APIs)
 
 Near by: restaurant location is inside the radius defined. If radius isn't provided on request, consider 10 kilometer.
 
