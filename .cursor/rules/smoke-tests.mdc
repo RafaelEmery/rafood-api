@@ -1,0 +1,57 @@
+---
+description: When to extend CI smoke tests (Postman/Newman) and how to match the existing happy-path flow
+globs:
+  - src/**/api.py
+  - src/api.py
+  - postman/**
+alwaysApply: false
+---
+
+# Smoke tests (Postman / Newman) — CI only
+
+GitHub Actions runs smoke in CI (`.github/workflows/smoke-tests.yml`, Newman on `postman/smoke.postman_collection.json`, folder `Smoke`). See `postman/README.md` and `docs/workflows.md`.
+
+**Agent job**: evaluate whether API changes belong in the collection and **edit the JSON + README when yes**. **Do not run smoke locally** — no `make newman-smoke-tests`, no `npx newman`, no Newman/Docker smoke commands unless the **user explicitly asks**.
+
+Pytest (unit + feature) is what agents validate with **`make agent-checks`**. **Smoke is optional per endpoint** but agents must **always evaluate** whether a change belongs in the CI collection.
+
+## When to evaluate
+
+Do this when you **add or change** something that affects the **public HTTP API** (new router, endpoint, request/response shape, status codes on success paths, or resources the smoke flow depends on).
+
+## Include in smoke when **all** apply
+
+- The endpoint is part of the **core product API** (`/api/v1/...` or `/ping`) that CI should guard against regressions.
+- You can exercise it with a **happy path only** (expected 2xx status, minimal body checks).
+- It fits the **existing linear flow**: reuse collection variables and entities created earlier (`userId`, `restaurantId`, etc.), or extend the flow in a **FK-safe** order (create → use → delete in cleanup).
+- Adding it does **not** duplicate coverage already in the same run (see exclusions below).
+
+## Do **not** add to smoke when
+
+- Only **error cases**, validation failures, or auth/permission failures (use **feature tests**).
+- The endpoint is already hit in the flow (e.g. another step calls the same route).
+- It is intentionally **out of scope** for smoke (e.g. `GET /api/v1/restaurants` list-all — covered by feature tests; see `postman/README.md`).
+- It needs **many prerequisites**, branching, or non-deterministic setup that would make the CI flow fragile or too long.
+- The change is **internal** (refactor, service-only) with **no** contract change.
+
+If unsure, **state your recommendation** in the delivery/review (include / skip / defer) and why.
+
+## How to add or update steps
+
+1. Read existing requests under folder **`Smoke`** in `postman/smoke.postman_collection.json` and mirror their style.
+2. **Naming**: `NN - short description` (two-digit order), under the `Smoke` folder only.
+3. **URLs**: `{{baseUrl}}/api/v1/...` (or `{{baseUrl}}/ping`); use collection variables for IDs (`{{userId}}`, etc.).
+4. **Tests tab**: assert **status code**; on create, parse JSON and `pm.collectionVariables.set('...', body.id)` for downstream steps.
+5. **Bodies**: valid minimal JSON; prefer Postman dynamic variables (`{{$randomEmail}}`, etc.) for uniqueness.
+6. **Placement**: insert after prerequisites exist; if the step **creates** a new resource, add matching **DELETE** steps in the **cleanup block** (reverse FK order), same as steps 26–33 today.
+7. Add collection **variables** at the top when new IDs are chained.
+8. Update `postman/README.md` (step count / flow summary) and the collection `info.description` if the step count changes.
+
+**Scope**: happy path only — no negative tests, no performance/load assertions.
+
+CI executes the collection after merge/PR; the user may run `make newman-smoke-tests` locally if they choose (`postman/README.md`) — **not an agent step**.
+
+## Agent modes
+
+- **Feature agent**: after implementing API changes, apply this rule; **update files for CI** when criteria are met; mention smoke in the summary (added / skipped + reason). Run **`make agent-checks`** only — never Newman smoke.
+- **Review agent**: under **Tests**, check whether the CI collection should have been updated; flag missing or out-of-scope smoke additions. Do not run smoke locally.

@@ -27,13 +27,14 @@ Do not invent structure that contradicts these rules or ADRs; if docs and code d
 
 When describing how to implement something, the proposal must **follow the same conventions** the feature agent would use:
 
-| Area       | Follow                                                                                                                                       |
-| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| Layout     | `src/<domain>/` — api, service, repository, models, schemas, deps, exceptions; wire in `src/api.py`                                          |
-| Tests      | `tests/unit/`, `tests/feature/`; factories/fixtures as in **tests-structure**                                                                |
-| Style      | **code-design** — naming, typing, no redundant docstrings/comments                                                                           |
-| Migrations | New revision only (never edit applied ones); `make create-migration` only with user approval; no `migrate`/`rollback` (**agent-boundaries**) |
-| After code | **quality-checks** — **`make agent-checks`** (lint + tests in `api` container; optional `t='tests/...'`)                                     |
+| Area       | Follow                                                                                                                                                                                                                        |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Layout     | `src/<domain>/` — api, service, repository, models, schemas, deps, exceptions; wire in `src/api.py`                                                                                                                           |
+| Tests      | `tests/unit/`, `tests/feature/`; factories/fixtures as in **tests-structure**                                                                                                                                                 |
+| Smoke (CI) | If the proposal adds/changes public HTTP APIs, note whether **smoke-tests.mdc** applies and if `postman/smoke.postman_collection.json` should gain happy-path steps for **GitHub Actions** (agents do not run Newman locally) |
+| Style      | **code-design** — naming, typing, no redundant docstrings/comments                                                                                                                                                            |
+| Migrations | New revision only (never edit applied ones); `make create-migration` only with user approval; no `migrate`/`rollback` (**agent-boundaries**)                                                                                  |
+| After code | **quality-checks** — **`make agent-checks`** (lint + tests in `api` container; optional `t='tests/...'`)                                                                                                                      |
 
 Outline **concrete steps**: which files to add or touch, which layer owns what, and how it fits existing code. Optional short **illustrative** snippets (not full implementations). Mention relevant ADRs and doc links.
 
