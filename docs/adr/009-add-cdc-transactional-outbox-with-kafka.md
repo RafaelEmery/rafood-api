@@ -9,7 +9,7 @@ domain change and an outbox row in the same database transaction. A separate
 process (here, CDC via Debezium) reads the outbox and publishes to Kafka, so
 a rollback never leaves a half-published event.
 
-The CDC (Change Data Capture) pattern is a pattern that allows us to capture the changes in a database and publish them to a message queue. We can use a tool like Debezium to capture the changes in a database and publish them to a Kafka topic.
+Change Data Capture (CDC) captures changes in a database and publishes them to a message broker. Debezium can capture those changes and publish them to Kafka topics.
 
 Debezium is primarily a set of Kafka Connect *source* connectors: they capture changes from databases (PostgreSQL, MySQL, MongoDB, Oracle, etc.) and publish them to Kafka. *Sink* connectors do the opposite—consume from Kafka and write to a destination (e.g. Elasticsearch via an Elasticsearch Sink Connector).
 
@@ -49,9 +49,11 @@ Run Kafka, Schema Registry (Avro), and Confluent Control Center with Docker. Def
 ## References
 
 - Full Cycle 4.0 - Apache Kafka course
-- Official Apache Kafka, Confluent and Debezium documentation
+- [Apache Kafka documentation](https://kafka.apache.org/documentation/)
+- [Confluent Schema Registry documentation](https://docs.confluent.io/platform/current/schema-registry/index.html)
+- [Debezium documentation](https://debezium.io/documentation/)
 
-> This ADR is a PoC (Proof of Concept) for Apache Kafka course from Full Cycle and implements some of the concepts and patterns described in the course. The transactional outbox pattern and Elastic Search usage are based on my professional experience.
+> This ADR is a PoC (Proof of Concept) for Apache Kafka course from Full Cycle and implements some of the concepts and patterns described in the course. The transactional outbox pattern and Elasticsearch usage are based on my professional experience.
 
 Extra references:
 
