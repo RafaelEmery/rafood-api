@@ -37,20 +37,18 @@ class ProductRepository:
 
 		return product
 
-	async def create(self, product: CreateProductSchema) -> UUID:
+	async def create(self, product: CreateProductSchema) -> Product:
 		new_product = Product(**product.model_dump())
 
 		self.db.add(new_product)
-		await self.db.commit()
+		await self.db.flush()
 
-		return new_product.id
+		return new_product
 
 	async def update(self, product: Product) -> None:
 		self.db.add(product)
-
-		await self.db.commit()
-		await self.db.refresh(product)
+		await self.db.flush()
 
 	async def delete(self, product: Product) -> None:
 		await self.db.delete(product)
-		await self.db.commit()
+		await self.db.flush()

@@ -1,8 +1,10 @@
 from collections.abc import AsyncGenerator
 
+from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.database import Session
+from src.core.unit_of_work import UnitOfWork
 
 
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
@@ -16,3 +18,7 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
 		yield session
 	finally:
 		await session.close()
+
+
+def get_unit_of_work(db: AsyncSession = Depends(get_session)) -> UnitOfWork:
+	return UnitOfWork(db)

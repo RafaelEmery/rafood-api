@@ -3,6 +3,14 @@ from uuid import uuid4
 import pytest
 from fastapi import status
 
+from src.products.outbox_events import (
+	PRODUCT_AGGREGATE_TYPE,
+	PRODUCT_CREATED,
+	PRODUCT_DELETED,
+	PRODUCT_UPDATED,
+)
+from tests.feature.src.products.outbox_helpers import fetch_outbox_events
+
 
 @pytest.mark.asyncio
 async def test_get_products(session, client, product_factory):
@@ -116,6 +124,14 @@ async def test_create_product(
 	assert response.status_code == status.HTTP_201_CREATED
 	assert data['id'] is not None
 
+	outbox_events = await fetch_outbox_events(session)
+	assert len(outbox_events) == 1
+	assert outbox_events[0].type == PRODUCT_CREATED
+	assert outbox_events[0].aggregatetype == PRODUCT_AGGREGATE_TYPE
+	assert outbox_events[0].aggregateid == data['id']
+	assert outbox_events[0].payload is not None
+	assert outbox_events[0].payload['name'] == payload['name']
+
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
@@ -151,6 +167,7 @@ async def test_create_product_bad_request_error(
 	response = await client.post('/api/v1/products', json=payload)
 
 	assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+	assert await fetch_outbox_events(session) == []
 
 
 @pytest.mark.asyncio
@@ -169,6 +186,13 @@ async def test_update_product(client, session, product_factory, build_update_pay
 	assert response.status_code == status.HTTP_200_OK
 	assert data['name'] == 'Alex Sandro'
 	assert data['price'] == 39.99
+
+	outbox_events = await fetch_outbox_events(session)
+	assert len(outbox_events) == 1
+	assert outbox_events[0].type == PRODUCT_UPDATED
+	assert outbox_events[0].aggregateid == str(product.id)
+	assert outbox_events[0].payload is not None
+	assert outbox_events[0].payload['name'] == 'Alex Sandro'
 
 
 @pytest.mark.asyncio
@@ -223,11 +247,19 @@ async def test_update_product_bad_request_error(
 @pytest.mark.asyncio
 async def test_delete_product(client, session, product_factory):
 	product = product_factory(session, name='Gerson')
+	product_id = str(product.id)
 	await session.commit()
 
 	response = await client.delete(f'/api/v1/products/{product.id}')
 
 	assert response.status_code == status.HTTP_204_NO_CONTENT
+
+	outbox_events = await fetch_outbox_events(session)
+	assert len(outbox_events) == 1
+	assert outbox_events[0].type == PRODUCT_DELETED
+	assert outbox_events[0].aggregateid == product_id
+	assert outbox_events[0].payload is not None
+	assert outbox_events[0].payload['name'] == 'Gerson'
 
 
 @pytest.mark.asyncio

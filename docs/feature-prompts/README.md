@@ -11,6 +11,7 @@ Has the <feature-name>.md file for each feature or change.
 ### ADRs and documentation references
 
 - [restaurants-and-offers-near-by](./restaurants-and-offers-near-by/): [008-add-postgis-and-gist-index.md](../adr/008-add-postgis-and-gist-index.md)
+- [kafka-transactional-outbox-and-cdc](./kafka-transactional-outbox-and-cdc/): [009-add-cdc-transactional-outbox-with-kafka.md](../adr/009-add-cdc-transactional-outbox-with-kafka.md)
 
 ## Base feature prompt
 
