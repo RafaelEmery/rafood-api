@@ -60,3 +60,12 @@ Extra references:
 - [10 Kafka mistakes Python developers make and how to avoid them like a pro](https://dev.to/m-a-h-b-u-b/10-kafka-mistakes-python-developers-make-and-how-to-avoid-them-like-a-pro-55cl)
 - [Transactional outbox with Debezium and Kafka](https://medium.com/@kuntsali/transactional-outbox-with-debezium-kafka-4f554679b40a)
 - [Sincronizando dados entre MongoDB e PostgreSQL usando Debezium e Kafka Connect](https://medium.com/@felipeas314/sincronizando-dados-entre-mongodb-e-postgresql-usando-debezium-e-kafka-connect-37443e96f65c)
+
+**Transactional outbox pattern** references:
+
+- [Transactional outbox pattern](https://microservices.io/patterns/data/transactional-outbox.html) - This is the original article about the outbox pattern.
+- [Outbox pattern for microservices architectures](https://medium.com/design-microservices-architecture-with-patterns/outbox-pattern-for-microservices-architectures-1b8648dfaa27) - Objective explanation (and good image/sketch) of the outbox pattern.
+- [Mastering the outbox pattern in Python: a reliable approach for financial systems](https://medium.com/israeli-tech-radar/mastering-the-outbox-pattern-in-python-a-reliable-approach-for-financial-systems-2a531473eaa5) - This article is a great explanation of the outbox pattern, it's trade-offs and how to apply it in a financial system.
+- [The outbox pattern in Python](https://blog.szymonmiks.pl/p/the-outbox-pattern-in-python/) - This article has an example of the outbox pattern in Python using SQLAlchemy, Postgres and uses an `OutboxProcessor` class to process the events (we'll be using debezium here).
+- [Outbox table schema example](https://github.com/bindian0509/system-design/blob/master/distributed-system-architectural-patterns/04-data-patterns/outbox-pattern.md#outbox-table-schema)
+- [Outbox Event Router](https://debezium.io/documentation/reference/stable/transformations/outbox-event-router.html) - This is the documentation for the outbox event router transformation from **Debezium docs**.
