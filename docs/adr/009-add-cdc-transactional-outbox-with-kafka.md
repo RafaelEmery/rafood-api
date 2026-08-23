@@ -49,5 +49,12 @@ Run Kafka, Schema Registry (Avro), and Confluent Control Center with Docker. Def
 ## References
 
 - Full Cycle 4.0 - Apache Kafka course
+- Official Apache Kafka, Confluent and Debezium documentation
 
 > This ADR is a PoC (Proof of Concept) for Apache Kafka course from Full Cycle and implements some of the concepts and patterns described in the course. The transactional outbox pattern and Elastic Search usage are based on my professional experience.
+
+Extra references:
+
+- [10 Kafka mistakes Python developers make and how to avoid them like a pro](https://dev.to/m-a-h-b-u-b/10-kafka-mistakes-python-developers-make-and-how-to-avoid-them-like-a-pro-55cl)
+- [Transactional outbox with Debezium and Kafka](https://medium.com/@kuntsali/transactional-outbox-with-debezium-kafka-4f554679b40a)
+- [Sincronizando dados entre MongoDB e PostgreSQL usando Debezium e Kafka Connect](https://medium.com/@felipeas314/sincronizando-dados-entre-mongodb-e-postgresql-usando-debezium-e-kafka-connect-37443e96f65c)
