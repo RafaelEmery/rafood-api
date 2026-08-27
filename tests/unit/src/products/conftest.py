@@ -4,8 +4,8 @@ from uuid import uuid4
 
 import pytest
 
+from src.core.db.unit_of_work import UnitOfWork
 from src.core.outbox.repository import OutboxRepository
-from src.core.unit_of_work import UnitOfWork
 from src.products.models import Product
 from src.products.repository import ProductRepository
 from src.products.schemas import ProductWithCategoriesSchema, ProductWithOffersSchema

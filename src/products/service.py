@@ -1,8 +1,8 @@
 from uuid import UUID
 
+from src.core.db.unit_of_work import UnitOfWork
 from src.core.logging.logger import StructLogger
 from src.core.outbox.repository import OutboxRepository
-from src.core.unit_of_work import UnitOfWork
 from src.products.exceptions import ProductNotFoundError, ProductsInternalError
 from src.products.outbox_events import (
 	build_product_created_event,
@@ -90,7 +90,6 @@ class ProductService:
 
 			return ProductSchema.model_validate(product)
 		except ProductNotFoundError:
-			await self.uow.rollback()
 			raise
 		except Exception as e:
 			await self.uow.rollback()
@@ -104,7 +103,6 @@ class ProductService:
 			await self.uow.commit()
 			logger.bind(deleted_product_id=id)
 		except ProductNotFoundError:
-			await self.uow.rollback()
 			raise
 		except Exception as e:
 			await self.uow.rollback()

@@ -3,8 +3,8 @@ from collections.abc import AsyncGenerator
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.database import Session
-from src.core.unit_of_work import UnitOfWork
+from src.core.db.database import Session
+from src.core.db.unit_of_work import UnitOfWork
 
 
 async def get_session() -> AsyncGenerator[AsyncSession, None]:

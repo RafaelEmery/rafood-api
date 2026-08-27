@@ -185,7 +185,7 @@ async def test_update_product_not_found(
 		await product_service.update(id=product_id, product_update=update_data)
 
 	mock_product_repository.get.assert_awaited_once_with(product_id)
-	mock_unit_of_work.rollback.assert_awaited_once()
+	mock_unit_of_work.rollback.assert_not_awaited()
 
 
 @pytest.mark.asyncio
@@ -245,7 +245,7 @@ async def test_delete_product_not_found(
 		await product_service.delete(id=product_id)
 
 	mock_product_repository.get.assert_awaited_once_with(product_id)
-	mock_unit_of_work.rollback.assert_awaited_once()
+	mock_unit_of_work.rollback.assert_not_awaited()
 
 
 @pytest.mark.asyncio
