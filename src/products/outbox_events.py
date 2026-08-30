@@ -13,12 +13,8 @@ class ProductOutboxEvent(str, Enum):
 	DELETED = 'ProductDeleted'
 
 
-class ProductOutboxPayload(ProductSchema):
-	image_url: str | None  # type: ignore[assignment]
-
-
 def build_product_outbox_event(product: Product, event_type: ProductOutboxEvent) -> OutboxEvent:
-	payload = ProductOutboxPayload.model_validate(product).model_dump(mode='json')
+	payload = ProductSchema.model_validate(product).model_dump(mode='json')
 
 	return OutboxEvent(
 		aggregatetype=PRODUCT_AGGREGATE_TYPE,
