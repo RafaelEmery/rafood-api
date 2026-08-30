@@ -4,6 +4,7 @@ from uuid import uuid4
 import pytest
 
 from src.products.exceptions import ProductNotFoundError, ProductsInternalError
+from src.products.outbox_events import ProductOutboxEvent
 from src.products.schemas import (
 	CreateProductSchema,
 	UpdateProductSchema,
@@ -81,26 +82,38 @@ async def test_get_product_internal_error(product_service, mock_product_reposito
 
 
 @pytest.mark.asyncio
-async def test_create_product_success(product_service, mock_product_repository):
-	product_id = uuid4()
+async def test_create_product_success(
+	product_service,
+	mock_product_repository,
+	mock_outbox_service,
+	mock_unit_of_work,
+	sample_product,
+):
 	create_data = CreateProductSchema(
-		restaurant_id=uuid4(),
-		name='Pizza Margherita',
-		price=25.0,
-		category_id=uuid4(),
-		image_url='https://example.com/pizza.jpg',
+		restaurant_id=sample_product.restaurant_id,
+		name=sample_product.name,
+		price=sample_product.price,
+		category_id=sample_product.category_id,
+		image_url=sample_product.image_url,
 	)
-	mock_product_repository.create = AsyncMock(return_value=product_id)
+	mock_product_repository.create = AsyncMock(return_value=sample_product)
+	mock_unit_of_work.commit = AsyncMock()
 
 	result = await product_service.create(product=create_data)
 
-	assert result.id == product_id
-
+	assert result.id == sample_product.id
 	mock_product_repository.create.assert_awaited_once_with(create_data)
+	mock_outbox_service.create.assert_called_once()
+	outbox_event = mock_outbox_service.create.call_args.args[0]
+	assert outbox_event.type == ProductOutboxEvent.CREATED
+	assert outbox_event.aggregateid == str(sample_product.id)
+	mock_unit_of_work.commit.assert_awaited_once()
 
 
 @pytest.mark.asyncio
-async def test_create_product_internal_error(product_service, mock_product_repository):
+async def test_create_product_internal_error(
+	product_service, mock_product_repository, mock_unit_of_work
+):
 	create_data = CreateProductSchema(
 		restaurant_id=uuid4(),
 		name='Pizza Margherita',
@@ -109,17 +122,24 @@ async def test_create_product_internal_error(product_service, mock_product_repos
 		image_url='https://example.com/pizza.jpg',
 	)
 	mock_product_repository.create = AsyncMock(side_effect=Exception('Ih! Deu ruim!'))
+	mock_unit_of_work.rollback = AsyncMock()
 
 	with pytest.raises(ProductsInternalError) as exc_info:
 		await product_service.create(product=create_data)
 
 	assert 'Ih! Deu ruim!' in str(exc_info.value)
-
 	mock_product_repository.create.assert_awaited_once_with(create_data)
+	mock_unit_of_work.rollback.assert_awaited_once()
 
 
 @pytest.mark.asyncio
-async def test_update_product_success(product_service, mock_product_repository, sample_product):
+async def test_update_product_success(
+	product_service,
+	mock_product_repository,
+	mock_outbox_service,
+	mock_unit_of_work,
+	sample_product,
+):
 	update_data = UpdateProductSchema(
 		restaurant_id=sample_product.restaurant_id,
 		name='Pizza Pepperoni',
@@ -129,6 +149,7 @@ async def test_update_product_success(product_service, mock_product_repository, 
 	)
 	mock_product_repository.get = AsyncMock(return_value=sample_product)
 	mock_product_repository.update = AsyncMock()
+	mock_unit_of_work.commit = AsyncMock()
 
 	result = await product_service.update(id=sample_product.id, product_update=update_data)
 
@@ -138,10 +159,15 @@ async def test_update_product_success(product_service, mock_product_repository, 
 
 	mock_product_repository.get.assert_awaited_once_with(sample_product.id)
 	mock_product_repository.update.assert_awaited_once_with(sample_product)
+	mock_outbox_service.create.assert_called_once()
+	assert mock_outbox_service.create.call_args.args[0].type == ProductOutboxEvent.UPDATED
+	mock_unit_of_work.commit.assert_awaited_once()
 
 
 @pytest.mark.asyncio
-async def test_update_product_not_found(product_service, mock_product_repository):
+async def test_update_product_not_found(
+	product_service, mock_product_repository, mock_unit_of_work
+):
 	product_id = uuid4()
 	update_data = UpdateProductSchema(
 		restaurant_id=uuid4(),
@@ -153,16 +179,18 @@ async def test_update_product_not_found(product_service, mock_product_repository
 	mock_product_repository.get = AsyncMock(
 		side_effect=ProductNotFoundError(product_id=str(product_id))
 	)
+	mock_unit_of_work.rollback = AsyncMock()
 
 	with pytest.raises(ProductNotFoundError):
 		await product_service.update(id=product_id, product_update=update_data)
 
 	mock_product_repository.get.assert_awaited_once_with(product_id)
+	mock_unit_of_work.rollback.assert_not_awaited()
 
 
 @pytest.mark.asyncio
 async def test_update_product_internal_error(
-	product_service, mock_product_repository, sample_product
+	product_service, mock_product_repository, mock_unit_of_work, sample_product
 ):
 	update_data = UpdateProductSchema(
 		restaurant_id=sample_product.restaurant_id,
@@ -173,45 +201,63 @@ async def test_update_product_internal_error(
 	)
 	mock_product_repository.get = AsyncMock(return_value=sample_product)
 	mock_product_repository.update = AsyncMock(side_effect=Exception('Ih! Deu ruim!'))
+	mock_unit_of_work.rollback = AsyncMock()
 
 	with pytest.raises(ProductsInternalError) as exc_info:
 		await product_service.update(id=sample_product.id, product_update=update_data)
 
 	assert 'Ih! Deu ruim!' in str(exc_info.value)
+	mock_unit_of_work.rollback.assert_awaited_once()
 
 
 @pytest.mark.asyncio
-async def test_delete_product_success(product_service, mock_product_repository, sample_product):
+async def test_delete_product_success(
+	product_service,
+	mock_product_repository,
+	mock_outbox_service,
+	mock_unit_of_work,
+	sample_product,
+):
 	mock_product_repository.get = AsyncMock(return_value=sample_product)
 	mock_product_repository.delete = AsyncMock()
+	mock_unit_of_work.commit = AsyncMock()
 
 	await product_service.delete(id=sample_product.id)
 
 	mock_product_repository.get.assert_awaited_once_with(sample_product.id)
+	mock_outbox_service.create.assert_called_once()
+	assert mock_outbox_service.create.call_args.args[0].type == ProductOutboxEvent.DELETED
 	mock_product_repository.delete.assert_awaited_once_with(sample_product)
+	mock_unit_of_work.commit.assert_awaited_once()
 
 
 @pytest.mark.asyncio
-async def test_delete_product_not_found(product_service, mock_product_repository):
+async def test_delete_product_not_found(
+	product_service, mock_product_repository, mock_unit_of_work
+):
 	product_id = uuid4()
 	mock_product_repository.get = AsyncMock(
 		side_effect=ProductNotFoundError(product_id=str(product_id))
 	)
+	mock_unit_of_work.rollback = AsyncMock()
 
 	with pytest.raises(ProductNotFoundError):
 		await product_service.delete(id=product_id)
 
 	mock_product_repository.get.assert_awaited_once_with(product_id)
+	mock_unit_of_work.rollback.assert_not_awaited()
 
 
 @pytest.mark.asyncio
 async def test_delete_product_internal_error(
-	product_service, mock_product_repository, sample_product
+	product_service, mock_product_repository, mock_unit_of_work, sample_product
 ):
 	mock_product_repository.get = AsyncMock(return_value=sample_product)
 	mock_product_repository.delete = AsyncMock(side_effect=Exception('Ih! Deu ruim!'))
+	mock_unit_of_work.rollback = AsyncMock()
 
 	with pytest.raises(ProductsInternalError) as exc_info:
 		await product_service.delete(id=sample_product.id)
 
 	assert 'Ih! Deu ruim!' in str(exc_info.value)
+	mock_unit_of_work.rollback.assert_awaited_once()

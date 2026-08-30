@@ -1,9 +1,11 @@
 from datetime import datetime
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock
 from uuid import uuid4
 
 import pytest
 
+from src.core.db.unit_of_work import UnitOfWork
+from src.core.outbox.service import OutboxService
 from src.products.models import Product
 from src.products.repository import ProductRepository
 from src.products.schemas import ProductWithCategoriesSchema, ProductWithOffersSchema
@@ -16,8 +18,25 @@ def mock_product_repository():
 
 
 @pytest.fixture
-def product_service(mock_product_repository):
-	return ProductService(repository=mock_product_repository)
+def mock_outbox_service():
+	return MagicMock(spec=OutboxService)
+
+
+@pytest.fixture
+def mock_unit_of_work():
+	uow = MagicMock(spec=UnitOfWork)
+	uow.commit = AsyncMock()
+	uow.rollback = AsyncMock()
+	return uow
+
+
+@pytest.fixture
+def product_service(mock_product_repository, mock_outbox_service, mock_unit_of_work):
+	return ProductService(
+		repository=mock_product_repository,
+		outbox_service=mock_outbox_service,
+		uow=mock_unit_of_work,
+	)
 
 
 @pytest.fixture
