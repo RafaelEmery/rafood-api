@@ -3,7 +3,6 @@ from typing import Annotated
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-import src.core.outbox.models as _outbox_models  # noqa: F401
 from src.core.db.unit_of_work import UnitOfWork
 from src.core.deps import get_session, get_unit_of_work
 from src.core.outbox.deps import get_outbox_service

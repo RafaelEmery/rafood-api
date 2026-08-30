@@ -35,7 +35,7 @@ def test_create_outbox_event_success(mock_logger, outbox_service, mock_outbox_re
 
 	mock_outbox_repository.add.assert_called_once_with(event)
 	mock_logger.info.assert_called_once_with(
-		'outbox_event_enqueued',
+		'Outbox event enqueued',
 		outbox_event_id=str(event.id),
 		aggregate_type=event.aggregatetype,
 		aggregate_id=event.aggregateid,
@@ -56,7 +56,7 @@ def test_create_outbox_event_failure(mock_logger, outbox_service, mock_outbox_re
 	mock_outbox_repository.add.assert_called_once_with(event)
 	mock_logger.info.assert_not_called()
 	mock_logger.exception.assert_called_once_with(
-		'outbox_event_enqueue_failed',
+		'Outbox event enqueue failed',
 		aggregate_type=event.aggregatetype,
 		aggregate_id=event.aggregateid,
 		event_type=event.type,

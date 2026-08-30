@@ -1,5 +1,9 @@
-from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import (
+	AsyncEngine,
+	AsyncSession,
+	async_sessionmaker,
+	create_async_engine,
+)
 
 from src.core.config import settings
 
@@ -7,7 +11,7 @@ db_url = f'postgresql+asyncpg://{settings.DB_USER}:{settings.DB_PASSWORD}@{setti
 engine: AsyncEngine = create_async_engine(db_url)
 
 
-Session: AsyncSession = sessionmaker(  # type: ignore[call-overload]
+Session = async_sessionmaker(
 	autocommit=False,
 	autoflush=False,
 	expire_on_commit=False,
