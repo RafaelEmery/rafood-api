@@ -3,12 +3,7 @@ from uuid import uuid4
 import pytest
 from fastapi import status
 
-from src.products.outbox_events import (
-	PRODUCT_AGGREGATE_TYPE,
-	PRODUCT_CREATED,
-	PRODUCT_DELETED,
-	PRODUCT_UPDATED,
-)
+from src.products.outbox_events import PRODUCT_AGGREGATE_TYPE, ProductOutboxEvent
 from tests.feature.src.products.outbox_helpers import fetch_outbox_events
 
 
@@ -126,7 +121,7 @@ async def test_create_product(
 
 	outbox_events = await fetch_outbox_events(session)
 	assert len(outbox_events) == 1
-	assert outbox_events[0].type == PRODUCT_CREATED
+	assert outbox_events[0].type == ProductOutboxEvent.CREATED
 	assert outbox_events[0].aggregatetype == PRODUCT_AGGREGATE_TYPE
 	assert outbox_events[0].aggregateid == data['id']
 	assert outbox_events[0].payload is not None
@@ -189,7 +184,7 @@ async def test_update_product(client, session, product_factory, build_update_pay
 
 	outbox_events = await fetch_outbox_events(session)
 	assert len(outbox_events) == 1
-	assert outbox_events[0].type == PRODUCT_UPDATED
+	assert outbox_events[0].type == ProductOutboxEvent.UPDATED
 	assert outbox_events[0].aggregateid == str(product.id)
 	assert outbox_events[0].payload is not None
 	assert outbox_events[0].payload['name'] == 'Alex Sandro'
@@ -256,7 +251,7 @@ async def test_delete_product(client, session, product_factory):
 
 	outbox_events = await fetch_outbox_events(session)
 	assert len(outbox_events) == 1
-	assert outbox_events[0].type == PRODUCT_DELETED
+	assert outbox_events[0].type == ProductOutboxEvent.DELETED
 	assert outbox_events[0].aggregateid == product_id
 	assert outbox_events[0].payload is not None
 	assert outbox_events[0].payload['name'] == 'Gerson'

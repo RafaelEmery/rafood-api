@@ -5,7 +5,7 @@ from uuid import uuid4
 import pytest
 
 from src.core.db.unit_of_work import UnitOfWork
-from src.core.outbox.repository import OutboxRepository
+from src.core.outbox.service import OutboxService
 from src.products.models import Product
 from src.products.repository import ProductRepository
 from src.products.schemas import ProductWithCategoriesSchema, ProductWithOffersSchema
@@ -18,8 +18,8 @@ def mock_product_repository():
 
 
 @pytest.fixture
-def mock_outbox_repository():
-	return MagicMock(spec=OutboxRepository)
+def mock_outbox_service():
+	return MagicMock(spec=OutboxService)
 
 
 @pytest.fixture
@@ -31,10 +31,10 @@ def mock_unit_of_work():
 
 
 @pytest.fixture
-def product_service(mock_product_repository, mock_outbox_repository, mock_unit_of_work):
+def product_service(mock_product_repository, mock_outbox_service, mock_unit_of_work):
 	return ProductService(
 		repository=mock_product_repository,
-		outbox_repository=mock_outbox_repository,
+		outbox_service=mock_outbox_service,
 		uow=mock_unit_of_work,
 	)
 

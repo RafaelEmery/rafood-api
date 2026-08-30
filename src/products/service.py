@@ -2,13 +2,9 @@ from uuid import UUID
 
 from src.core.db.unit_of_work import UnitOfWork
 from src.core.logging.logger import StructLogger
-from src.core.outbox.repository import OutboxRepository
+from src.core.outbox.service import OutboxService
 from src.products.exceptions import ProductNotFoundError, ProductsInternalError
-from src.products.outbox_events import (
-	build_product_created_event,
-	build_product_deleted_event,
-	build_product_updated_event,
-)
+from src.products.outbox_events import ProductOutboxEvent, build_product_outbox_event
 from src.products.repository import ProductRepository
 from src.products.schemas import (
 	CreateProductResponseSchema,
@@ -24,17 +20,17 @@ logger = StructLogger()
 
 class ProductService:
 	repository: ProductRepository
-	outbox_repository: OutboxRepository
+	outbox_service: OutboxService
 	uow: UnitOfWork
 
 	def __init__(
 		self,
 		repository: ProductRepository,
-		outbox_repository: OutboxRepository,
+		outbox_service: OutboxService,
 		uow: UnitOfWork,
 	):
 		self.repository = repository
-		self.outbox_repository = outbox_repository
+		self.outbox_service = outbox_service
 		self.uow = uow
 
 	async def list(
@@ -62,7 +58,9 @@ class ProductService:
 	async def create(self, product: CreateProductSchema) -> CreateProductResponseSchema:
 		try:
 			created_product = await self.repository.create(product)
-			self.outbox_repository.add(build_product_created_event(created_product))
+			self.outbox_service.create(
+				build_product_outbox_event(created_product, ProductOutboxEvent.CREATED)
+			)
 			await self.uow.commit()
 			logger.bind(created_product_id=str(created_product.id))
 
@@ -84,7 +82,9 @@ class ProductService:
 			)
 
 			await self.repository.update(product)
-			self.outbox_repository.add(build_product_updated_event(product))
+			self.outbox_service.create(
+				build_product_outbox_event(product, ProductOutboxEvent.UPDATED)
+			)
 			await self.uow.commit()
 			logger.bind(updated_product_id=product.id)
 
@@ -98,7 +98,9 @@ class ProductService:
 	async def delete(self, id: UUID) -> None:
 		try:
 			product = await self.repository.get(id)
-			self.outbox_repository.add(build_product_deleted_event(product))
+			self.outbox_service.create(
+				build_product_outbox_event(product, ProductOutboxEvent.DELETED)
+			)
 			await self.repository.delete(product)
 			await self.uow.commit()
 			logger.bind(deleted_product_id=id)

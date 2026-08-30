@@ -4,7 +4,7 @@ from uuid import uuid4
 import pytest
 
 from src.products.exceptions import ProductNotFoundError, ProductsInternalError
-from src.products.outbox_events import PRODUCT_CREATED, PRODUCT_DELETED, PRODUCT_UPDATED
+from src.products.outbox_events import ProductOutboxEvent
 from src.products.schemas import (
 	CreateProductSchema,
 	UpdateProductSchema,
@@ -85,7 +85,7 @@ async def test_get_product_internal_error(product_service, mock_product_reposito
 async def test_create_product_success(
 	product_service,
 	mock_product_repository,
-	mock_outbox_repository,
+	mock_outbox_service,
 	mock_unit_of_work,
 	sample_product,
 ):
@@ -103,9 +103,9 @@ async def test_create_product_success(
 
 	assert result.id == sample_product.id
 	mock_product_repository.create.assert_awaited_once_with(create_data)
-	mock_outbox_repository.add.assert_called_once()
-	outbox_event = mock_outbox_repository.add.call_args.args[0]
-	assert outbox_event.type == PRODUCT_CREATED
+	mock_outbox_service.create.assert_called_once()
+	outbox_event = mock_outbox_service.create.call_args.args[0]
+	assert outbox_event.type == ProductOutboxEvent.CREATED
 	assert outbox_event.aggregateid == str(sample_product.id)
 	mock_unit_of_work.commit.assert_awaited_once()
 
@@ -136,7 +136,7 @@ async def test_create_product_internal_error(
 async def test_update_product_success(
 	product_service,
 	mock_product_repository,
-	mock_outbox_repository,
+	mock_outbox_service,
 	mock_unit_of_work,
 	sample_product,
 ):
@@ -159,8 +159,8 @@ async def test_update_product_success(
 
 	mock_product_repository.get.assert_awaited_once_with(sample_product.id)
 	mock_product_repository.update.assert_awaited_once_with(sample_product)
-	mock_outbox_repository.add.assert_called_once()
-	assert mock_outbox_repository.add.call_args.args[0].type == PRODUCT_UPDATED
+	mock_outbox_service.create.assert_called_once()
+	assert mock_outbox_service.create.call_args.args[0].type == ProductOutboxEvent.UPDATED
 	mock_unit_of_work.commit.assert_awaited_once()
 
 
@@ -214,7 +214,7 @@ async def test_update_product_internal_error(
 async def test_delete_product_success(
 	product_service,
 	mock_product_repository,
-	mock_outbox_repository,
+	mock_outbox_service,
 	mock_unit_of_work,
 	sample_product,
 ):
@@ -225,8 +225,8 @@ async def test_delete_product_success(
 	await product_service.delete(id=sample_product.id)
 
 	mock_product_repository.get.assert_awaited_once_with(sample_product.id)
-	mock_outbox_repository.add.assert_called_once()
-	assert mock_outbox_repository.add.call_args.args[0].type == PRODUCT_DELETED
+	mock_outbox_service.create.assert_called_once()
+	assert mock_outbox_service.create.call_args.args[0].type == ProductOutboxEvent.DELETED
 	mock_product_repository.delete.assert_awaited_once_with(sample_product)
 	mock_unit_of_work.commit.assert_awaited_once()
 
