@@ -21,6 +21,17 @@ services:
   database:
     container_name: rafood_db
     image: postgis/postgis:16-3.4
+    # Logical decoding is what Debezium reads; the default 'replica' level only
+    # logs enough for physical replication, so CDC would see nothing.
+    # One slot/sender per connector, with headroom for reconnects.
+    command:
+      - "postgres"
+      - "-c"
+      - "wal_level=logical"
+      - "-c"
+      - "max_wal_senders=10"
+      - "-c"
+      - "max_replication_slots=10"
     ports:
       - "${DB_PORT}:5432"
     volumes:
@@ -29,6 +40,12 @@ services:
       POSTGRES_DB: "${DB_NAME}"
       POSTGRES_USER: "${DB_USER}"
       POSTGRES_PASSWORD: "${DB_PASSWORD}"
+    # Lets Kafka Connect wait for a database that accepts queries, not just an open port.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
   database-admin:
     container_name: rafood_pgadmin
     image: dpage/pgadmin4:latest
@@ -91,7 +108,162 @@ services:
       - "/sys:/sys"
       - "/var/lib/docker/:/var/lib/docker"
       - "/dev/disk/:/dev/disk"
+  kafka:
+    container_name: rafood_kafka
+    image: confluentinc/cp-kafka:7.8.0
+    profiles: ["kafka"]
+    ports:
+      # Only the host listener is published; other containers reach 29092 directly.
+      - "${KAFKA_PORT:-9092}:9092"
+    environment:
+      # KRaft: this single node is both broker and controller, so no ZooKeeper.
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:29093"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      # Cluster identity for the KRaft metadata log; changing it wipes broker identity.
+      CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
+      # LISTENERS is where the broker binds; ADVERTISED_LISTENERS is what clients are
+      # told to connect back to. Containers must use kafka:29092 (Docker network) while
+      # tools on the host must use localhost:9092, hence two separate listeners.
+      KAFKA_LISTENERS: "PLAINTEXT://kafka:29092,CONTROLLER://kafka:29093,PLAINTEXT_HOST://0.0.0.0:9092"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+      KAFKA_LOG_DIRS: "/var/lib/kafka/data"
+      # Single broker: every replication factor must be 1 or topic creation fails.
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      # Topics are created explicitly (kafka-setup or Connect), so a typo in a topic
+      # name fails loudly instead of silently creating a one-partition topic.
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    # Dependents wait for a broker that answers API calls, not just an open socket.
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "kafka:29092"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+      start_period: 20s
+  schema-registry:
+    container_name: rafood_schema_registry
+    image: confluentinc/cp-schema-registry:7.8.0
+    profiles: ["kafka"]
+    depends_on:
+      kafka:
+        condition: service_healthy
+    ports:
+      - "${SCHEMA_REGISTRY_PORT:-8081}:8081"
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka:29092"
+      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8081"
+      # Avro schemas live in the _schemas topic; RF must match the single broker.
+      SCHEMA_REGISTRY_KAFKASTORE_TOPIC_REPLICATION_FACTOR: 1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/subjects"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+  connect:
+    container_name: rafood_kafka_connect
+    # Built locally because cp-kafka-connect does not ship the Debezium plugin.
+    build:
+      context: ./docker/kafka-connect
+    image: rafood-kafka-connect:7.8.0
+    profiles: ["kafka"]
+    depends_on:
+      kafka:
+        condition: service_healthy
+      schema-registry:
+        condition: service_healthy
+      database:
+        condition: service_healthy
+    ports:
+      - "${KAFKA_CONNECT_PORT:-8083}:8083"
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: "kafka:29092"
+      CONNECT_REST_PORT: 8083
+      # How other containers (Control Center, kafka-setup) reach this worker.
+      CONNECT_REST_ADVERTISED_HOST_NAME: connect
+      CONNECT_GROUP_ID: rafood-connect
+      # Connect keeps its own state in Kafka: connector configs, source offsets
+      # (the WAL position Debezium resumes from) and task status.
+      CONNECT_CONFIG_STORAGE_TOPIC: _connect-configs
+      CONNECT_OFFSET_STORAGE_TOPIC: _connect-offsets
+      CONNECT_STATUS_STORAGE_TOPIC: _connect-status
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+      # Key stays a plain string (the product UUID) so partitioning is readable;
+      # the value is Avro, with schemas registered in Schema Registry.
+      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.storage.StringConverter
+      CONNECT_VALUE_CONVERTER: io.confluent.connect.avro.AvroConverter
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+      # Ordered and idempotent production: retries cannot duplicate or reorder
+      # records for the same partition key.
+      CONNECT_PRODUCER_ENABLE_IDEMPOTENCE: "true"
+      CONNECT_PRODUCER_ACKS: "all"
+      CONNECT_PRODUCER_MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION: 5
+      # Where Connect scans for connectors; confluent-hub installs into the second path.
+      CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
+      CONNECT_LOG4J_ROOT_LOGLEVEL: INFO
+      CONNECT_LOG4J_LOGGERS: "org.reflections=ERROR"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/connectors"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 40s
+  kafka-setup:
+    container_name: rafood_kafka_setup
+    image: confluentinc/cp-kafka:7.8.0
+    profiles: ["kafka"]
+    # One-shot: creates topics, registers the connector, then exits 0.
+    restart: "no"
+    depends_on:
+      kafka:
+        condition: service_healthy
+      connect:
+        condition: service_healthy
+    environment:
+      DB_USER: "${DB_USER}"
+      DB_PASSWORD: "${DB_PASSWORD}"
+      DB_NAME: "${DB_NAME}"
+    volumes:
+      - ./docker/kafka:/setup:ro
+    entrypoint: ["bash", "/setup/setup.sh"]
+  control-center:
+    container_name: rafood_control_center
+    image: confluentinc/cp-enterprise-control-center:7.8.0
+    profiles: ["kafka"]
+    depends_on:
+      kafka:
+        condition: service_healthy
+      schema-registry:
+        condition: service_healthy
+      connect:
+        condition: service_healthy
+    ports:
+      - "${CONTROL_CENTER_PORT:-9021}:9021"
+    environment:
+      CONTROL_CENTER_BOOTSTRAP_SERVERS: "kafka:29092"
+      # Registers the Connect cluster in the UI so connector status is visible.
+      CONTROL_CENTER_CONNECT_CONNECT-DEFAULT_CLUSTER: "connect:8083"
+      CONTROL_CENTER_CONNECT_HEALTHCHECK_ENDPOINT: "/connectors"
+      CONTROL_CENTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+      # Control Center stores its own metrics in Kafka; RF 1 for the single broker.
+      CONTROL_CENTER_REPLICATION_FACTOR: 1
+      CONTROL_CENTER_INTERNAL_TOPICS_PARTITIONS: 1
+      CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
+      CONFLUENT_METRICS_TOPIC_REPLICATION: 1
+      PORT: 9021
 
 volumes:
   postgres_data:
   pgadmin_data:
+  kafka_data:
