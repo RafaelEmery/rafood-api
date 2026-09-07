@@ -101,6 +101,24 @@ restart-monitoring: ## Restart the monitoring Docker containers (from down state
 	@echo "\nContainers restarted! 🎉\n"
 	@docker compose ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
 
+start-kafka: ## Start the Kafka CDC containers (Kafka, Schema Registry, Connect + Debezium, Control Center)
+	@echo "$$BANNER"
+	@echo "Starting Kafka CDC containers... 🚀\n"
+	@docker compose --profile kafka up -d --build
+	@echo "\nKafka CDC containers started! 🎉 Control Center: http://localhost:$${CONTROL_CENTER_PORT:-9021}\n"
+	@docker compose ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
+
+down-kafka: ## Remove the Kafka CDC containers
+	@echo "Removing Kafka CDC containers... 🗑️\n"
+	@docker compose --profile kafka down
+
+restart-kafka: ## Restart the Kafka CDC containers (from down state)
+	@echo "Stopping and restarting Kafka CDC containers (full down/up cycle) ... 🔄\n"
+	@docker compose --profile kafka down
+	@docker compose --profile kafka up -d
+	@echo "\nContainers restarted! 🎉\n"
+	@docker compose ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
+
 list-containers: ## List running Docker containers
 	@echo "Listing running containers... 📋\n"
 	@docker compose ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)

@@ -15,6 +15,7 @@ The **default way to run this project locally** is **Docker Compose**, not bare 
 | `database` | PostgreSQL + PostGIS (port from `.env` → `DB_PORT`) | always |
 | `database-admin` | pgAdmin 4 UI (port from `.env` → `PGADMIN_PORT`) | always |
 | `prometheus`, `grafana`, `database-exporter`, `container-metrics-exporter` | Monitoring | `monitoring` (`make start-monitoring`) |
+| `kafka`, `schema-registry`, `connect`, `kafka-setup`, `control-center` | Kafka CDC on the `outbox` table (Debezium) | `kafka` (`make start-kafka`) |
 
 The `api` service bind-mounts the repo (`.:/app`), so **code changes apply without rebuild**. After **`pyproject.toml` / `poetry.lock` changes**, the image must be rebuilt: **`make build`** (user runs it unless they explicitly ask the agent).
 
@@ -62,3 +63,4 @@ The `api` service sets **`TEST_DB_HOST=database`** and **`TEST_DB_PORT=5432`** f
 - **`make build`** — rebuild images, then start
 - **`make stop`** / **`make down`** / **`make restart`**
 - **`make list-containers`** — status check
+- **`make start-kafka`** / **`make down-kafka`** / **`make restart-kafka`** — Kafka CDC profile; `kafka-setup` creates topics and registers the Debezium connector on startup (no separate target). Connector reference: `docker/kafka/connectors/README.md`.
