@@ -22,7 +22,7 @@ def _sample_outbox_event() -> OutboxEvent:
 	return OutboxEvent(
 		aggregatetype='product',
 		aggregateid=str(uuid4()),
-		type='ProductCreated',
+		type='product.created',
 		payload={'name': 'Pizza'},
 	)
 
