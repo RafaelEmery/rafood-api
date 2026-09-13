@@ -12,9 +12,9 @@ RENDERED_CONNECTOR="/tmp/outbox-source.rendered.json"
 
 # One topic per outbox `type` value, matching transforms.outbox.route.by.field=type.
 TOPICS=(
-  "outbox.event.ProductCreated"
-  "outbox.event.ProductUpdated"
-  "outbox.event.ProductDeleted"
+  "outbox.event.product.created"
+  "outbox.event.product.updated"
+  "outbox.event.product.deleted"
 )
 
 # More than one partition (parallel consumers later); ordering per product is kept

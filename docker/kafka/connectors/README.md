@@ -18,9 +18,9 @@ API write (product + outbox row, one transaction)
 
 Topics created by `setup.sh`, one per outbox `type` value:
 
-- `outbox.event.ProductCreated`
-- `outbox.event.ProductUpdated`
-- `outbox.event.ProductDeleted`
+- `outbox.event.product.created`
+- `outbox.event.product.updated`
+- `outbox.event.product.deleted`
 
 Each has 3 partitions, replication factor 1, `cleanup.policy=delete`. The message key is the product UUID (`aggregateid`), the value is the product snapshot from the outbox `payload`, and `id` / `eventType` travel as headers.
 
@@ -65,7 +65,7 @@ Each has 3 partitions, replication factor 1, `cleanup.policy=delete`. The messag
 
 ## Known trade-offs in this setup
 
-**Ordering across event types is not guaranteed.** Kafka orders messages per partition, and there is no ordering between topics. With three topics, a consumer can see `ProductDeleted` before the `ProductUpdated` that came first in the database. Order per product is preserved *within* each topic thanks to the key.
+**Ordering across event types is not guaranteed.** Kafka orders messages per partition, and there is no ordering between topics. With three topics, a consumer can see `product.deleted` before the `product.updated` that came first in the database. Order per product is preserved *within* each topic thanks to the key.
 
 Mitigation for future consumers and the Elasticsearch sink: the payload carries `updated_at`, so writes can be applied version-aware (ignore a payload older than the stored document) and a delete can be treated as terminal. Routing all types to a single topic (`route.by.field=aggregatetype`) is the alternative that restores total order per product.
 
@@ -85,7 +85,7 @@ curl -s localhost:8081/subjects
 # Read the events (from inside the broker container)
 docker compose exec kafka kafka-console-consumer \
   --bootstrap-server kafka:29092 \
-  --topic outbox.event.ProductCreated \
+  --topic outbox.event.product.created \
   --from-beginning --property print.key=true
 ```
 
@@ -95,7 +95,7 @@ For the Avro value in a readable form, use `kafka-avro-console-consumer` from th
 docker compose exec schema-registry kafka-avro-console-consumer \
   --bootstrap-server kafka:29092 \
   --property schema.registry.url=http://schema-registry:8081 \
-  --topic outbox.event.ProductCreated --from-beginning
+  --topic outbox.event.product.created --from-beginning
 ```
 
 Control Center (topics, throughput, connector status) runs at `http://localhost:9021`.

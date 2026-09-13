@@ -8,9 +8,9 @@ PRODUCT_AGGREGATE_TYPE = 'product'
 
 
 class ProductOutboxEvent(str, Enum):
-	CREATED = 'ProductCreated'
-	UPDATED = 'ProductUpdated'
-	DELETED = 'ProductDeleted'
+	CREATED = 'product.created'
+	UPDATED = 'product.updated'
+	DELETED = 'product.deleted'
 
 
 def build_product_outbox_event(product: Product, event_type: ProductOutboxEvent) -> OutboxEvent:

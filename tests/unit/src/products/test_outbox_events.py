@@ -26,6 +26,7 @@ def test_build_product_outbox_event_created():
 	assert event.aggregatetype == PRODUCT_AGGREGATE_TYPE
 	assert event.aggregateid == str(product.id)
 	assert event.type == ProductOutboxEvent.CREATED
+	assert event.type == 'product.created'
 	assert event.payload is not None
 	assert event.payload['id'] == str(product.id)
 	assert event.payload['name'] == 'Pizza'
@@ -48,5 +49,6 @@ def test_build_product_outbox_event_without_image_url():
 	event = build_product_outbox_event(product, ProductOutboxEvent.DELETED)
 
 	assert event.type == ProductOutboxEvent.DELETED
+	assert event.type == 'product.deleted'
 	assert event.payload is not None
 	assert event.payload['image_url'] is None
