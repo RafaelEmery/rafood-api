@@ -42,6 +42,8 @@ My initial studies of FastAPI is at [fastapi-studies repository](https://github.
 - Postman Newman for smoke tests on CI
 - Kubernetes and Helm Charts on local Minikube cluster
 - GitOps with ArgoCD on local Minikube cluster (PoC/sandbox)
+- Transactional Outbox Pattern with Unit of Work pattern
+- CDC (Change Data Capture) with Debezium and Kafka
 - Cursor (AI-assisted development with rules and agent prompts)
 
 ### ER Model
