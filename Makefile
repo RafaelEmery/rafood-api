@@ -108,6 +108,10 @@ start-kafka: ## Start the Kafka CDC containers (Kafka, Schema Registry, Connect 
 	@echo "\nKafka CDC containers started! 🎉 Control Center: http://localhost:$${CONTROL_CENTER_PORT:-9021}\n"
 	@docker compose ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
 
+stop-kafka: ## Stop the Kafka CDC containers without removing them
+	@echo "Stopping Kafka CDC containers... 🛑\n"
+	@docker compose --profile kafka stop
+
 down-kafka: ## Remove the Kafka CDC containers
 	@echo "Removing Kafka CDC containers... 🗑️\n"
 	@docker compose --profile kafka down

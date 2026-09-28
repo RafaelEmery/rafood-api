@@ -179,6 +179,10 @@ More about the release process and GitHub Actions workflows can be found at [doc
 
 More about local deployment with Kubernetes using Minikube can be found at [docs/local-deployment.md](./docs/local-deployment.md) - On section `Deployment with Kubernetes + Helm Charts at Minikube cluster`.
 
+## Events Architecture Guide (Kafka)
+
+More about events architecture guide (Kafka) can be found at [docs/kafka-events-guide.md](./docs/kafka-events-guide.md).
+
 ## Cursor (AI-assisted development)
 
 More about using Cursor with rules, agent prompts (new feature, explain, code review), and model prompts can be found at [docs/cursor-as-my-intern.md](./docs/cursor-as-my-intern.md).

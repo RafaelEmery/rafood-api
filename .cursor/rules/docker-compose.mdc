@@ -63,4 +63,4 @@ The `api` service sets **`TEST_DB_HOST=database`** and **`TEST_DB_PORT=5432`** f
 - **`make build`** — rebuild images, then start
 - **`make stop`** / **`make down`** / **`make restart`**
 - **`make list-containers`** — status check
-- **`make start-kafka`** / **`make down-kafka`** / **`make restart-kafka`** — Kafka CDC profile; `kafka-setup` creates topics and registers the Debezium connector on startup (no separate target). Connector reference: `docker/kafka/connectors/README.md`.
+- **`make start-kafka`** / **`make stop-kafka`** / **`make down-kafka`** / **`make restart-kafka`** — Kafka CDC profile (`docker compose --profile kafka`, no service list). `stop-kafka` stops containers and keeps them; `down-kafka` removes them. A profile enables extra services, so both also affect the default ones (`api`, `database`, `database-admin`). `kafka-setup` creates topics and registers the Debezium connector on startup (no separate target). Connector reference: `docker/kafka/connectors/README.md`.

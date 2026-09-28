@@ -1,9 +1,30 @@
-# Events Architecture Guide
-
-> [!IMPORTANT]
-> This guide is a work in progress.
+# Events Architecture Guide (Kafka)
 
 Configurations, usage and other details will be updated as the project progresses.
+
+## TL;DR
+
+```bash
+make start-kafka
+```
+
+> If `outbox` table hasn\`t been created yet, you need to apply migrations first.
+
+```bash
+make migrate
+```
+
+Access Control Center at `http://localhost:9021` and see the topics and their partitions, Kafka Connect, consumers, replicators, and others.
+
+Call any API to produce events on the topics.
+
+To remove, stop or restart containers:
+
+```bash
+make down-kafka
+make stop-kafka
+make restart-kafka
+```
 
 ## Overview
 
@@ -31,9 +52,23 @@ Start containers with `kafka` profile:
 make start-kafka
 ```
 
+### The outbox table
+
+`public.outbox` is written in the same transaction as the domain change. Columns follow the Debezium Outbox Event Router contract: `id`, `aggregatetype` (today `product`), `aggregateid` (Kafka key), `type` (`product.created`, `product.updated`, `product.deleted`), and `payload` (JSONB snapshot of `ProductSchema`).
+
+Field notes are on `OutboxEvent` in `src/core/outbox/models.py`.
+
 ### Debezium connector configuration
 
+`docker/kafka/connectors/outbox-source.json` is applied by `kafka-setup` as `rafood-outbox-connector`. It reads only `public.outbox` through `pgoutput` (slot `debezium_outbox`). The EventRouter expands the JSON payload, routes on `type` to `outbox.event.${type}`, and sets the key from `aggregateid` (`eventType` is a header).
+
+Each property is documented in `docker/kafka/connectors/README.md`.
+
 ### Kafka configuration
+
+One KRaft broker (no ZooKeeper): containers use `kafka:29092`, the host uses `localhost:9092`. Replication factor is 1 and `auto.create.topics.enable` is false, so `kafka-setup` creates the three product topics (3 partitions, `cleanup.policy=delete`).
+
+The commented broker settings are on the `kafka` service in `docker-compose.yml`.
 
 ### Schema registry configuration
 
@@ -139,3 +174,13 @@ You can check the Schema Registry for the message payload, it's versions, types 
 ![Schema Registry screen](./images/kafka-control-center-schema-registry.png)
 
 ### To improve message payload and/or Schema Registry
+
+You can improve the message payload and/or Schema Registry by adding a new column to the outbox table and updating the schema registry.
+
+### Add new topics (example: restaurant)
+
+The topic name is the outbox `type`: `restaurant.created` is published to `outbox.event.restaurant.created`. The connector JSON and the outbox table stay as they are (`route.by.field=type`).
+
+1. Write the row in the same transaction as the restaurant change: `aggregatetype=restaurant`, `aggregateid` = the restaurant id, `type=restaurant.created` or `restaurant.updated`, `payload` = the restaurant snapshot. Follow `src/products/outbox_events.py` and the product service. The restaurants repository still commits on its own, so that commit has to move to the service `UnitOfWork`, or the outbox row is not in the same transaction.
+1. Add `outbox.event.restaurant.created` and `outbox.event.restaurant.updated` to `TOPICS` in `docker/kafka/setup.sh`.
+1. Run `make restart-kafka` so `kafka-setup` creates the topics. Schema Registry registers the new payload on the first event; there is no `.avsc` to add.
