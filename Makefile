@@ -25,6 +25,12 @@ $(PURPLE)$(BOLD)
 endef
 export BANNER
 
+# Compose file lives in docker/. Project directory stays the repo root so the
+# project name, named volumes and the root .env do not move with the file.
+DOCKER_DIR := docker
+COMPOSE_FILE := $(DOCKER_DIR)/docker-compose.yml
+DOCKER_COMPOSE = docker compose --project-directory "$(CURDIR)" -f "$(COMPOSE_FILE)"
+
 # Docker compose command aliases
 DOCKER_PS_FORMAT = "table {{.Service}}\t{{.Image}}\t{{.State}}\t{{.Status}}\t{{.Size}}\t{{.Ports}}"
 DOCKER_PS_AWK = 'BEGIN{OFS="\t"} { \
@@ -58,82 +64,82 @@ banner: ## Show the banner
 start: ## Start the Docker containers (also run the API)
 	@echo "$$BANNER"
 	@echo "Starting containers... 🚀\n"
-	@docker compose up -d
+	@$(DOCKER_COMPOSE) up -d
 	@echo "\nContainers started! 🎉\n"
-	@docker compose ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
+	@$(DOCKER_COMPOSE) ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
 
 build: ## Build the Docker images. Tip: use 'make build' after changing dependencies in pyproject.toml
 	@echo "Building Docker images... 🏗️"
-	@docker compose down && docker compose build
+	@$(DOCKER_COMPOSE) down && $(DOCKER_COMPOSE) build
 	@echo "\nDocker images built! 🎉\n"
 	@make start && make list-containers
 
 stop: ## Stop the Docker containers
 	@echo "Stopping containers... 🛑\n"
-	@docker compose stop
+	@$(DOCKER_COMPOSE) stop
 
 down: ## Remove the Docker containers
 	@echo "Removing containers... 🗑️\n"
-	@docker compose down
+	@$(DOCKER_COMPOSE) down
 
 restart: ## Restart the Docker containers
 	@echo "Restarting containers... 🔄\n"
-	@docker compose stop
-	@docker compose up -d
+	@$(DOCKER_COMPOSE) stop
+	@$(DOCKER_COMPOSE) up -d
 	@echo "\nContainers restarted! 🎉\n"
-	@docker compose ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
+	@$(DOCKER_COMPOSE) ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
 
 start-monitoring: ## Start the monitoring Docker containers
 	@echo "$$BANNER"
 	@echo "Starting monitoring containers... 🚀\n"
-	@docker compose --profile monitoring up -d
+	@$(DOCKER_COMPOSE) --profile monitoring up -d
 	@echo "\nMonitoring containers started! 🎉\n"
-	@docker compose ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
+	@$(DOCKER_COMPOSE) ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
 
 down-monitoring: ## Remove the monitoring Docker containers
 	@echo "Removing monitoring containers... 🗑️\n"
-	@docker compose --profile monitoring down
+	@$(DOCKER_COMPOSE) --profile monitoring down
 
 restart-monitoring: ## Restart the monitoring Docker containers (from down state)
 	@echo "Stopping and restarting monitoring Docker containers (full down/up cycle) ... 🔄\n"
-	@docker compose --profile monitoring down
-	@docker compose --profile monitoring up -d
+	@$(DOCKER_COMPOSE) --profile monitoring down
+	@$(DOCKER_COMPOSE) --profile monitoring up -d
 	@echo "\nContainers restarted! 🎉\n"
-	@docker compose ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
+	@$(DOCKER_COMPOSE) ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
 
 start-kafka: ## Start the Kafka CDC containers (Kafka, Schema Registry, Connect + Debezium, Control Center)
 	@echo "$$BANNER"
 	@echo "Starting Kafka CDC containers... 🚀\n"
-	@docker compose --profile kafka up -d --build
+	@$(DOCKER_COMPOSE) --profile kafka up -d --build
 	@echo "\nKafka CDC containers started! 🎉 Control Center: http://localhost:$${CONTROL_CENTER_PORT:-9021}\n"
-	@docker compose ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
+	@$(DOCKER_COMPOSE) ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
 
 stop-kafka: ## Stop the Kafka CDC containers without removing them
 	@echo "Stopping Kafka CDC containers... 🛑\n"
-	@docker compose --profile kafka stop
+	@$(DOCKER_COMPOSE) --profile kafka stop
 
 down-kafka: ## Remove the Kafka CDC containers
 	@echo "Removing Kafka CDC containers... 🗑️\n"
-	@docker compose --profile kafka down
+	@$(DOCKER_COMPOSE) --profile kafka down
 
 restart-kafka: ## Restart the Kafka CDC containers (from down state)
 	@echo "Stopping and restarting Kafka CDC containers (full down/up cycle) ... 🔄\n"
-	@docker compose --profile kafka down
-	@docker compose --profile kafka up -d
+	@$(DOCKER_COMPOSE) --profile kafka down
+	@$(DOCKER_COMPOSE) --profile kafka up -d
 	@echo "\nContainers restarted! 🎉\n"
-	@docker compose ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
+	@$(DOCKER_COMPOSE) ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
 
 list-containers: ## List running Docker containers
 	@echo "Listing running containers... 📋\n"
-	@docker compose ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
+	@$(DOCKER_COMPOSE) ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
 
 logs: ## Show logs for a container. Usage: make logs container=<container_name> (default: api)
 	@echo "Showing logs... 📜\n"
-	@docker compose logs $(or $(container),api)
+	@$(DOCKER_COMPOSE) logs $(or $(container),api)
 
 bash: ## Access bash in a container. Usage: make bash container=<container_name> (default: api)
 	@echo "Accessing bash in container... 💻\n"
-	@docker compose exec $(or $(container),api) bash
+	@$(DOCKER_COMPOSE) exec $(or $(container),api) bash
 
 create-migration: ## Create a new database migration. Usage: make create-migration name='<revision message>'
 	@echo "Creating new migration... 🆕"
@@ -181,7 +187,7 @@ run: ## Run the application (not recommended for use with Docker)
 	@poetry run python -m src.main
 
 test: ## Run the test suite. Usage: make test t='<test_path_or_marker>'
-	@echo "Checking if the database is running... 🔍\n" && if [ -z "$$(docker compose ps --status running -q database 2>/dev/null)" ]; then \
+	@echo "Checking if the database is running... 🔍\n" && if [ -z "$$($(DOCKER_COMPOSE) ps --status running -q database 2>/dev/null)" ]; then \
 		make start; \
 	fi
 	@echo "Running tests... 🧪\n"
@@ -213,7 +219,7 @@ load-test: ## Run load tests with Locust
 
 build-container: ## Build the Docker image for Kubernetes deployment using Docker only (not for use with Docker Compose)
 	@echo "Building Docker image for Kubernetes deployment using Docker... 🏗️\n"
-	@docker build -f docker/Dockerfile -t rafood-api:latest .
+	@docker build -f $(DOCKER_DIR)/Dockerfile -t rafood-api:latest .
 	@echo "\nDocker image built! 🎉\n"
 	@echo "Showing Docker image... 📋\n"
 	@docker images | grep rafood-api
@@ -235,16 +241,16 @@ newman-smoke-tests: ## Run Newman smoke tests (Requires API and database contain
 		-e /etc/newman/ci.environment.json --folder "Smoke" --timeout-request 15000
 
 agent-ensure-env: ## Ensure api and database containers are running (AI agent workflow)
-	@if [ -z "$$(docker compose ps --status running -q api 2>/dev/null)" ] || \
-	   [ -z "$$(docker compose ps --status running -q database 2>/dev/null)" ]; then \
-		docker compose up -d api database; \
+	@if [ -z "$$($(DOCKER_COMPOSE) ps --status running -q api 2>/dev/null)" ] || \
+	   [ -z "$$($(DOCKER_COMPOSE) ps --status running -q database 2>/dev/null)" ]; then \
+		$(DOCKER_COMPOSE) up -d api database; \
 	fi
 
 agent-lint: agent-ensure-env ## Run lint-complete inside the api container (AI agent workflow)
-	@docker compose exec -T api bash -c 'cd /app && poetry run ruff check --fix . && poetry run mypy src && poetry run ruff format .'
+	@$(DOCKER_COMPOSE) exec -T api bash -c 'cd /app && poetry run ruff check --fix . && poetry run mypy src && poetry run ruff format .'
 
 agent-test: agent-ensure-env ## Run tests inside the api container (AI agent workflow). Usage: make agent-test t='<test_path_or_marker>'
-	@docker compose exec -T api bash -c 'cd /app && PYTHONPATH=src poetry run pytest -vv --cov=src --cov-report=term-missing $(t)'
+	@$(DOCKER_COMPOSE) exec -T api bash -c 'cd /app && PYTHONPATH=src poetry run pytest -vv --cov=src --cov-report=term-missing $(t)'
 
 agent-checks: agent-ensure-env ## Run lint + tests in api container (AI agent workflow). Usage: make agent-checks t='<test_path_or_marker>'
 	@make agent-lint

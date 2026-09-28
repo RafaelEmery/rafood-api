@@ -7,7 +7,7 @@ alwaysApply: true
 
 The **default way to run this project locally** is **Docker Compose**, not bare `poetry run` on the host. The **Makefile** wraps Compose and Poetry; treat it as the single entry point (`make help`).
 
-## Services (`docker-compose.yml`)
+## Services (`docker/docker-compose.yml`)
 
 | Service | Role | Default profile |
 | ------- | ---- | --------------- |
@@ -19,7 +19,7 @@ The **default way to run this project locally** is **Docker Compose**, not bare 
 
 The `api` service bind-mounts the repo (`.:/app`), so **code changes apply without rebuild**. After **`pyproject.toml` / `poetry.lock` changes**, the image must be rebuilt: **`make build`** (user runs it unless they explicitly ask the agent).
 
-The `api` service sets **`TEST_DB_HOST=database`** and **`TEST_DB_PORT=5432`** for pytest in the container (overrides `.env`). Recreate `api` after changing those in `docker-compose.yml` (`docker compose up -d api`).
+The `api` service sets **`TEST_DB_HOST=database`** and **`TEST_DB_PORT=5432`** for pytest in the container (overrides `.env`). Recreate `api` after changing those in `docker/docker-compose.yml` (`make start` recreates via the Compose file in `docker/`).
 
 ## Agent quality checks (preferred for agents)
 
@@ -37,7 +37,7 @@ The `api` service sets **`TEST_DB_HOST=database`** and **`TEST_DB_PORT=5432`** f
 | Where pytest runs | Typical env |
 | ----------------- | ----------- |
 | **Host** (`make test`) | `.env`: `TEST_DB_HOST=localhost`, `TEST_DB_PORT` = published port (e.g. `5434`, same as `DB_PORT`) |
-| **`api` container** (`agent-test`) | `docker-compose.yml` on `api`: `database`, `5432` |
+| **`api` container** (`agent-test`) | `docker/docker-compose.yml` on `api`: `database`, `5432` |
 
 ## Host vs container
 

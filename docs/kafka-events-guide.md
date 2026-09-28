@@ -70,9 +70,9 @@ Each property is documented in `docker/kafka/connectors/README.md`.
 
 ### Kafka configuration
 
-One KRaft broker (no ZooKeeper): containers use `kafka:29092`, the host uses `localhost:9092`. Replication factor is 1 and `auto.create.topics.enable` is false, so `kafka-setup` creates the three product topics (3 partitions, `cleanup.policy=delete`).
+One KRaft broker (no ZooKeeper): containers use `kafka:29092`, the host uses `localhost` on `KAFKA_PORT` (default 9092). Replication factor is 1 and `auto.create.topics.enable` is false, so `kafka-setup` creates the three product topics (3 partitions, `cleanup.policy=delete`).
 
-The commented broker settings are on the `kafka` service in `docker-compose.yml`.
+The commented broker settings are on the `kafka` service in `docker/docker-compose.yml`.
 
 ### Schema registry configuration
 

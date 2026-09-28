@@ -124,10 +124,10 @@ services:
       # Cluster identity for the KRaft metadata log; changing it wipes broker identity.
       CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
       # LISTENERS is where the broker binds; ADVERTISED_LISTENERS is what clients are
-      # told to connect back to. Containers must use kafka:29092 (Docker network) while
-      # tools on the host must use localhost:9092, hence two separate listeners.
+      # told to connect back to. Containers use kafka:29092 (Docker network). Host tools
+      # use localhost:${KAFKA_PORT:-9092}; the container still binds 9092.
       KAFKA_LISTENERS: "PLAINTEXT://kafka:29092,CONTROLLER://kafka:29093,PLAINTEXT_HOST://0.0.0.0:9092"
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:${KAFKA_PORT:-9092}"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT"
       KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
       KAFKA_LOG_DIRS: "/var/lib/kafka/data"

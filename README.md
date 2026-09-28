@@ -162,7 +162,7 @@ More about load tests can be found at [docs/load-testing.md](./docs/load-testing
 
 ### PG Admin UI (locally)
 
-To access the PG Admin UI, you can use the following URL: `http://localhost:5050`. The service is defined at `docker-compose.yml` file must be running.
+To access the PG Admin UI, you can use the following URL: `http://localhost:5050`. The service is defined at `docker/docker-compose.yml` and must be running.
 
 The credentials are defined at `.env` file:
 

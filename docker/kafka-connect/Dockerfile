@@ -9,6 +9,6 @@ FROM confluentinc/cp-kafka-connect:7.8.0
 ARG DEBEZIUM_POSTGRES_VERSION=2.5.4-3
 
 # confluent-hub installs into /usr/share/confluent-hub-components, the second entry
-# of CONNECT_PLUGIN_PATH in docker-compose.yml.
+# of CONNECT_PLUGIN_PATH in docker/docker-compose.yml.
 RUN confluent-hub install --no-prompt \
     debezium/debezium-connector-postgresql:${DEBEZIUM_POSTGRES_VERSION}
