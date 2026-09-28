@@ -219,16 +219,45 @@ services:
       timeout: 5s
       retries: 20
       start_period: 40s
+  elasticsearch:
+    container_name: rafood_elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.3
+    # Elasticsearch is a shared dependency, not part of Kafka. It belongs on a
+    # broader profile. It sits on "kafka" only for this PoC, so the sink
+    # connector can be validated together with the broker.
+    profiles: ["kafka"]
+    environment:
+      # One node, no cluster discovery. Security stays off so the sink can use plain HTTP.
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      xpack.security.enrollment.enabled: "false"
+      xpack.security.http.ssl.enabled: "false"
+      xpack.security.transport.ssl.enabled: "false"
+      # Cap the heap so this profile stays light next to Kafka and Connect.
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:9200 >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 40s
   kafka-setup:
     container_name: rafood_kafka_setup
     image: confluentinc/cp-kafka:7.8.0
     profiles: ["kafka"]
-    # One-shot: creates topics, registers the connector, then exits 0.
+    # One-shot: creates topics, registers both connectors, then exits 0.
     restart: "no"
     depends_on:
       kafka:
         condition: service_healthy
       connect:
+        condition: service_healthy
+      # Sink registration talks to Elasticsearch; wait until it answers, not just until the port is open.
+      elasticsearch:
         condition: service_healthy
     environment:
       DB_USER: "${DB_USER}"
@@ -267,3 +296,4 @@ volumes:
   postgres_data:
   pgadmin_data:
   kafka_data:
+  elasticsearch_data:
