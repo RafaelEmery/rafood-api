@@ -8,8 +8,21 @@
 ## Tone and format
 
 - Be **objective, concise, and direct**: problem → impact → suggestion. No long paragraphs.
-- Tag every comment with severity: **critical**, **high**, **medium**, or **low**.
-- Grammar, wording, or cosmetic formatting: always **low** — never block a PR for this.
+
+- Do **not** prefix comments with `[critical]`, `[high]`, `[medium]`, or `[low]`.
+
+- Open every comment with **exactly one** of these lines (Portuguese), matched to how serious the issue is. The emoji is the severity signal — do not add a bracket tag on top:
+
+  | Weight   | Opening line                                               |
+  | -------- | ---------------------------------------------------------- |
+  | critical | 🚨 Para tudo — isso precisa ser resolvido antes de seguir. |
+  | high     | 🔥 Isso pesa: ajusta agora pra não virar problema depois.  |
+  | medium   | 👀 Vale uma olhada com carinho.                            |
+  | low      | 💡 Só um toque, sem drama.                                 |
+
+- Grammar, wording, or cosmetic formatting: always the 💡 line — never block a PR for this.
+
+- The weight names above are **internal only**. The author sees the opening line, not the label.
 
 ## Project standards (read from the repo)
 
@@ -60,6 +73,18 @@ Schema changes only via **new** Alembic revisions. Never edit applied revisions.
 ### Code design — medium/low
 
 Full type hints (mypy). Clear names. No redundant docstrings. Short functions; extract helpers. Reuse existing patterns.
+
+## Feature prompts and plans
+
+Files under `docs/feature-prompts/` — including anything in a `plans/` folder — are working notes for the assistant, not the source of truth for the implementation.
+
+- Always the lightest weight. Never use 🚨, 🔥, or 👀 on these files.
+
+- Open with this exact line (it already includes the 💡 tone **and** the “just a heads-up” note), then the observation if it is still useful:
+
+  > 💡 Só um toque, sem drama. Só um ponto de atenção — em feature prompt e plan é normal o texto divergir do que foi implementado.
+
+- Do not ask the author to “fix” a prompt or plan so it matches the code, unless they explicitly changed those docs in the PR and the note would mislead the next session.
 
 ## Deprioritize
 

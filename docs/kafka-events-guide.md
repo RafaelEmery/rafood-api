@@ -4,6 +4,10 @@ Configurations, usage and other details will be updated as the project progresse
 
 ## TL;DR
 
+- Produce events by creating on `public.outbox` table.
+- Debezium watches the outbox table after commit and publishes each event to a Kafka topic.
+- Schema Registry (Avro) describes the message payload so consumers can read a stable schema.
+
 ```bash
 make start-kafka
 ```
