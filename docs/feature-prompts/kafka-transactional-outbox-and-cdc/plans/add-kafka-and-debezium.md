@@ -26,7 +26,7 @@ This is a **conscious deviation** from the prompt's "more than one replica": RF 
 Route by the outbox `type` column instead of `aggregatetype`, so each event type gets its own topic. This matches the illustrative topic style in ADR 009 (`restaurant_created`, `offer_disabled`, `product_deleted`).
 
 - `transforms.outbox.route.by.field=type` + default `route.topic.replacement=outbox.event.${routedByValue}`
-- Topics: `outbox.event.ProductCreated`, `outbox.event.ProductUpdated`, `outbox.event.ProductDeleted` (values come from `ProductOutboxEvent` in `src/products/outbox_events.py`; no `src/` change). A `RegexRouter` SMT after the EventRouter can rename them to snake_case later without touching Python.
+- Topics: `outbox.event.product.created`, `outbox.event.product.updated`, `outbox.event.product.deleted` (values come from `ProductOutboxEvent` in `src/products/outbox_events.py`).
 - Partitions: **3** each (the prompt's "more than one partition"; fine on a single broker)
 - Replication factor: **1**
 - `cleanup.policy=delete` on all three

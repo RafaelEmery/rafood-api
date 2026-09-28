@@ -45,6 +45,6 @@ There's no logic flow for this feature. The goal is to add Kafka and Debezium to
 
 ## References
 
-- `docs/adr/009-use-kafka-for-event-driven-communication-and-cdc-for-real-time-data-synchronization.md`
+- `docs/adr/009-add-cdc-transactional-outbox-with-kafka.md`
 - `src/products` directory and the `Product` entity.
 - `src/core/outbox` directory and the `Outbox` entity.
