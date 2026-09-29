@@ -25,8 +25,8 @@ $(PURPLE)$(BOLD)
 endef
 export BANNER
 
-# Compose file lives in docker/. Project directory stays the repo root so the
-# project name, named volumes and the root .env do not move with the file.
+# Compose file lives in docker/. Project directory stays the repo root so
+# .env, volumes and the build context do not move with the file.
 DOCKER_DIR := docker
 COMPOSE_FILE := $(DOCKER_DIR)/docker-compose.yml
 DOCKER_COMPOSE = docker compose --project-directory "$(CURDIR)" -f "$(COMPOSE_FILE)"

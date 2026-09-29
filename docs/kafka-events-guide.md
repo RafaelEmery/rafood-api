@@ -207,7 +207,7 @@ After `make start-kafka` for creating the Kafka/Debezium/Elastic Search setup. I
 Create a new product:
 
 ```bash
-curl --location 'localhost:8000/api/v1/products' \
+curl --location 'http://localhost:8000/api/v1/products' \
 --header 'Content-Type: application/json' \
 --data '{
     "restaurant_id": "2f8f4eb2-2202-4e31-a537-1c3f9706abf4",
@@ -233,7 +233,7 @@ Topics, partitions and offsets:
 To validate the Elastic Search index and do a full text search, you can use the `curl` command:
 
 ```bash
-curl -s 'localhost:9200/product/_search?q=Esfirra&pretty'
+curl -s 'http://localhost:9200/product/_search?q=Esfirra&pretty'
 ```
 
 Pretty response:
@@ -247,51 +247,51 @@ Pretty response:
 <summary>Other Elastic Search indexes query examples for this product</summary>
 
 ```bash
-curl -s 'localhost:9200/product/_search?pretty' -H 'Content-Type: application/json' -d '{"query":{"match":{"name":"esfirra"}}}'
+curl -s 'http://localhost:9200/product/_search?pretty' -H 'Content-Type: application/json' -d '{"query":{"match":{"name":"esfirra"}}}'
 ```
 
 ```bash
-curl -s 'localhost:9200/product/_search?pretty' -H 'Content-Type: application/json' -d '{"query":{"match":{"name":"ESFIRRA"}}}'
+curl -s 'http://localhost:9200/product/_search?pretty' -H 'Content-Type: application/json' -d '{"query":{"match":{"name":"ESFIRRA"}}}'
 ```
 
 ```bash
-curl -s 'localhost:9200/product/_search?pretty' -H 'Content-Type: application/json' -d '{"query":{"match":{"name":"carne"}}}'
+curl -s 'http://localhost:9200/product/_search?pretty' -H 'Content-Type: application/json' -d '{"query":{"match":{"name":"carne"}}}'
 ```
 
 ```bash
-curl -s 'localhost:9200/product/_search?pretty' -H 'Content-Type: application/json' -d '{"query":{"match_phrase":{"name":"esfirra de carne"}}}'
+curl -s 'http://localhost:9200/product/_search?pretty' -H 'Content-Type: application/json' -d '{"query":{"match_phrase":{"name":"esfirra de carne"}}}'
 ```
 
 ```bash
-curl -s 'localhost:9200/product/_search?pretty' -H 'Content-Type: application/json' -d '{"query":{"match":{"name":{"query":"esfirra carne","operator":"and"}}}}'
+curl -s 'http://localhost:9200/product/_search?pretty' -H 'Content-Type: application/json' -d '{"query":{"match":{"name":{"query":"esfirra carne","operator":"and"}}}}'
 ```
 
 ```bash
-curl -s 'localhost:9200/product/_search?pretty' -H 'Content-Type: application/json' -d '{"query":{"query_string":{"query":"esfirra AND carne","default_field":"name"}}}'
+curl -s 'http://localhost:9200/product/_search?pretty' -H 'Content-Type: application/json' -d '{"query":{"query_string":{"query":"esfirra AND carne","default_field":"name"}}}'
 ```
 
 ```bash
-curl -s 'localhost:9200/product/_search?pretty' -H 'Content-Type: application/json' -d '{"query":{"multi_match":{"query":"esfirra","fields":["name"]}}}'
+curl -s 'http://localhost:9200/product/_search?pretty' -H 'Content-Type: application/json' -d '{"query":{"multi_match":{"query":"esfirra","fields":["name"]}}}'
 ```
 
 ```bash
-curl -s 'localhost:9200/product/_search?pretty' -H 'Content-Type: application/json' -d '{"query":{"match":{"name":{"query":"esfira","fuzziness":"AUTO"}}}}'
+curl -s 'http://localhost:9200/product/_search?pretty' -H 'Content-Type: application/json' -d '{"query":{"match":{"name":{"query":"esfira","fuzziness":"AUTO"}}}}'
 ```
 
 ```bash
-curl -s 'localhost:9200/product/_search?pretty' -H 'Content-Type: application/json' -d '{"query":{"match":{"name":{"query":"esfirraa","fuzziness":"AUTO"}}}}'
+curl -s 'http://localhost:9200/product/_search?pretty' -H 'Content-Type: application/json' -d '{"query":{"match":{"name":{"query":"esfirraa","fuzziness":"AUTO"}}}}'
 ```
 
 ```bash
-curl -s 'localhost:9200/product/_search?pretty' -H 'Content-Type: application/json' -d '{"query":{"match":{"name":{"query":"esfírrá","fuzziness":"AUTO"}}}}'
+curl -s 'http://localhost:9200/product/_search?pretty' -H 'Content-Type: application/json' -d '{"query":{"match":{"name":{"query":"esfírrá","fuzziness":"AUTO"}}}}'
 ```
 
 ```bash
-curl -s 'localhost:9200/product/_search?pretty' -H 'Content-Type: application/json' -d '{"query":{"prefix":{"name":"esf"}}}'
+curl -s 'http://localhost:9200/product/_search?pretty' -H 'Content-Type: application/json' -d '{"query":{"prefix":{"name":"esf"}}}'
 ```
 
 ```bash
-curl -s 'localhost:9200/product/_search?pretty' -H 'Content-Type: application/json' -d '{"query":{"wildcard":{"name":"*sfirra*"}}}'
+curl -s 'http://localhost:9200/product/_search?pretty' -H 'Content-Type: application/json' -d '{"query":{"wildcard":{"name":"*sfirra*"}}}'
 ```
 
 </details>
