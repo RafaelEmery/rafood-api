@@ -25,8 +25,8 @@ $(PURPLE)$(BOLD)
 endef
 export BANNER
 
-# Compose file lives in docker/. Project directory stays the repo root so the
-# project name, named volumes and the root .env do not move with the file.
+# Compose file lives in docker/. Project directory stays the repo root so
+# .env, volumes and the build context do not move with the file.
 DOCKER_DIR := docker
 COMPOSE_FILE := $(DOCKER_DIR)/docker-compose.yml
 DOCKER_COMPOSE = docker compose --project-directory "$(CURDIR)" -f "$(COMPOSE_FILE)"
@@ -107,7 +107,7 @@ restart-monitoring: ## Restart the monitoring Docker containers (from down state
 	@echo "\nContainers restarted! 🎉\n"
 	@$(DOCKER_COMPOSE) ps --format $(DOCKER_PS_FORMAT) | awk $(DOCKER_PS_AWK)
 
-start-kafka: ## Start the Kafka CDC containers (Kafka, Schema Registry, Connect + Debezium, Control Center)
+start-kafka: ## Start the Kafka CDC containers (Kafka, Schema Registry, Connect + Debezium, Elasticsearch, Control Center)
 	@echo "$$BANNER"
 	@echo "Starting Kafka CDC containers... 🚀\n"
 	@$(DOCKER_COMPOSE) --profile kafka up -d --build

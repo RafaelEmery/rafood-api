@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# One-shot setup for the "kafka" Compose profile: creates the product event topics
-# and registers the Debezium outbox connector. Runs on every `up` and is safe to
-# repeat, so there is no Makefile target for it.
+# One-shot setup for the "kafka" Compose profile: creates the outbox event topics
+# and registers the Debezium source plus the Elasticsearch sink. Runs on every `up`
+# and is safe to repeat, so there is no Makefile target for it.
 set -euo pipefail
 
 BOOTSTRAP_SERVER="kafka:29092"
@@ -9,8 +9,13 @@ CONNECT_URL="http://connect:8083"
 CONNECTOR_NAME="rafood-outbox-connector"
 CONNECTOR_TEMPLATE="/setup/connectors/outbox-source.json"
 RENDERED_CONNECTOR="/tmp/outbox-source.rendered.json"
+ES_URL="http://elasticsearch:9200"
+ES_CONNECTOR_NAME="rafood-elasticsearch-sink"
+ES_CONNECTOR_CONFIG="/setup/connectors/elastic-search-sink-connector.json"
 
-# One topic per outbox `type` value, matching transforms.outbox.route.by.field=type.
+# One topic per outbox `type` the API writes today. auto.create.topics.enable is
+# false, so a new aggregate is added here only when that domain starts writing
+# the outbox. The sink already matches outbox.event.* and indexes it then.
 TOPICS=(
   "outbox.event.product.created"
   "outbox.event.product.updated"
@@ -72,10 +77,32 @@ register_connector() {
   echo "Connector ready: ${CONNECTOR_NAME}"
 }
 
+wait_for_elasticsearch() {
+  echo "Waiting for Elasticsearch at ${ES_URL}..."
+  # The Compose healthcheck already gates this container, but the loop keeps the
+  # script usable on its own (docker compose run kafka-setup).
+  until curl -fsS "${ES_URL}" >/dev/null 2>&1; do
+    sleep 2
+  done
+}
+
+register_elasticsearch_sink() {
+  # PUT on /config creates or updates the connector; POST /connectors would return
+  # 409 Conflict once it already exists. The connector name is the consumer group
+  # connect-rafood-elasticsearch-sink.
+  curl -fsS -X PUT \
+    -H "Content-Type: application/json" \
+    --data "@${ES_CONNECTOR_CONFIG}" \
+    "${CONNECT_URL}/connectors/${ES_CONNECTOR_NAME}/config" >/dev/null
+  echo "Connector ready: ${ES_CONNECTOR_NAME}"
+}
+
 wait_for_kafka
 create_topics
 wait_for_connect
 render_connector_config
 register_connector
+wait_for_elasticsearch
+register_elasticsearch_sink
 
 echo "Kafka CDC setup finished."
