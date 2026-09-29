@@ -2,6 +2,10 @@
 
 Configurations, usage and other details will be updated as the project progresses.
 
+[Related ADR: Add CDC and Transactional Outbox with Kafka](./adr/009-add-cdc-transactional-outbox-with-kafka.md) and related sketch 🖌️
+
+![Full sketch](./images/full-sketch.png)
+
 ## TL;DR
 
 - Produce events by creating on `public.outbox` table.
