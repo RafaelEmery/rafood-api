@@ -7,6 +7,7 @@
   "schema.ignore": "true",
   "write.method": "upsert",
   "behavior.on.null.values": "delete",
+  "flush.synchronously": "true",
   "predicates": "isDelete",
   "predicates.isDelete.type": "org.apache.kafka.connect.transforms.predicates.TopicNameMatches",
   "predicates.isDelete.pattern": "outbox\\.event\\..+\\.deleted",
@@ -17,5 +18,5 @@
   "transforms.indexName.regex": "outbox\\.event\\.([^.]+)\\..*",
   "transforms.indexName.replacement": "$1",
   "errors.log.enable": "true",
-  "errors.log.include.messages": "true"
+  "errors.log.include.messages": "false"
 }

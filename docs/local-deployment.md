@@ -16,7 +16,7 @@ kubernetes/
 ```
 
 > [!NOTE]
-> The main deployment and service configuration is at `kubernetes/charts/rafood-api` directory and the _official_ guide below is based on this configuration.
+> The main deployment and service configuration is at `kubernetes/charts/rafood-api` directory and the *official* guide below is based on this configuration.
 > To check the PoC configurations and steps, you'll find them at `Studies notes` section.
 
 ## Setup
@@ -126,7 +126,7 @@ The Helm chart contains the following Kubernetes templates:
 - **service.yaml**: Creates a Service to expose the Rafood API pods, specifying the service type (ClusterIP, NodePort, etc.) and ports.
 - **ingress.yaml**: Configures an Ingress resource for external access, with host, path, and backend service settings (enabled via values).
 - **hpa.yaml**: Sets up a Horizontal Pod Autoscaler (HPA) to automatically scale pods based on CPU and memory utilization thresholds.
-- **\_helpers.tpl**: Provides reusable template functions for naming, labels, and chart metadata used across other templates.
+- **helpers.tpl**: Provides reusable template functions for naming, labels, and chart metadata used across other templates.
 
 ### First Steps
 
@@ -443,8 +443,7 @@ helm create rafood-api
 
 The generated `values.yaml` file contains default values for the Helm chart, which can be overridden when deploying the chart. Below is an example of what the generated `values.yaml` file might look like, with comments explaining each section.
 
-<details>
-<summary>Generated Values file</summary>
+Generated Values file
 
 ```yaml
 # Default values for rafood-api.
@@ -610,8 +609,6 @@ tolerations: []
 affinity: {}
 ```
 
-</details>
-
 ### Basic helm charts by deployment and service configurations
 
 `values.yaml`:
@@ -746,8 +743,8 @@ helm-docs kubernetes/charts/rafood-api/
 
 ### Context about ArgoCD
 
-> Reference: [ArgoCD Documentation](https://argo-cd.readthedocs.io/en/stable/) and [
-> GITOPS? Aprenda a usar na prática com Argo CD e Kubernetes](https://www.youtube.com/watch?v=k1GeGLlqZBU) - YouTube video by @codigofontetv
+> Reference: [ArgoCD Documentation](https://argo-cd.readthedocs.io/en/stable/) and
+> [GITOPS? Aprenda a usar na prática com Argo CD e Kubernetes](https://www.youtube.com/watch?v=k1GeGLlqZBU) - YouTube video by @codigofontetv
 
 ArgoCD is a declarative, GitOps continuous delivery tool for Kubernetes. It follows the GitOps pattern of using Git as the source of truth for the desired state of the application. It can be used to deploy and manage applications on Kubernetes clusters.
 

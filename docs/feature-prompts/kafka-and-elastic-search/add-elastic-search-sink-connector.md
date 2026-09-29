@@ -4,7 +4,7 @@
 
 Add a new Elastic Search sink connector to the Kafka Connectors. The connector should be able to read events from the Kafka topics and write them to the Elastic Search index.
 
-> Add a new markdown file to the plans folter (you can create the folder if it doesn't exist), containing the plan related to this feature prompt
+> Add a new markdown file to the plans folder (you can create the folder if it doesn't exist), containing the plan related to this feature prompt
 
 ## Logic flow
 

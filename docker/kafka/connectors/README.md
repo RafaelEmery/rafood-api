@@ -115,7 +115,7 @@ outbox.event.<aggregate>.<action>
 
 Created and updated overwrite one document per aggregate id in the index named after the aggregate (`product` today). A topic ending in `.deleted` removes that document, so search no longer returns it. The event on Kafka stays the full snapshot; only this sink sees a tombstone.
 
-Drop runs before RegexRouter. After the rename the topic is only `product`, and the delete predicate would not match.
+`flush.synchronously=true` is required. With the default `false`, this sink rejects a topic-renaming SMT and the task fails with `doesn't match assigned partitions`. Drop runs before RegexRouter. After the rename the topic is only `product`, and the delete predicate would not match.
 
 ### Properties
 
@@ -129,6 +129,7 @@ Drop runs before RegexRouter. After the rename the topic is only `product`, and 
 | `write.method=upsert`                               | A repeated id overwrites the document. Created and updated share one document.                                                                                                          |
 | `behavior.on.null.values=delete`                    | A null value deletes the document for that key. The default `fail` would stop the task on a delete event.                                                                               |
 | `predicates.isDelete` + `Drop$Value`                | Topics matching `outbox.event.<aggregate>.deleted` have their value set to null before the sink writes. Other topics are unchanged. `Drop$Value` comes from `connect-transforms` 1.6.2. |
+| `flush.synchronously=true`                          | Lets RegexRouter rename the topic. The default `false` fails the task.                                                                                                                  |
 | `transforms.indexName` (RegexRouter)                | Index name is the aggregate (`$1` in `outbox.event.<aggregate>.<action>`), not the full topic.                                                                                          |
 | `errors.log.enable` / `errors.log.include.messages` | Failed records are logged with their content (`make logs container=connect`).                                                                                                           |
 
