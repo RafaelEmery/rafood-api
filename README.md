@@ -31,19 +31,18 @@ My initial studies of FastAPI is at [fastapi-studies repository](https://github.
 ### Tools used :hammer:
 
 - Python (`3.10.7`) and Poetry
-- FastAPI
-- SQLModel & Alembic
+- FastAPI, SQLModel and Alembic
 - Pytest for testing
 - PostgreSQL, PostGIS and GiST index for location data
 - Docker & Docker Compose
-- Prometheus & Grafana
-- Locust for load testing
+- Prometheus and Grafana
+- Locust for stress testing
 - GitHub Actions
 - Postman Newman for smoke tests on CI
 - Kubernetes and Helm Charts on local Minikube cluster
 - GitOps with ArgoCD on local Minikube cluster (PoC/sandbox)
 - Transactional Outbox Pattern with Unit of Work pattern
-- CDC (Change Data Capture) with Debezium and Kafka
+- CDC (Change Data Capture) with Debezium, Kafka and Elastic Search
 - Cursor (AI-assisted development with rules and agent prompts)
 
 ### ER Model
@@ -181,7 +180,7 @@ More about local deployment with Kubernetes using Minikube can be found at [docs
 
 ## Events Architecture Guide (Kafka)
 
-More about events architecture guide (Kafka) can be found at [docs/kafka-events-guide.md](./docs/kafka-events-guide.md).
+More about events architecture guide (Kafka) can be found at [docs/kafka-events-guide.md](./docs/kafka-events-guide.md). Also has Elastic Search integration guide.
 
 ## Cursor (AI-assisted development)
 
