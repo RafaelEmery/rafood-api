@@ -111,8 +111,8 @@ At the same unit of work, the product will be created/updated or deleted and the
 
 The outbox table will be updated with the event data:
 
-> [!NOTE] About the `outbox.type` column
-> At screenshot below, you can see the `outbox.type` column on PascalCase format but was refactored to `model.action` on lower case (e.g. `product.created`, `product.updated`, `product.deleted`)
+> [!NOTE]
+> At the screenshot below, you can see the `outbox.type` column on PascalCase format but was refactored to `model.action` on lower case (e.g. `product.created`, `product.updated`, `product.deleted`).
 
 ![Product Outbox Events Postgres](./images/product-outbox-events-postgres.png)
 
@@ -226,8 +226,8 @@ Topics, partitions and offsets:
 
 ![Kafka Control Center Sink Consumer Group Offsets](./images/kafka-control-center-sink-consumer-group-offsets.png)
 
-> [!IMPORTANT] About the topic names and indexes
-> The topic names follow outbox.event.<aggregate>.<action> pattern. The indexes follow the aggregate name. So all product topics are mapped to the `product` index. For other topics and indexes, the logic is to use the aggregate name as the index name.
+> [!IMPORTANT]
+> The topic names follow the `outbox.event.<aggregate>.<action>` pattern. The indexes follow the aggregate name. So all product topics are mapped to the `product` index. For other topics and indexes, the logic is to use the aggregate name as the index name.
 > The `delete` action marks the document as deleted and the full snapshot is kept in the topic.
 
 To validate the Elastic Search index and do a full text search, you can use the `curl` command:
@@ -240,7 +240,7 @@ Pretty response:
 
 ![Elastic Search basic index query](./images/elastic-search-basic-index-query.png)
 
-> [!NOTE] About the Elastic Search interface
+> [!NOTE]
 > The current example uses the Elastic Search REST API but Kibana (using Docker Compose) can be integrated on the future.
 
 <details>
