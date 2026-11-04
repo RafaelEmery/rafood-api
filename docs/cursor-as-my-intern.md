@@ -15,6 +15,7 @@ Configuration lives under [.cursor/](../.cursor/) and the root [AGENTS.md](../AG
 - **Rules** (`.cursor/rules/*.mdc`): Injected context—stack, domain layout, tests, migrations, code style, quality checks. Some apply always, others when you edit matching files.
 - **Prompts** (`.cursor/prompts/*.md`): One file per “agent”. Mention them in chat (e.g. `@.cursor/prompts/feature-agent.md`) or paste the model prompt so the agent behaves as that mode.
 - **AGENTS.md**: Describes when to use each mode and how to invoke it.
+- **Skills** (`.cursor/skills/`): Extra workflows the agent loads when the task matches. The list, what each skill does, the source link, and how that skill was installed are in [agent-skills.md](agent-skills.md). Installing or removing a skill means updating that file.
 
 When the agent **produces or changes code**, it automatically runs format, lint, type check, and tests and fixes failures. It does not apply migrations or change git state; it may create a migration revision only after you approve, and may use read-only git commands for context.
 

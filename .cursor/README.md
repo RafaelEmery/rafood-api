@@ -4,11 +4,12 @@ This folder holds Cursor rules and agent prompts so the AI assistant follows pro
 
 ## Contents
 
-| Path        | Purpose                                                                                                  |
-| ----------- | -------------------------------------------------------------------------------------------------------- |
-| `rules/`    | Project rules (`.mdc` files) that inject context: stack, domain layout, tests, migrations.               |
-| `prompts/`  | Agent instructions: one file per “mode” (feature, explain, review). Use via @-mention or copy into chat. |
-| `README.md` | This file.                                                                                               |
+| Path        | Purpose                                                                                                           |
+| ----------- | ----------------------------------------------------------------------------------------------------------------- |
+| `rules/`    | Project rules (`.mdc` files) that inject context: stack, domain layout, tests, migrations.                        |
+| `prompts/`  | Agent instructions: one file per “mode” (feature, explain, review). Use via @-mention or copy into chat.          |
+| `skills/`   | Installed agent skills. Catalog: [docs/agent-skills.md](../docs/agent-skills.md). Update it when a skill changes. |
+| `README.md` | This file.                                                                                                        |
 
 See the root [AGENTS.md](../AGENTS.md) for when to use each agent and how to invoke it. When the agent **produces or changes code**, it **automatically** runs **`make agent-checks`** (lint + tests inside the `api` container via Docker Compose) and fixes failures. **agent-boundaries.mdc**: no `migrate`/`rollback`; `create-migration` only with your approval; no `git add`/commit/push; read-only git (`diff`, `status`, `log`) is OK; **dependencies.mdc**: you run `poetry add` and `make build` after lockfile changes. Commands: **Makefile** (`make help`).
 

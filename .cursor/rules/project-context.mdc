@@ -57,6 +57,7 @@ Before **implementing**, **refactoring**, or **reviewing** code, **read the rele
 3. **Guides** (when the change touches that area): e.g. `docs/logging.md`, `docs/monitoring.md`, `docs/load-testing.md`, `docs/workflows.md`, `docs/local-deployment.md`.
 4. **Smoke tests (CI)** (when adding or changing HTTP endpoints): **smoke-tests.mdc** — update `postman/smoke.postman_collection.json` for GitHub Actions; agents do **not** run Newman locally (**agent-boundaries.mdc**).
 5. **Cursor usage** (optional): `docs/cursor-as-my-intern.md` for agent modes and prompts.
+6. **Agent skills**: catalog in `docs/agent-skills.md`. When a skill is added or removed under `.cursor/skills/`, update that file in the same change: table row (name, what it does, reference URL) and a note of how **that** skill was installed. Do not write one install command as if it applied to every skill.
 
 If an ADR or guide conflicts with existing code, **follow the ADR/guide** and align the change—or call out the mismatch to the user.
 

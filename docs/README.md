@@ -9,4 +9,5 @@ This folder contains documentation and guides related to the project.
 - [workflows.md](workflows.md): Documentation on GitHub workflows used in the project.
 - [local-deployment.md](local-deployment.md): Guide for local deployment of the application using Kubernetes.
 - [cursor-as-my-intern.md](cursor-as-my-intern.md): Guide for using Cursor with rules, agent prompts (new feature, explain, code review), and model prompts.
+- [agent-skills.md](agent-skills.md): Skills installed for Cursor in this repo, what each one does, and where it comes from.
 - [kafka-events-guide.md](kafka-events-guide.md): Guide for Kafka events and CDC (Change Data Capture) with Debezium and Kafka.
