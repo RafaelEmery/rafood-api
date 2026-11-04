@@ -184,7 +184,7 @@ More about events architecture guide (Kafka) can be found at [docs/kafka-events-
 
 ## Cursor (AI-assisted development)
 
-More about using Cursor with rules, agent prompts (new feature, explain, code review), and model prompts can be found at [docs/cursor-as-my-intern.md](./docs/cursor-as-my-intern.md).
+More about using Cursor with rules, agent prompts (new feature, explain, code review), and model prompts can be found at [docs/cursor-as-my-intern.md](./docs/cursor-as-my-intern.md). Installed skills are listed in [docs/agent-skills.md](./docs/agent-skills.md).
 
 ______________________________________________________________________
 
